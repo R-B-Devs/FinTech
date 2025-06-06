@@ -4,7 +4,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(to right, #0c0c0e, #1a0101fd);
+  background: linear-gradient(to right, #0c0c0e, #06182c);
   font-family: sans-serif;
   color: white;
 }
@@ -12,7 +12,7 @@
 .brand-title {
   font-size: 5rem; 
   font-weight: bold;
-  background: linear-gradient(90deg, #df4444, #ee2222);
+  background: linear-gradient(90deg, #f31010, #ff0000);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -21,7 +21,8 @@
   font-size: 3rem;
 }
 
-/*  */
+/********** Form Section **********/
+
 .login-container {
   max-width: 1100px;
   width: 100%;
@@ -77,12 +78,12 @@
   color: gray;
 }
 
-/**********LOGIN BUTTON**********/
+/**********BUTTON SECTION**********/
 
 .login-button {
-  width: 90%;
+  width: 60%;
   height: 50px;
-  background: linear-gradient(90deg, #fa4e4e, #7a1313); 
+  background: linear-gradient(90deg, #680606, #be1717); 
   color: white;
   font-size: 1rem;
   font-weight: bold;
@@ -91,13 +92,39 @@
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
   box-shadow: 0 4px 10px rgba(48, 23, 46, 0.3);
+  
 }
 
 .login-button:hover {
-  background: linear-gradient(90deg, #882525, #d14242);
+  background: linear-gradient(90deg, #000000, #701212);
   transform: translateY(-2px); 
 }
 
 .login-button:active {
+  transform: scale(0.98);
+}
+
+
+.register-button {
+  width: 60%;
+  height: 50px;
+  background: transparent; 
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  border: 1px solid rgb(36, 36, 36);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 4px 10px rgba(48, 23, 46, 0.3);
+}
+
+.register-button:hover {
+  background: linear-gradient(90deg, #000000, #123370);
+  transform: translateY(-2px); 
+  box-shadow: 0 4px 10px rgba(158, 5, 5, 0.3);
+}
+
+.register-button:active {
   transform: scale(0.98);
 }
