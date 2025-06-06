@@ -20,7 +20,7 @@ const LoginPage = () => {
               <input
                 id="userId"
                 type="text"
-                placeholder="Enter your ID"
+                placeholder="Enter your ID Number"
                 className="input-field"
               />
             </div>
