@@ -10,7 +10,7 @@ const LoginPage = () => {
         {/* Left: Login Form Section */}
         <div className="login-form-section">
           <h1 className="brand-title">FinTech</h1>
-          <h1 className="form-title">Login</h1>
+          <h2 className="form-title">Login</h2>
 
           <div className="form-fields">
 
