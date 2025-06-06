@@ -1,10 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ForgotPassword from './pages/ForgotPassword';
-import './ForgotPassword.css';
-
-<Route path="/forgot-password" element={<ForgotPassword />} />
-
+import ForgotPasswordImg from "../img/forgot.png";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -12,9 +8,8 @@ const ForgotPassword = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: Implement backend integration
     alert(`Password reset link sent to: ${email}`);
-    navigate('/login'); // Navigate back to login
+    navigate('/login');
   };
 
   return (
@@ -27,7 +22,7 @@ const ForgotPassword = () => {
           <label style={styles.label}>Email address</label>
           <input
             type="email"
-            value={email}L
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email address"
             required
@@ -43,7 +38,65 @@ const ForgotPassword = () => {
   );
 };
 
+// Inline styles
+const styles = {
+  container: {
+    display: 'flex',
+    height: '100vh',
+    fontFamily: 'sans-serif',
+  },
+  left: {
+    flex: 1,
+    padding: '60px',
+    backgroundColor: '#1e293b',
+    color: 'white',
+  },
+  logo: {
+    fontSize: '32px',
+    marginBottom: '20px',
+  },
+  heading: {
+    fontSize: '36px',
+    marginBottom: '10px',
+  },
+  text: {
+    fontSize: '16px',
+    marginBottom: '30px',
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+  },
+  label: {
+    marginBottom: '8px',
+  },
+  input: {
+    padding: '12px',
+    marginBottom: '20px',
+    border: 'none',
+    borderRadius: '4px',
+    fontSize: '16px',
+  },
+  button: {
+    padding: '12px',
+    backgroundColor: '#38bdf8',
+    border: 'none',
+    borderRadius: '4px',
+    fontSize: '16px',
+    color: 'white',
+    cursor: 'pointer',
+  },
+  right: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    maxWidth: '80%',
+    height: 'auto',
+  },
 
-
-
+};
 export default ForgotPassword;
