@@ -474,14 +474,6 @@ womanImage: {
     boxShadow: '0 25px 50px rgba(220, 20, 60, 0.2)',
     transition: 'all 0.5s ease'
   },
-  phoneScreen: {
-    width: '100%',
-    height: '100%',
-    backgroundColor: '#000000',
-    borderRadius: '16px',
-    overflow: 'hidden',
-    position: 'relative'
-  },
   screenContent: {
     padding: '24px',
     height: '100%',
