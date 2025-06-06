@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import DemoPage from "./pages/DemoPage";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword";
+import RegistrationPage from "./pages/Registration-page"; // ✅ Correct import
 
 function App() {
   return (
@@ -16,8 +17,8 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/demo" element={<DemoPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} /> 
-
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/register" element={<RegistrationPage />} /> {/* ✅ Correct usage */}
       </Routes>
     </Router>
   );
