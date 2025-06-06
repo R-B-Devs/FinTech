@@ -1,6 +1,8 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
+import DemoPage from "./pages/DemoPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword"; // 💡 Import it
 
@@ -15,5 +17,5 @@ function App() {
     </Router>
   );
 }
-
+ 
 export default App;
