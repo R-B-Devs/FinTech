@@ -44,8 +44,8 @@ const LoginPage = () => {
             </div>
 
             {/* Sign In Button */}
-            <button className="sign-in-button">
-              Sign in
+            <button className="login-button">
+              Login 
             </button>
           </div>
         </div>
