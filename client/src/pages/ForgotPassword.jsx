@@ -10,7 +10,7 @@ const ForgotPassword = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     alert(`Password reset link sent to: ${email}`);
-    navigate('/login');
+    navigate('/reset-password'); // Navigate to ResetPassword page
   };
 
   return (
@@ -58,7 +58,6 @@ const styles = {
     maxWidth: '1000px',
     backgroundColor: '#000000',
     borderRadius: '12px',
-    // Removed boxShadow here to eliminate glow effect
   },
   left: {
     flex: 1,
