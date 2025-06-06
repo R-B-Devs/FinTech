@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import logo from '../assets/logo.png';
 import woman from '../assets/woman.png';
 
 
 
 const LandingPage = () => {
+  const navigate = useNavigate();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isLoaded, setIsLoaded] = useState(false);
   const [hoveredCard, setHoveredCard] = useState(null);
@@ -101,17 +103,25 @@ const LandingPage = () => {
 
           {/* CTA Buttons */}
           <div style={styles.ctaContainer}>
-            <button style={styles.primaryButton}>
+            <button
+              style={styles.primaryButton}
+              onClick={() => navigate('/login')}
+            >
               <div style={styles.buttonOverlay} />
               <div style={styles.buttonContent}>
                 Start Your Journey
                 <span style={styles.chevron}>→</span>
               </div>
             </button>
-            <button style={styles.secondaryButton}>
+
+            <button
+              style={styles.secondaryButton}
+              onClick={() => navigate('/demo')}
+            >
               Watch Demo
             </button>
           </div>
+
 
           {/* Stats */}
           <div style={styles.statsContainer}>
