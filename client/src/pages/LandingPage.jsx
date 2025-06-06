@@ -380,19 +380,19 @@ womanImage: {
     marginBottom: '48px'
   },
   primaryButton: {
-    position: 'relative',
-    padding: '16px 32px',
-    background: 'linear-gradient(45deg, #dc2626, #ec4899)',
-    borderRadius: '50px',
-    fontWeight: '600',
-    fontSize: '18px',
-    border: 'none',
-    color: 'white',
-    cursor: 'pointer',
-    overflow: 'hidden',
-    transition: 'all 0.3s ease',
-    boxShadow: '0 10px 25px rgba(220, 20, 60, 0.25)'
-  },
+  position: 'relative',
+  padding: '16px 32px',
+  background: 'linear-gradient(45deg, #8A1F2C, #B02A3F)', // deep red gradient
+  borderRadius: '50px',
+  fontWeight: '600',
+  fontSize: '18px',
+  border: 'none',
+  color: 'white',
+  cursor: 'pointer',
+  overflow: 'hidden',
+  transition: 'all 0.3s ease',
+  boxShadow: '0 10px 25px rgba(138, 31, 44, 0.4)' // matching shadow
+},
   buttonOverlay: {
     position: 'absolute',
     top: 0,
