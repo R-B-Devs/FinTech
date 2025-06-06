@@ -1,4 +1,3 @@
- 
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -127,4 +126,3 @@
 .register-button:active {
   transform: scale(0.98);
 }
- 
