@@ -1,8 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/LoginPage.css";
 import loginImg from "../img/login-image.jpg";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="login-page">
       <div className="login-container">
@@ -39,7 +42,11 @@ const LoginPage = () => {
             </div>
 
             {/* Forgot Password */}
-            <div className="forgot-password">
+            <div
+              className="forgot-password"
+              style={{ color: "white", cursor: "pointer" }}
+              onClick={() => navigate("/forgot-password")}
+            >
               Forgot password?
             </div>
 
@@ -62,7 +69,7 @@ const LoginPage = () => {
         </div>
 
       </div>
-    </div>  
+    </div>
   );
 };
 

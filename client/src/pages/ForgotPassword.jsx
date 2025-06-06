@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ForgotPassword from './pages/ForgotPassword';
-
-<Route path="/forgot-password" element={<ForgotPassword />} />
-
+import ForgotPasswordImg from "../img/forgot.png";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -11,9 +8,8 @@ const ForgotPassword = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // TODO: Implement backend integration
     alert(`Password reset link sent to: ${email}`);
-    navigate('/login'); // Navigate back to login
+    navigate('/login');
   };
 
   return (
@@ -36,42 +32,36 @@ const ForgotPassword = () => {
         </form>
       </div>
       <div style={styles.right}>
-        <img src="/images/reset-illustration.png" alt="Illustration" style={styles.image} />
+        <img src="forgot.png" alt="Illustration" style={styles.image} />
       </div>
     </div>
   );
 };
 
+// Inline styles
 const styles = {
   container: {
     display: 'flex',
     height: '100vh',
-    background: 'linear-gradient(to bottom right, #0f0f0f, #1a1a1a)',
-    color: '#eee',
     fontFamily: 'sans-serif',
   },
   left: {
     flex: 1,
     padding: '60px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
+    backgroundColor: '#1e293b',
+    color: 'white',
   },
   logo: {
-    color: '#e14c3c',
     fontSize: '32px',
     marginBottom: '20px',
   },
   heading: {
-    fontSize: '42px',
-    fontWeight: 'bold',
-    lineHeight: '1.2',
+    fontSize: '36px',
     marginBottom: '10px',
   },
   text: {
     fontSize: '16px',
     marginBottom: '30px',
-    color: '#ccc',
   },
   form: {
     display: 'flex',
@@ -82,32 +72,31 @@ const styles = {
   },
   input: {
     padding: '12px',
-    fontSize: '16px',
-    backgroundColor: '#1f1f1f',
-    border: '1px solid #333',
-    borderRadius: '6px',
     marginBottom: '20px',
-    color: '#fff',
+    border: 'none',
+    borderRadius: '4px',
+    fontSize: '16px',
   },
   button: {
-    padding: '14px',
-    backgroundColor: '#e14c3c',
-    color: '#fff',
+    padding: '12px',
+    backgroundColor: '#38bdf8',
     border: 'none',
-    borderRadius: '8px',
+    borderRadius: '4px',
     fontSize: '16px',
+    color: 'white',
     cursor: 'pointer',
   },
   right: {
     flex: 1,
+    backgroundColor: '#f8fafc',
     display: 'flex',
-    alignItems: 'center',
     justifyContent: 'center',
+    alignItems: 'center',
   },
   image: {
-    maxWidth: '60%',
+    maxWidth: '80%',
     height: 'auto',
   },
-};
 
+};
 export default ForgotPassword;
