@@ -277,7 +277,7 @@ logoImage: {
 womanImage: {
   width: '600%',
   maxWidth: '800px',       // Increased from 400px to 600px
-  marginLeft: '-30rem',
+  marginLeft: '-35rem',
   borderRadius: '1rem',
   boxShadow: '0 10px 30px rgba(0, 0, 0, 0.3)',
   animation: 'fadeInUp 1s ease-out',
