@@ -1,0 +1,67 @@
+.landing-page {
+  position: relative;
+  min-height: 100vh;
+  background-image: url('/assets/background.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #0a0a23;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  overflow: hidden;
+  padding: 40px 20px;
+}
+
+.content {
+  z-index: 2;
+  max-width: 700px;
+}
+
+.title {
+  font-size: 3rem;
+  font-weight: bold;
+  margin: 0;
+  color: white;
+}
+
+.white {
+  color: white;
+}
+
+.red {
+  color: #ff2d55;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  margin: 20px 0;
+  color: white;
+}
+
+.get-started-button {
+  padding: 12px 24px;
+  font-size: 1rem;
+  background-color: #ff2d55;
+  border: none;
+  border-radius: 30px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.get-started-button:hover {
+  background-color: #d9003a;
+}
+
+.woman-image {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  max-width: 50%;
+  height: auto;
+  z-index: 1;
+}
