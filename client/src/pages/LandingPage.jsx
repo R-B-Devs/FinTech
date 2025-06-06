@@ -137,6 +137,10 @@ const LandingPage = () => {
               <div style={styles.statNumber}>99.9%</div>
               <div style={styles.statLabel}>Uptime</div>
             </div>
+            <div style={styles.stat}>
+              <div style={styles.statNumber}>5+</div>
+              <div style={styles.statLabel}>AI Tools Integrated</div>
+            </div>
           </div>
         </div>
 
