@@ -1,10 +1,10 @@
-/* LoginPage.css */
+
 .login-page {
   min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(to right, #0c0c0e, #1a1b1e);
+  background: linear-gradient(to right, #0c0c0e, #1a0101fd);
   font-family: sans-serif;
   color: white;
 }
