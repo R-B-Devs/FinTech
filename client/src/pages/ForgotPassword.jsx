@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ForgotPasswordImg from "../img/forgot.png";
+import ForgotPasswordImg from "../img/forgot.png"; // ✅ use the actual image you imported
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -9,7 +9,7 @@ const ForgotPassword = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     alert(`Password reset link sent to: ${email}`);
-    navigate('/login');
+    navigate('/reset-password'); // ✅ redirect to reset page
   };
 
   return (
@@ -32,13 +32,12 @@ const ForgotPassword = () => {
         </form>
       </div>
       <div style={styles.right}>
-        <img src="forgot.png" alt="Illustration" style={styles.image} />
+        <img src={ForgotPasswordImg} alt="Illustration" style={styles.image} /> {/* ✅ Correct image */}
       </div>
     </div>
   );
 };
 
-// Inline styles
 const styles = {
   container: {
     display: 'flex',
@@ -97,6 +96,6 @@ const styles = {
     maxWidth: '80%',
     height: 'auto',
   },
-
 };
+
 export default ForgotPassword;
