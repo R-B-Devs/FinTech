@@ -1,5 +1,6 @@
 import React from "react";
 import "../styles/LoginPage.css";
+
 import loginImg from "../img/login-image.jpg";
 
 const LoginPage = () => {
