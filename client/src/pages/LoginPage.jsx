@@ -1,7 +1,7 @@
 import React from "react";
 import "../styles/LoginPage.css";
 import loginImg from "../img/login-image.jpg";
-import { validateLogin } from '../cyberFrontend/ValidateLogin';
+import { validateLogin } from '../cyberFrontend/validation.js';
 
 
 
