@@ -6,9 +6,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock } from '@fortawesome/free-solid-svg-icons';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
 
-
-
-
 const LoginPage = () => {
   const navigate = useNavigate();
 
@@ -18,7 +15,9 @@ const LoginPage = () => {
 
         {/* Left: Login Form Section */}
         <div className="login-form-section">
-          <h1 className="brand-title">LynqAI</h1>
+          <h1>
+            <span className="brand">Lynq</span><span className="highlight">AI</span>
+          </h1>
           <h2 className="form-title">Login</h2>
 
           <div className="form-fields">
@@ -37,7 +36,6 @@ const LoginPage = () => {
               </div>
             </div>
 
-
             {/* Password Input */}
             <div className="input-group">
               <label htmlFor="password" className="input-label">Password</label>
@@ -51,7 +49,6 @@ const LoginPage = () => {
                 />
               </div>
             </div>
-
 
             {/* Forgot Password */}
             <div
