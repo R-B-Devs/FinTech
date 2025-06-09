@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "nodemailer": "^7.0.3",
     "resend": "^4.5.2",
     "sib-api-v3-sdk": "^8.5.0"
   }
