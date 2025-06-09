@@ -1,17 +1,17 @@
-// src/pages/DemoPage.jsx
-
 import React from 'react';
-import logo from '../assets/logo.png'; // adjust path if needed
 
 const DemoPage = () => {
   return (
     <div style={styles.container}>
-      {/* Logo */}
-      <div style={styles.logoContainer}>
-        <img src={logo} alt="LynqAI Logo" style={styles.logo} />
+      {/* Brand Name */}
+      <div style={styles.brandContainer}>
+        <h1 style={styles.brandName}>
+          <span style={styles.brand}>Lynq</span>
+          <span style={styles.highlight}>AI</span>
+        </h1>
       </div>
 
-      <h1 style={styles.title}>Product Demo</h1>
+      <h2 style={styles.title}>Product Demo</h2>
       <p style={styles.description}>
         Discover how LynqAI empowers you to make smarter financial decisions
         with real-time insights and powerful AI tools.
@@ -41,18 +41,27 @@ const styles = {
     padding: '40px 20px',
     textAlign: 'center',
   },
-  logoContainer: {
+  brandContainer: {
     display: 'flex',
     justifyContent: 'center',
     marginBottom: '20px',
   },
-  logo: {
-    height: '60px',
+  brandName: {
+    fontSize: '48px',
+    fontWeight: '700',
+    margin: '0',
+  },
+  brand: {
+    color: '#333',
+  },
+  highlight: {
+    color: '#8A1F2C',
   },
   title: {
-    fontSize: '42px',
+    fontSize: '36px',
     color: '#8A1F2C',
     marginBottom: '10px',
+    fontWeight: '600',
   },
   description: {
     fontSize: '18px',
