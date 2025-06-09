@@ -70,15 +70,20 @@ const LoginPage = () => {
         </div>
 
         {/* Right: Register Section */}
-        <div className="register-section">
-          <img
-            src={loginImg}
-            alt="Login Illustration"
-            className="login-image"
-          />
-          <h3 className="register-text">Don’t have an account?</h3>
-          <button className="register-button">Register</button>
-        </div>
+      <div className="register-section">
+        <img
+          src={loginImg}
+          alt="Login Illustration"
+          className="login-image"
+        />
+        <h3 className="register-text">Don’t have an account?</h3>
+        <button
+          className="register-button"
+          onClick={() => navigate('/register')}
+        >
+          Register
+        </button>
+      </div>
 
       </div>
     </div>
