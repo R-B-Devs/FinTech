@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ResetPassword.css";
-import ResetImage from "../assets/Reset.png"; // rename your image accordingly and put in /assets
+import ResetImage from "../assets/Reset3.png"; // make sure this path is correct
 
 const ResetPassword = () => {
   const [userId, setUserId] = useState("");
@@ -45,38 +45,43 @@ const ResetPassword = () => {
 
   return (
     <div className="reset-wrapper">
-      <div className="image-section">
-        <img src={ResetImage} alt="Reset Illustration" />
-      </div>
-      <div className="reset-box">
-        <h2>Reset Your Password</h2>
-        <form onSubmit={handleReset}>
-          <label>ID Number</label>
-          <input
-            type="text"
-            value={userId}
-            onChange={(e) => validateId(e.target.value)}
-            placeholder="Enter your 13-digit ID"
-            required
-          />
-          {idError && <small style={{ color: "red" }}>{idError}</small>}
+      <div className="reset-container">
+        <div className="image-section">
+          <img src={ResetImage} alt="Reset Illustration" />
+        </div>
+        <div className="reset-box">
+          <h2>Reset Your Password</h2>
+          <form onSubmit={handleReset}>
+            <label>ID Number</label>
+            <input
+              type="text"
+              value={userId}
+              onChange={(e) => validateId(e.target.value)}
+              placeholder="Enter your 13-digit ID"
+              required
+            />
+            {idError && <small style={{ color: "red" }}>{idError}</small>}
 
-          <label>New Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => validatePassword(e.target.value)}
-            placeholder="New password"
-            required
-          />
-          {strength && (
-            <small style={{ color: strength === "Strong" ? "green" : "orange" }}>
-              Password strength: {strength}
-            </small>
-          )}
+            <label>New Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => validatePassword(e.target.value)}
+              placeholder="New password"
+              required
+            />
+            {strength && (
+              <small style={{ color: strength === "Strong" ? "green" : "orange" }}>
+                Password strength: {strength}
+              </small>
+            )}
 
-          <button type="submit">Reset Password</button>
-        </form>
+            <button type="submit">Reset Password</button>
+          </form>
+          <div className="back-login" onClick={() => navigate("/login")}>
+            &larr; Back to Login
+          </div>
+        </div>
       </div>
     </div>
   );

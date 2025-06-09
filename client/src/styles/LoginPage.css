@@ -238,3 +238,27 @@
     height: 150px;
   }
 }
+
+.error-text {
+  color: red;
+  font-size: 12px;
+  margin-top: 5px;
+}
+
+.strength-bar {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.strength-bar.weak {
+  color: red;
+}
+
+.strength-bar.medium {
+  color: orange;
+}
+
+.strength-bar.strong {
+  color: green;
+}
