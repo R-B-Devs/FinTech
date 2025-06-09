@@ -4,9 +4,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(to right, #0c0c0e, #06182c);
+  background: linear-gradient(to right, #0c0c0e, #080b13);
   font-family: sans-serif;
-  color: white;
+  color: rgb(255, 255, 255);
 }
 
 .brand-title {
@@ -70,16 +70,16 @@
 
 .input-icon {
   position: absolute;
-  left: 10px;
+  left: 12px;
   top: 50%;
   transform: translateY(-50%);
   color: gray;
-  font-size: 16px;
+  font-size: 18px;
   pointer-events: none;
 }
 
 .input-field.with-icon {
-  padding-left: 35px; 
+  padding-left: 40px; 
 }
 
 .input-field {
@@ -87,10 +87,16 @@
   height: 50px;
   width: 90%;
   background-color: transparent;
-  color: gray;
+  color: white;
   border: 1px solid rgb(36, 36, 36);
   padding: 0 10px;
   font-size: 1rem;
+}
+
+.input-field:focus {
+  outline: none;
+  border-color: #be1717;
+  box-shadow: 0 0 0 2px rgba(190, 23, 23, 0.3);
 }
 
 .input-field::placeholder {
