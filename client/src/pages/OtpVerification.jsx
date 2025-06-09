@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // ✅ Import navigate
 
 const SendOtpForm = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // ✅ Init navigate
 
   const sendOtp = async (e) => {
     e.preventDefault();
@@ -23,6 +25,10 @@ const SendOtpForm = () => {
 
       if (data.success) {
         setMessage('✅ OTP sent to your email!');
+        // ✅ Redirect to verifyOtp page with email in query string
+        setTimeout(() => {
+          navigate(`/verifyOtp?email=${encodeURIComponent(email)}`);
+        }, 1000);
       } else {
         setMessage('❌ Failed to send OTP: ' + data.message);
       }
