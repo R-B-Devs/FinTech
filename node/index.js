@@ -54,6 +54,25 @@ app.post('/send-otp', async (req, res) => {
   }
 });
 
+app.post('/verify-otp', (req, res) => {
+  const { email, otp } = req.body;
+  const entry = otpStore[email];
+
+  if (!entry || Date.now() > entry.expires) {
+    return res.json({ success: false, message: 'OTP expired or invalid.' });
+  }
+
+  if (entry.otp !== otp) {
+    return res.json({ success: false, message: 'Incorrect OTP.' });
+  }
+
+  // Optional: delete OTP from store after success
+  delete otpStore[email];
+
+  res.json({ success: true, message: 'OTP verified successfully!' });
+});
+
+
 app.listen(PORT, () => {
   console.log(`🚀 Backend running at http://localhost:${PORT}`);
 });
