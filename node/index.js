@@ -31,7 +31,7 @@ app.post('/send-otp', async (req, res) => {
 
   try {
     await transporter.sendMail({
-      from: '"LYNQAI" <absacobol@gmail.com>', // must be same as authenticated user
+      from: '" LyngAI " <absacobol@gmail.com>', // must be same as authenticated user
       to: email,
       subject: '🔐 Your OTP Code',
       html: `
