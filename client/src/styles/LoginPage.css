@@ -1,3 +1,4 @@
+
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -7,21 +8,21 @@
   font-family: sans-serif;
   color: white;
 }
- 
+
 .brand-title {
-  font-size: 5rem;
+  font-size: 5rem; 
   font-weight: bold;
   background: linear-gradient(90deg, #f31010, #ff0000);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
- 
+
 .form-title{
   font-size: 3rem;
 }
- 
+
 /********** Form Section **********/
- 
+
 .login-container {
   max-width: 1100px;
   width: 100%;
@@ -30,14 +31,14 @@
   border-radius: 12px;
   overflow: hidden;
 }
- 
+
 .login-form-section {
   background: none;
   border: none;
   box-shadow: none;
-  padding: 40px;
+  padding: 40px; 
 }
- 
+
 .register-section {
   padding: 40px;
   display: flex;
@@ -45,23 +46,42 @@
   justify-content: center;
   align-items: center;
 }
- 
+
 .login-image {
   max-width: 100%;
   margin-bottom: 20px;
 }
- 
+
 .input-group {
   margin-bottom: 30px;
 }
- 
+
 .input-label {
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 8px; 
   color: rgb(255, 252, 252);
   font-weight: 500;
 }
- 
+
+/**********Icons**********/
+.input-wrapper {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: gray;
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.input-field.with-icon {
+  padding-left: 35px; 
+}
+
 .input-field {
   border-radius: 7px;
   height: 50px;
@@ -72,17 +92,17 @@
   padding: 0 10px;
   font-size: 1rem;
 }
- 
+
 .input-field::placeholder {
   color: gray;
 }
- 
+
 /**********BUTTON SECTION**********/
- 
+
 .login-button {
   width: 60%;
   height: 50px;
-  background: linear-gradient(90deg, #680606, #be1717);
+  background: linear-gradient(90deg, #680606, #be1717); 
   color: white;
   font-size: 1rem;
   font-weight: bold;
@@ -91,18 +111,19 @@
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
   box-shadow: 0 4px 10px rgba(48, 23, 46, 0.3);
+  margin-top: 20px;
 }
- 
+
 .login-button:hover {
   background: linear-gradient(90deg, #000000, #701212);
-  transform: translateY(-2px);
+  transform: translateY(-2px); 
 }
- 
+
 .login-button:active {
   transform: scale(0.98);
 }
- 
- 
+
+
 .register-button {
   width: 60%;
   height: 50px;
@@ -116,13 +137,13 @@
   transition: background 0.3s ease, transform 0.2s ease;
   box-shadow: 0 4px 10px rgba(48, 23, 46, 0.3);
 }
- 
+
 .register-button:hover {
   background: linear-gradient(90deg, #000000, #123370);
-  transform: translateY(-2px);
+  transform: translateY(-2px); 
   box-shadow: 0 4px 10px rgba(158, 5, 5, 0.3);
 }
- 
+
 .register-button:active {
   transform: scale(0.98);
 }
