@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-/* import '../styles/registration-page.css'; */
+import registerImage from '../assets/register.png';
+import '../styles/registration-page.css'; 
 
 function RegistrationForm() {
   const [idNumber, setIdNumber] = useState('');
@@ -103,99 +104,111 @@ function RegistrationForm() {
 
   return (
     <div className="registration-container">
-      <h1>
-        <span className="brand">Lyng</span><span className="highlight">AI</span>
-      </h1>
-      <h2>Register</h2>
-      <form className="form-box" onSubmit={handleSubmit} noValidate>
-        <input
-          type="text"
-          placeholder="ID Number"
-          value={idNumber}
-          onChange={(e) => setIdNumber(e.target.value)}
-        />
-        {errors.idNumber && <p className="error">{errors.idNumber}</p>}
+      <div className="registration-content">
+        <div className="registration-form-section">
+          <h1>
+            <span className="brand">Lynq</span><span className="highlight">AI</span>
+          </h1>
+          <h2>Register</h2>
+          <form className="form-box" onSubmit={handleSubmit} noValidate>
+            <input
+              type="text"
+              placeholder="ID Number"
+              value={idNumber}
+              onChange={(e) => setIdNumber(e.target.value)}
+            />
+            {errors.idNumber && <p className="error">{errors.idNumber}</p>}
 
-        <div className="name-fields">
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-          {errors.firstName && <p className="error">{errors.firstName}</p>}
+            <div className="name-fields">
+              <input
+                type="text"
+                placeholder="First Name"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+              />
+              {errors.firstName && <p className="error">{errors.firstName}</p>}
 
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-          {errors.lastName && <p className="error">{errors.lastName}</p>}
+              <input
+                type="text"
+                placeholder="Last Name"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+              />
+              {errors.lastName && <p className="error">{errors.lastName}</p>}
+            </div>
+
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+            {errors.email && <p className="error">{errors.email}</p>}
+
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <span
+                className="toggle-password-span"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </span>
+            </div>
+            {errors.password && <p className="error">{errors.password}</p>}
+
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
+
+            <label className="terms-label">
+              <input
+                type="checkbox"
+                checked={termsAccepted}
+                onChange={(e) => {
+                  setTermsAccepted(e.target.checked);
+                  setAcceptedAt(e.target.checked ? new Date().toISOString() : null);
+                }}
+              />
+              I accept the{' '}
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setShowTermsModal(true);
+                }}
+                className="terms-link"
+              >
+                terms and conditions
+              </a>.
+            </label>
+            {errors.termsAccepted && <p className="error">{errors.termsAccepted}</p>}
+
+            <input
+              type="submit"
+              className="signup-btn"
+              value={loading ? 'Registering...' : 'Sign Up'}
+              disabled={loading}
+            />
+          </form>
         </div>
 
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        {errors.email && <p className="error">{errors.email}</p>}
-
-        <div className="password-wrapper">
-          <input
-            type={showPassword ? 'text' : 'password'}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+        <div className="registration-image-section">
+          <img 
+            src={registerImage} 
+            alt="Registration illustration" 
+            className="register-image"
           />
-          <span
-            className="toggle-password-span"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? 'Hide' : 'Show'}
-          </span>
         </div>
-        {errors.password && <p className="error">{errors.password}</p>}
-
-        <input
-          type="password"
-          placeholder="Confirm Password"
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-        />
-        {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
-
-        <label className="terms-label">
-          <input
-            type="checkbox"
-            checked={termsAccepted}
-            onChange={(e) => {
-              setTermsAccepted(e.target.checked);
-              setAcceptedAt(e.target.checked ? new Date().toISOString() : null);
-            }}
-          />
-          I accept the{' '}
-          <a
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              setShowTermsModal(true);
-            }}
-            className="terms-link"
-          >
-            terms and conditions
-          </a>.
-        </label>
-        {errors.termsAccepted && <p className="error">{errors.termsAccepted}</p>}
-
-        <input
-          type="submit"
-          className="signup-btn"
-          value={loading ? 'Registering...' : 'Sign Up'}
-          disabled={loading}
-        />
-      </form>
+      </div>
 
       {/* Terms Modal */}
       {showTermsModal && (
