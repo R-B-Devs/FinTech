@@ -1,0 +1,74 @@
+
+/* Container for the whole form */
+.otp-form-container {
+  position: relative;
+  min-height: 100vh;
+  background-image: url('../assets/login-image.jpg'); /* Adjusted path */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #0a0a23;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  font-family: sans-serif;
+  text-align: center;
+}
+
+/* Heading */
+h2 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  color: #ff2d55;
+}
+
+/* Email input */
+input[type="email"] {
+  border-radius: 7px;
+  height: 50px;
+  width: 250px;
+  background-color: transparent;
+  color: white;
+  border: 1px solid rgb(36, 36, 36);
+  padding: 0 10px;
+  font-size: 1rem;
+}
+
+input[type="email"]:focus {
+  outline: none;
+  border-color: #ff2d55;
+  box-shadow: 0 0 0 2px rgba(255, 45, 85, 0.3);
+}
+
+input::placeholder {
+  color: gray;
+}
+
+/* Submit button */
+button[type="submit"] {
+  width: 250px;
+  height: 50px;
+  background: linear-gradient(90deg, #ff2d55, #d9003a);
+  color: white;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button[type="submit"]:hover {
+  background: linear-gradient(90deg, #be0039, #900028);
+  transform: translateY(-2px);
+}
+
+/* Message paragraph */
+p {
+  margin-top: 1rem;
+  color: white;
+}
