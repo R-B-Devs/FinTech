@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom'; // ✅ Import navigate
+import '../styles/OtpVerification.css'
+
+
 
 const SendOtpForm = () => {
   const [email, setEmail] = useState('');
