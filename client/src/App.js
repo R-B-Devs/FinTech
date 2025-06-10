@@ -7,7 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import DemoPage from "./pages/DemoPage";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword";
-import RegistrationPage from "./pages/registration-page.jsx"; // ✅ Correct import
+import RegistrationPage from "./pages/Registration-page.jsx"; // ✅ Correct import
 import OtpPage from "./pages/OtpVerification.jsx"
 import VerifyOtp from "./pages/VerifyOtp.jsx";
 

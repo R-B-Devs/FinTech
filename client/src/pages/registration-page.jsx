@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import registerImage from '../assets/register.png';
 import '../styles/registration-page.css'; 
-import { registerUser } from '../cyberFrontend/validation';
-
 
 function RegistrationForm() {
-  const navigate = useNavigate();
   const [idNumber, setIdNumber] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -88,34 +84,22 @@ function RegistrationForm() {
 
     setErrors(newErrors);
 
-    
-  if (Object.keys(newErrors).length === 0) {
-    setLoading(true);
-    
-    // Log form data (without passwords for security)
-    console.log("Form submitted with:", {
-      idNumber,
-      firstName,
-      lastName,
-      email,
-      password,
-      termsAccepted,
-      acceptedAt
-    });
-      
-   setTimeout(() => {
-      // Navigate to OTP page with user data
-      navigate('/otp', {
-        state: {
-          email: email,
-          firstName: firstName,
-          lastName: lastName,
-          idNumber: idNumber
-        }
-      });
-      setLoading(false);
-    }, 2000);
-  }
+    if (Object.keys(newErrors).length === 0) {
+      setLoading(true);
+      setTimeout(() => {
+        alert('Registration successful!');
+        setIdNumber('');
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        setTermsAccepted(false);
+        setAcceptedAt(null);
+        setErrors({});
+        setLoading(false);
+      }, 2000);
+    }
   };
 
   return (
@@ -239,11 +223,11 @@ function RegistrationForm() {
             </span>
             <h3>Terms and Conditions</h3>
             <p>
-              These terms and conditions govern your use of your platform. By registering,
+              These terms and conditions govern your use of our platform. By registering,
               you agree to comply with our privacy policy, code of conduct, and all applicable laws.
               You may not misuse the service or distribute harmful content. Violation may result in account suspension.
               <br /><br />
-              If you do not agree with these terms, please do not register!!!!.
+              If you do not agree with these terms, please do not register.
             </p>
           </div>
         </div>
