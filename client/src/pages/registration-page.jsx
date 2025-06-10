@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import registerImage from '../assets/register.png';
 import '../styles/registration-page.css'; 
+import { registerUser } from '../cyberFrontend/validation';
+
 
 function RegistrationForm() {
   const navigate = useNavigate();
