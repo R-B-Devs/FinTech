@@ -53,32 +53,10 @@ run_init_scripts() {
     echo "/////////////////////////////////////////////////"
         if [ -f "$script" ]; then
             echo "Running script: $(basename "$script")"
-            
-            # Run script based on OS
-            case "$OSTYPE" in
-                "darwin"*) # macOS
-                    PGPASSWORD=$DB_PASSWORD psql -U postgres -d "$DB_NAME" -f "$script" || {
-                        echo "Failed to run $script"
-                        exit 1
-                    }
-                    ;;
-                    
-                "linux-gnu"*)
-                    PGPASSWORD=$DB_PASSWORD psql -U postgres -d "$DB_NAME" -f "$script" || {
-                        echo "Failed to run $script"
-                        exit 1
-                    }
-                    ;;
-                    
-                "msys"*|"cygwin"*)
-                    # Windows needs different quoting
-                    PGPASSWORD=$DB_PASSWORD psql -U postgres -d "%DB_NAME%" -f "$script" || {
-                        echo "Failed to run $script"
-                        exit 1
-                    }
-                    ;;
-            esac
-            
+            PGPASSWORD=$DB_PASSWORD psql -U $DB_USER -d "$DB_NAME" -f "$script" || {
+                echo "Failed to run $script"
+                exit 1
+            }
             echo "Successfully executed: $(basename "$script")"
         fi
     done
