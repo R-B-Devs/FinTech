@@ -1,5 +1,4 @@
-!#/bin/bash
-# This script sets up the database for the application.
+#!/bin/bash
 set -e
 # Check if the database is already set up
 if [ -f /var/lib/postgresql/data/PG_VERSION ]; then
