@@ -60,7 +60,7 @@ run_init_scripts() {
             echo "Successfully executed: $(basename "$script")"
         fi
     done
-    
+
     echo "✨ All initialization scripts completed successfully!"
 }
 
