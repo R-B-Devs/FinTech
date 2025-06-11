@@ -1,5 +1,6 @@
 // moodule to execute shell commands
 const { execSync } = require( 'child_process' )
+const path = require( 'path' )
 // Add this debug section
 console.log('🔧 Environment Variables Check:');
 console.log('DB_HOST:', process.env.DB_HOST);
