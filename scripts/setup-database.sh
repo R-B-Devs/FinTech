@@ -208,3 +208,27 @@ for script in ./sql/*.sql; do
         }
     fi
 done
+
+# Verify database connection
+echo "Verifying database connection..."
+if psql -d "$DB_NAME" -c "SELECT 1" > /dev/null 2>&1; then
+    echo "Database setup completed successfully"
+else
+    echo "Database connection verification failed"
+    exit 1
+fi
+
+# Set database configuration
+export PGHOST=${PGHOST:-"localhost"}
+export PGPORT=${PGPORT:-"5432"}
+export PGUSER=$DB_USER
+export PGPASSWORD=$DB_PASSWORD
+export PGDATABASE=$DB_NAME
+
+echo "
+Setup complete!
+Database: $DB_NAME
+Host: $PGHOST
+Port: $PGPORT
+User: $PGUSER
+"
