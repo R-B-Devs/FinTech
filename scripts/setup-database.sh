@@ -36,3 +36,175 @@ create_database() {
         echo "Database $DB_NAME already exists"
     fi
 }
+
+run_init_scripts() {
+    echo "📜 Running initialization scripts..."
+    
+    # Check if scripts directory exists
+    if [ ! -d "../scripts" ]; then
+        echo "Scripts directory not found!"
+        exit 1
+    fi
+    
+    # Sort files to ensure correct order
+    for script in ./scripts/[0-9][0-9]-*.sql; do
+        if [ -f "$script" ]; then
+            echo "Running script: $(basename "$script")"
+            
+            # Run script based on OS
+            case "$OSTYPE" in
+                "darwin"*) # macOS
+                    PGPASSWORD=$DB_PASSWORD psql -U postgres -d "$DB_NAME" -f "$script" || {
+                        echo "Failed to run $script"
+                        exit 1
+                    }
+                    ;;
+                    
+                "linux-gnu"*)
+                    PGPASSWORD=$DB_PASSWORD psql -U postgres -d "$DB_NAME" -f "$script" || {
+                        echo "Failed to run $script"
+                        exit 1
+                    }
+                    ;;
+                    
+                "msys"*|"cygwin"*)
+                    # Windows needs different quoting
+                    PGPASSWORD=$DB_PASSWORD psql -U postgres -d "%DB_NAME%" -f "$script" || {
+                        echo "Failed to run $script"
+                        exit 1
+                    }
+                    ;;
+            esac
+            
+            echo "Successfully executed: $(basename "$script")"
+        fi
+    done
+    
+    echo "✨ All initialization scripts completed successfully!"
+}
+
+# OS-specific setup
+case "$OSTYPE" in
+    "darwin"*) # macOS
+        echo "Setting up for macOS..."
+        
+        # Check if running as root
+        if [ "$EUID" -eq 0 ]; then
+            echo "Please run this script as a non-root user"
+            exit 1
+        fi
+        
+        if ! check_postgres; then
+            echo "Installing PostgreSQL..."
+            brew install postgresql@15
+            brew link postgresql@15 --force
+        fi
+        
+        # Stop existing PostgreSQL processes
+        echo "Stopping any running PostgreSQL instances..."
+        brew services stop postgresql@15 2>/dev/null || true
+        pkill postgres 2>/dev/null || true
+        
+        # Use proper PostgreSQL data directory
+        PGDATA="$(brew --prefix)/var/postgresql@15"
+        
+        # Clean up and reinitialize if needed
+        if [ -d "$PGDATA" ]; then
+            echo "🧹 Cleaning up existing PostgreSQL data directory..."
+            rm -rf "$PGDATA"
+        fi
+        
+        echo "Initializing fresh PostgreSQL data directory..."
+        mkdir -p "$PGDATA"
+        chmod 700 "$PGDATA"
+        initdb "$PGDATA" --auth=trust --no-locale --encoding=UTF8
+        
+        # Start PostgreSQL manually
+        echo "Starting PostgreSQL manually..."
+        pg_ctl -D "$PGDATA" -l "$PGDATA/server.log" start
+        
+        # Wait for PostgreSQL to be ready
+        echo "⏳ Waiting for PostgreSQL to start..."
+        for i in {1..30}; do
+            if pg_isready -q; then
+                echo "PostgreSQL is ready!"
+                break
+            fi
+            if [ $i -eq 30 ]; then
+                echo "PostgreSQL failed to start. Check logs at $PGDATA/server.log"
+                exit 1
+            fi
+            sleep 1
+        done
+        
+        # Create superuser if it doesn't exist
+        echo "Creating postgres superuser..."
+        createuser -s postgres || true
+        
+        # Set password for postgres user
+        psql -U postgres -c "ALTER USER postgres WITH PASSWORD '$DB_PASSWORD';" || true
+        
+        # Create database and run initialization
+        echo "Creating database..."
+        if ! psql -U postgres -lqt | cut -d \| -f 1 | grep -qw "$DB_NAME"; then
+            createdb -U postgres "$DB_NAME"
+            echo "Database $DB_NAME created successfully"
+            run_init_scripts
+        else
+            echo "Database $DB_NAME already exists"
+        fi
+        ;;
+
+    "linux-gnu"*)
+        echo "Setting up for Linux..."
+        if ! check_postgres; then
+            echo "Please install PostgreSQL first"
+            exit 1
+        fi
+        
+        # Check if service is running
+        if ! systemctl is-active --quiet postgresql; then
+            echo "Starting PostgreSQL service..."
+            sudo systemctl start postgresql
+            sleep 3
+        fi
+        
+        create_database
+        ;;
+        
+    "msys"*|"cygwin"*)
+        echo "Setting up for Windows..."
+        if ! check_postgres; then
+            echo "Please install PostgreSQL first"
+            exit 1
+        fi
+        
+        # Windows-specific paths
+        PGDATA="/c/Program Files/PostgreSQL/15/data"
+        
+        if ! pg_ctl status -D "$PGDATA"; then
+            echo "Starting PostgreSQL service..."
+            pg_ctl -D "$PGDATA" start
+            sleep 3
+        fi
+        
+        create_database
+        ;;
+        
+    *)
+        echo "Unsupported operating system: $OSTYPE"
+        exit 1
+        ;;
+esac
+
+# Run initialization scripts
+echo "Running database initialization scripts..."
+for script in ./sql/*.sql; do
+    if [ -f "$script" ]; then
+        echo "Running $script..."
+        psql -d "$DB_NAME" -f "$script" || {
+            echo "Failed to run $script"
+            exit 1
+        }
+    fi
+done
