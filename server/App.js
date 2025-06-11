@@ -1,6 +1,29 @@
 // moodule to execute shell commands
 const { execSync } = require( 'child_process' )
 const path = require( 'path' )
+
+try
+{
+    console.log( 'Begin database sh execution' )
+    const scriptPath = path.join( __dirname, '..', 'scripts', 'setup-database.sh' )
+
+    // Execute script synchronously and show output
+    const output = execSync( `bash "${ scriptPath }"`, {
+        stdio: 'inherit',
+        env: {
+            ...process.env,
+            PGPASSWORD: process.env.DB_PASSWORD
+        }
+    } )
+
+    console.log( 'Database setup completed' )
+} catch ( error )
+{
+    console.error( 'Database setup failed:', error.message )
+    process.exit( 1 )
+}
+
+require( 'dotenv' ).config()
 // Add this debug section
 console.log('🔧 Environment Variables Check:');
 console.log('DB_HOST:', process.env.DB_HOST);
