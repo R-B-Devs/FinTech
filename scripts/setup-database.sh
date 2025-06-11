@@ -18,3 +18,21 @@ for var in "${required_vars[@]}"; do
         exit 1
     fi
 done
+
+check_postgres() {
+    if ! command -v psql &> /dev/null; then
+        echo "PostgreSQL is not installed"
+        return 1
+    fi
+    return 0
+}
+
+# Function to create database
+create_database() {
+    if ! psql -lqt | cut -d \| -f 1 | grep -qw "$DB_NAME"; then
+        echo "Creating database: $DB_NAME"
+        createdb "$DB_NAME"
+    else
+        echo "Database $DB_NAME already exists"
+    fi
+}
