@@ -1,4 +1,5 @@
-require('dotenv').config();
+// moodule to execute shell commands
+const { execSync } = require( 'child_process' )
 // Add this debug section
 console.log('🔧 Environment Variables Check:');
 console.log('DB_HOST:', process.env.DB_HOST);
