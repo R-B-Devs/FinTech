@@ -39,15 +39,18 @@ create_database() {
 
 run_init_scripts() {
     echo "📜 Running initialization scripts..."
-    
-    # Check if scripts directory exists
+
     if [ ! -d "../scripts" ]; then
         echo "Scripts directory not found!"
         exit 1
     fi
-    
+
     # Sort files to ensure correct order
-    for script in ./scripts/[0-9][0-9]-*.sql; do
+    for script in ../scripts/[0-9][0-9]-*.sql; do
+    echo
+    echo "/////////////////////////////////////////////////"
+    echo $script
+    echo "/////////////////////////////////////////////////"
         if [ -f "$script" ]; then
             echo "Running script: $(basename "$script")"
             
