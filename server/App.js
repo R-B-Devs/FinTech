@@ -124,7 +124,10 @@ const startServer = async () =>
     await waitForDatabase()
     app.listen( PORT, () =>
     {
-        console.log( `server is running at path: http://localhost:${ PORT }` )
+        console.log( `Server is running at path: http://localhost:${ PORT }` )
+        console.log( `Health check: http://localhost:${ PORT }/api/health` )
+        console.log( `Register: POST http://localhost:${ PORT }/api/auth/register` )
+        console.log( `Login: POST http://localhost:${ PORT }/api/auth/login` )
     } )
 }
 
@@ -722,13 +725,5 @@ app.use( '*', ( req, res ) =>
     res.status( 404 ).json( { error: 'Route not found' } )
 } )
 
-// Start server
-app.listen( PORT, () =>
-{
-    console.log( `🚀 ABSA Financial Assistant API running on http://localhost:${ PORT }` )
-    console.log( `📊 Health check: http://localhost:${ PORT }/api/health` )
-    console.log( `🔐 Register: POST http://localhost:${ PORT }/api/auth/register` )
-    console.log( `🔑 Login: POST http://localhost:${ PORT }/api/auth/login` )
-} )
 
 module.exports = app
