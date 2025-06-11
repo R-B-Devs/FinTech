@@ -1,26 +1,13 @@
 #!/bin/bash
 set -e
-# Check if the database is already set up
-if [ -f /var/lib/postgresql/data/PG_VERSION ]; then
-    echo "Database already set up."
+
+echo "Starting database setup..."
+
+# Load environment variables
+if [ -f ../.env ]; then
+    source ../.env
 else
-    echo "Setting up the database..."
-    # Initialize the database
-    pg_ctl initdb -D /var/lib/postgresql/data
-    # Start the PostgreSQL server
-    pg_ctl start -D /var/lib/postgresql/data
-    # Create a new database user and database
-    psql -c "CREATE USER myuser WITH PASSWORD 'mypassword';"
-    psql -c "CREATE DATABASE mydatabase OWNER myuser;"
-    echo "Database setup complete."
-fi
-# Stop the PostgreSQL server
-pg_ctl stop -D /var/lib/postgresql/data
-# Ensure the script is executable
-chmod +x /scripts/setup-database.sh
-# Ensure the script is run with the correct permissions
-if [ "$(id -u)" -ne 0 ]; then
-    echo "This script must be run as root."
+    echo "Error: .env file not found"
     exit 1
 fi
 # Ensure the PostgreSQL service is running
