@@ -154,22 +154,57 @@ case "$OSTYPE" in
         ;;
         
     "msys"*|"cygwin"*)
-        echo "Setting up for Windows..."
-        if ! check_postgres; then
-            echo "Please install PostgreSQL first"
+        echo "🪟 Setting up for Windows..."
+
+        # Check for PostgreSQL tools
+        if ! command -v psql &> /dev/null || ! command -v pg_ctl &> /dev/null; then
+            echo "Please ensure PostgreSQL (psql and pg_ctl) is installed and in your PATH."
             exit 1
         fi
-        
-        # Windows-specific paths
-        PGDATA="/c/Program Files/PostgreSQL/15/data"
-        
-        if ! pg_ctl status -D "$PGDATA"; then
+
+        # Set default PGDATA if not set
+        if [ -z "$PGDATA" ]; then
+            PGDATA="/c/Program Files/PostgreSQL/15/data"
+        fi
+
+        # Check if PGDATA exists
+        if [ ! -d "$PGDATA" ]; then
+            echo "PostgreSQL data directory not found at $PGDATA"
+            echo "Please initialize your database cluster first (e.g., using initdb)."
+            exit 1
+        fi
+
+        # Start PostgreSQL if not running
+        if ! pg_ctl status -D "$PGDATA" | grep -q "server is running"; then
             echo "Starting PostgreSQL service..."
-            pg_ctl -D "$PGDATA" start
+            pg_ctl -D "$PGDATA" -l "$PGDATA/server.log" start
             sleep 3
         fi
-        
-        create_database
+
+        # Wait for PostgreSQL to be ready
+        echo "Waiting for PostgreSQL to be ready..."
+        for i in {1..30}; do
+            if pg_isready -U "$DB_USER" -d "$DB_NAME" > /dev/null 2>&1; then
+                echo "PostgreSQL is ready!"
+                break
+            fi
+            if [ $i -eq 30 ]; then
+                echo "PostgreSQL failed to start. Check logs at $PGDATA/server.log"
+                exit 1
+            fi
+            sleep 1
+        done
+
+        # Create database and run initialization
+        echo "📦 Creating database..."
+        if ! psql -U "$DB_USER" -lqt | cut -d \| -f 1 | grep -qw "$DB_NAME"; then
+            createdb -U "$DB_USER" "$DB_NAME"
+            echo "Database $DB_NAME created successfully"
+        else
+            echo "Database $DB_NAME already exists"
+        fi
+
+        run_init_scripts
         ;;
         
     *)
@@ -178,17 +213,17 @@ case "$OSTYPE" in
         ;;
 esac
 
-# Run initialization scripts
-echo "Running database initialization scripts..."
-for script in ./sql/*.sql; do
-    if [ -f "$script" ]; then
-        echo "Running $script..."
-        psql -d "$DB_NAME" -f "$script" || {
-            echo "Failed to run $script"
-            exit 1
-        }
-    fi
-done
+# # Run initialization scripts
+# echo "Running database initialization scripts..."
+# for script in ./sql/*.sql; do
+#     if [ -f "$script" ]; then
+#         echo "Running $script..."
+#         psql -d "$DB_NAME" -f "$script" || {
+#             echo "Failed to run $script"
+#             exit 1
+#         }
+#     fi
+# done
 
 # Verify database connection
 echo "Verifying database connection..."
