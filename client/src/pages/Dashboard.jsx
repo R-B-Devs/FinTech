@@ -177,7 +177,7 @@ const Dashboard = () => {
                 <div className="nav-links">
                   <a href="#" className="nav-link">
                     <Wallet className="nav-icon" />
-                    <span>Accounts</span>
+                    <span>Transactions</span>
                   </a>
                   <a href="#" className="nav-link">
                     <CreditCard className="nav-icon" />
@@ -284,6 +284,8 @@ const Dashboard = () => {
               <div className="metric-label">Savings Goal</div>
             </div>
           </div>
+
+          
 
           <div className="content-grid">
             {/* AI Insights */}
