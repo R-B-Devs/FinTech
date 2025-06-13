@@ -286,6 +286,137 @@ const Dashboard = () => {
           </div>
 
           
+          {/* Financial Overview Section */}
+          <div className="financial-overview">
+            {/* Charts Grid */}
+            <div className="charts-grid">
+              {/* Spending by Category */}
+              <div className="chart-card">
+                <div className="chart-header">
+                  <h3 className="chart-title">Spending by Category</h3>
+                  <p className="chart-subtitle">Your spending breakdown for the current period</p>
+                </div>
+                <div className="chart-content">
+                  <div className="pie-chart-container">
+                    <div className="pie-chart">
+                      <div className="pie-slice pie-slice-red" style={{transform: 'rotate(0deg)'}}>
+                        <span className="pie-label">0: 23.0%</span>
+                      </div>
+                      <div className="pie-slice pie-slice-orange" style={{transform: 'rotate(83deg)'}}>
+                        <span className="pie-label">1: 21.7%</span>
+                      </div>
+                      <div className="pie-slice pie-slice-green" style={{transform: 'rotate(161deg)'}}>
+                        <span className="pie-label">2: 12.1%</span>
+                      </div>
+                      <div className="pie-slice pie-slice-teal" style={{transform: 'rotate(204deg)'}}>
+                        <span className="pie-label">3: 9.9%</span>
+                      </div>
+                      <div className="pie-slice pie-slice-blue" style={{transform: 'rotate(240deg)'}}>
+                        <span className="pie-label">4: 7.1%</span>
+                      </div>
+                      <div className="pie-slice pie-slice-pink" style={{transform: 'rotate(266deg)'}}>
+                        <span className="pie-label">5: 6.7%</span>
+                      </div>
+                      <div className="pie-slice pie-slice-purple" style={{transform: 'rotate(290deg)'}}>
+                        <span className="pie-label">6: 6.1%</span>
+                      </div>
+                      <div className="pie-slice pie-slice-indigo" style={{transform: 'rotate(312deg)'}}>
+                        <span className="pie-label">7: 4.7%</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="chart-legend">
+                    <div className="legend-item">
+                      <div className="legend-color legend-color-red"></div>
+                      <span className="legend-label">Shopping</span>
+                    </div>
+                    <div className="legend-item">
+                      <div className="legend-color legend-color-orange"></div>
+                      <span className="legend-label">Bills & Utilities</span>
+                    </div>
+                    <div className="legend-item">
+                      <div className="legend-color legend-color-green"></div>
+                      <span className="legend-label">Groceries</span>
+                    </div>
+                    <div className="legend-item">
+                      <div className="legend-color legend-color-teal"></div>
+                      <span className="legend-label">Travel</span>
+                    </div>
+                    <div className="legend-item">
+                      <div className="legend-color legend-color-blue"></div>
+                      <span className="legend-label">Entertainment</span>
+                    </div>
+                    <div className="legend-item">
+                      <div className="legend-color legend-color-pink"></div>
+                      <span className="legend-label">Education</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Monthly Income vs Expenses */}
+              <div className="chart-card">
+                <div className="chart-header">
+                  <h3 className="chart-title">Monthly Income vs Expenses</h3>
+                  <p className="chart-subtitle">Compare your monthly income and spending patterns</p>
+                </div>
+                <div className="chart-content">
+                  <div className="bar-chart">
+                    <div className="chart-y-axis">
+                      <span className="y-label">R28,000</span>
+                      <span className="y-label">R21,000</span>
+                      <span className="y-label">R14,000</span>
+                      <span className="y-label">R7,000</span>
+                      <span className="y-label">R0</span>
+                    </div>
+                    <div className="chart-bars">
+                      <div className="bar-group">
+                        <div className="bar bar-income" style={{height: '95%'}}></div>
+                        <div className="bar bar-expense" style={{height: '75%'}}></div>
+                        <span className="bar-label">Jan</span>
+                      </div>
+                      <div className="bar-group">
+                        <div className="bar bar-income" style={{height: '75%'}}></div>
+                        <div className="bar bar-expense" style={{height: '18%'}}></div>
+                        <span className="bar-label">Feb</span>
+                      </div>
+                      <div className="bar-group">
+                        <div className="bar bar-income" style={{height: '55%'}}></div>
+                        <div className="bar bar-expense" style={{height: '20%'}}></div>
+                        <span className="bar-label">Mar</span>
+                      </div>
+                      <div className="bar-group">
+                        <div className="bar bar-income" style={{height: '95%'}}></div>
+                        <div className="bar bar-expense" style={{height: '16%'}}></div>
+                        <span className="bar-label">Apr</span>
+                      </div>
+                      <div className="bar-group">
+                        <div className="bar bar-income" style={{height: '88%'}}></div>
+                        <div className="bar bar-expense" style={{height: '17%'}}></div>
+                        <span className="bar-label">May</span>
+                      </div>
+                      <div className="bar-group">
+                        <div className="bar bar-income" style={{height: '12%'}}></div>
+                        <div className="bar bar-expense" style={{height: '8%'}}></div>
+                        <span className="bar-label">Jun</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="chart-legend chart-legend-horizontal">
+                    <div className="legend-item">
+                      <div className="legend-color legend-color-income"></div>
+                      <span className="legend-label">Income</span>
+                    </div>
+                    <div className="legend-item">
+                      <div className="legend-color legend-color-expense"></div>
+                      <span className="legend-label">Expenses</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
 
           <div className="content-grid">
             {/* AI Insights */}
