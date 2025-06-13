@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import "../styles/OtpVerification.css";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const SendOtpForm = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  
+    const navigate = useNavigate();
   // Modal states
   const [otp, setOtp] = useState('');
   const [modalMessage, setModalMessage] = useState('');
@@ -66,29 +67,28 @@ const SendOtpForm = () => {
 
     setLoading(false);
   };
+const handleVerify = async () => {
+  setVerifying(true);
+  setModalMessage('');
 
-  const handleVerify = async () => {
-    setVerifying(true);
-    setModalMessage('');
-    
-    try {
-      const res = await axios.post('http://localhost:5000/verify-otp', { email, otp });
-      if (res.data.success) {
-        setModalMessage('✅ OTP verified successfully!');
-        setTimeout(() => {
-          setShowModal(false);
-          // Add your success logic here (e.g., redirect to dashboard, update auth state, etc.)
-          console.log('OTP verification successful - implement your success logic here');
-        }, 1500);
-      } else {
-        setModalMessage('❌ Invalid or expired OTP.');
-      }
-    } catch (err) {
-      setModalMessage('❌ Error verifying OTP.');
+  try {
+    const res = await axios.post('http://localhost:5000/verify-otp', { email, otp });
+    if (res.data.success) {
+      setModalMessage('✅ OTP verified successfully!');
+      setTimeout(() => {
+        setShowModal(false);
+        navigate('/login'); // 👈 Redirect to login page here
+      }, 1500);
+    } else {
+      setModalMessage('❌ Invalid or expired OTP.');
     }
-    
-    setVerifying(false);
-  };
+  } catch (err) {
+    setModalMessage('❌ Error verifying OTP.');
+  }
+
+  setVerifying(false);
+};
+
 
   const handleResend = async () => {
     try {
@@ -170,7 +170,8 @@ const SendOtpForm = () => {
             />
 
             <button
-              onClick={handleVerify}
+              onClick={handleVerify }
+
               disabled={verifying || !otp}
               className="verify-btn"
             >

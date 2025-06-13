@@ -19,8 +19,8 @@ let otpStore = {};
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'absacobol@gmail.com', // Your Gmail address
-    pass: 'zbbo urcg hdge doeb',   // Your Gmail app password
+    user: 'absacobol@gmail.com', 
+    pass: 'zbbo urcg hdge doeb',   
   },
 });
 
@@ -31,18 +31,18 @@ app.post('/send-otp', async (req, res) => {
 
   try {
     await transporter.sendMail({
-      from: '" LyngAI " <absacobol@gmail.com>', // must be same as authenticated user
+      from: '" LynqAI " <absacobol@gmail.com>', 
       to: email,
       subject: '🔐 Your OTP Code',
       html: `
         <div style="font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: auto; padding: 20px; background-color: #f9f9f9; border-radius: 10px; border: 1px solid #ddd;">
-      <h1 style="color: #8A1F2C; text-align: center;">🔐 LyngAI Verification</h1>
+      <h1 style="color: #8A1F2C; text-align: center;">🔐 LynqAI Verification</h1>
       <p>Hey there! 👋</p>
       <p>Your OTP code is:</p>
       <h2 style="text-align:center; background-color:#8A1F2C; color:#fff; padding:10px; border-radius:5px;">${otp}</h2>
       <p>This code will expire in <strong>5 minutes</strong>.</p>
       <p>If you didn’t request this, just ignore it.</p>
-      <p>Stay awesome,<br/>— The LyngAI Team 💚</p>
+      <p>Stay awesome,<br/>— The LynqAI Team 💚</p>
     </div>
       `,
     });
