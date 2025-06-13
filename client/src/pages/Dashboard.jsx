@@ -372,7 +372,7 @@ const Dashboard = () => {
                     <div className="chart-bars">
                       <div className="bar-group">
                         <div className="bar bar-income" style={{height: '95%'}}></div>
-                        <div className="bar bar-expense" style={{height: '75%'}}></div>
+                        <div className="bar bar-expense" style={{height: '5%'}}></div>
                         <span className="bar-label">Jan</span>
                       </div>
                       <div className="bar-group">
