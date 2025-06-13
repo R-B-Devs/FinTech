@@ -4,7 +4,8 @@ import {
   TrendingUp, 
   TrendingDown, 
   Shield, 
-  Brain, 
+  Brain,
+  Banknote,
   Wallet, 
   CreditCard, 
   PieChart, 
@@ -13,10 +14,11 @@ import {
   CheckCircle, 
   DollarSign, 
   Target, 
+  Tag,
+  Activity,
   Zap,
   Lock,
   Database,
-  Activity,
   Bell,
   Settings,
   User,
@@ -24,6 +26,8 @@ import {
   Eye,
   EyeOff,
   Menu,
+  Phone,
+  Video,
   X
 } from 'lucide-react';
 
@@ -87,6 +91,7 @@ const Dashboard = () => {
     { label: 'Fraud Detection', value: 'Real-time', status: 'secure' },
     { label: 'Data Integrity', value: 'Verified', status: 'secure' }
   ];
+  
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -150,6 +155,19 @@ const Dashboard = () => {
                     <Target className="nav-icon" />
                     <span>Goals</span>
                   </a>
+                  <a href="#" className="nav-link">
+                    <Tag className="nav-icon" />
+                    <span>Offers</span>
+                  </a>
+                  <a href="#" className="nav-link">
+                    <Activity className="nav-icon" />
+                    <span>Credit Health</span>
+                  </a>
+                  <a href="#" className="nav-link">
+                    <Banknote className="nav-icon" />
+                    <span>Money Tracker</span>
+
+                  </a>
                 </div>
               </div>
 
@@ -205,6 +223,15 @@ const Dashboard = () => {
                 <div className="status-badge status-ai">
                   <Brain className="status-icon" />
                   <span>AI Active</span>
+                </div>
+                <div className="status-badge status-phone">
+                    <Phone className="status-icon" />
+                    <span>Phone Call</span>
+                </div>
+
+                <div className="status-badge status-video">
+                    <Video className="status-icon" />
+                    <span>Video Call</span>
                 </div>
               </div>
             </div>
