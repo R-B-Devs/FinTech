@@ -28,6 +28,7 @@ import {
   Menu,
   Phone,
   Video,
+  UserCircle,
   X
 } from 'lucide-react';
 
@@ -193,12 +194,12 @@ const Dashboard = () => {
                 <div className="nav-section-title">Security</div>
                 <div className="nav-links">
                   <a href="#" className="nav-link">
-                    <Shield className="nav-icon" />
-                    <span>Protection</span>
+                    <UserCircle className="nav-icon" />
+                    <span>Profile</span>
                   </a>
                   <a href="#" className="nav-link">
-                    <Database className="nav-icon" />
-                    <span>COBOL Core</span>
+                    <Settings className="nav-icon" />
+                    <span>Settings</span>
                   </a>
                 </div>
               </div>
