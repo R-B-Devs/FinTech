@@ -5,9 +5,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import DemoPage from "./pages/DemoPage";
+import Dashboard from "./pages/Dashboard";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword";
-import RegistrationPage from "./pages/registration-page.jsx"; // ✅ Correct import
+import RegistrationPage from "./pages/registration-page.jsx"; 
 import OtpPage from "./pages/OtpVerification.jsx"
 import VerifyOtp from "./pages/VerifyOtp.jsx";
 
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/demo" element={<DemoPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/register" element={<RegistrationPage />} /> {/* ✅ Correct usage */}
