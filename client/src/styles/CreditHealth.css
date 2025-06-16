@@ -1,0 +1,89 @@
+.credit-health-page {
+    background-color: #1e1e1e;
+    color: #f0f0f0;
+    min-height: 100vh;
+    padding: 2rem;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  
+  .credit-health-page h2 {
+    display: flex;
+    align-items: center;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #fff;
+  }
+  
+  .icon {
+    margin-right: 10px;
+    color: #a10d2f;
+  }
+  
+  .credit-score-section {
+    background-color: #2c2c2c;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    margin-bottom: 2rem;
+  }
+  
+  .credit-score-box {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .score {
+    font-size: 3.5rem;
+    font-weight: bold;
+    color: #4caf50;
+  }
+  
+  .score-rating {
+    font-size: 1.2rem;
+    color: #aaa;
+  }
+  
+  .score-description {
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    color: #ccc;
+  }
+  
+  .credit-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .metric-card {
+    background-color: #2a2a2a;
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    color: #f5f5f5;
+  }
+  
+  .metric-icon {
+    color: #a10d2f;
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .metric-card h4 {
+    margin: 0.5rem 0;
+    color: #ffffff;
+  }
+  
+  .metric-card p,
+  .metric-card ul {
+    font-size: 0.95rem;
+    color: #ccc;
+  }
+  
+  .metric-card ul {
+    padding-left: 1.2rem;
+    margin: 0.5rem 0 0 0;
+  }
+  

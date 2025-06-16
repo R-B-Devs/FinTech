@@ -1,0 +1,58 @@
+.investments-page {
+    background-color: #1e1e1e;
+    color: #f0f0f0;
+    min-height: 100vh;
+    padding: 2rem 2.5rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .investments-page h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+  }
+  
+  .investments-page p {
+    color: #ccc;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+  }
+  
+  .investments-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #2a2a2a;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(161, 13, 47, 0.4);
+  }
+  
+  .investments-table thead {
+    background-color: #3c3c3c;
+  }
+  
+  .investments-table th,
+  .investments-table td {
+    padding: 14px 18px;
+    text-align: left;
+    border-bottom: 1px solid #444;
+  }
+  
+  .investments-table tbody tr:hover {
+    background-color: #444;
+    cursor: pointer;
+  }
+  
+  .investments-table td.positive {
+    color: #4caf50;
+    font-weight: 600;
+  }
+  
+  .investments-table td.negative {
+    color: #f44336;
+    font-weight: 600;
+  }
+  

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
+import { Link, Outlet } from 'react-router-dom';
 import "../styles/Dashboard.css";
 import { 
   TrendingUp, 
@@ -38,61 +39,93 @@ const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
+  const financialData = {
+    totalBalance: 127500,
+    investments: 85300,
+    creditScore: 820,
+    savingsGoal: 78
+  };
 
   const timeframes = ['week', 'month', 'quarter', 'year'];
 
-  const financialData = {
-    totalBalance: 125840.50,
-    monthlyIncome: 25000,
-    monthlyExpenses: 18750,
-    creditScore: 785,
-    savingsGoal: 75,
-    investments: 84320.25,
-    debt: 12450.00
-  };
-
   const aiInsights = [
     {
-      type: 'opportunity',
-      icon: <TrendingUp className="insight-icon" />,
-      title: 'Investment Opportunity',
-      message: 'AI detected 12% growth potential in tech sector ETFs',
-      confidence: 87
-    },
-    {
-      type: 'warning',
-      icon: <AlertTriangle className="insight-icon" />,
-      title: 'Spending Alert',
-      message: 'Dining expenses up 23% this month vs. budget',
+      type: 'success',
+      icon: <CheckCircle className="icon" />,
+      title: 'Spending Optimization',
+      message: 'Your grocery spending is 15% below average. Consider investing the savings.',
       confidence: 94
     },
     {
-      type: 'success',
-      icon: <Target className="insight-icon" />,
-      title: 'Goal Achievement',
-      message: 'Emergency fund target reached 2 months early',
-      confidence: 100
+      type: 'warning',
+      icon: <AlertTriangle className="icon" />,
+      title: 'Bill Prediction',
+      message: 'Electricity bill likely to increase by R180 next month based on usage patterns.',
+      confidence: 87
+    },
+    {
+      type: 'info',
+      icon: <TrendingUp className="icon" />,
+      title: 'Investment Opportunity',
+      message: 'Stock market trends suggest a good time to increase your portfolio by 5%.',
+      confidence: 91
     }
   ];
 
   const recentTransactions = [
-    { id: 1, type: 'credit', amount: 2500, description: 'Salary Deposit', category: 'Income', time: '2 hours ago' },
-    { id: 2, type: 'debit', amount: 45.80, description: 'Grocery Store', category: 'Food', time: '5 hours ago' },
-    { id: 3, type: 'debit', amount: 120.00, description: 'Utility Bill', category: 'Bills', time: '1 day ago' },
-    { id: 4, type: 'credit', amount: 15.50, description: 'Cashback Reward', category: 'Rewards', time: '2 days ago' }
+    {
+      id: 1,
+      description: 'Salary Deposit',
+      category: 'Income',
+      amount: '25,000.00',
+      time: '2 hours ago',
+      type: 'credit'
+    },
+    {
+      id: 2,
+      description: 'Woolworths Grocery',
+      category: 'Groceries',
+      amount: '1,245.50',
+      time: '1 day ago',
+      type: 'debit'
+    },
+    {
+      id: 3,
+      description: 'Netflix Subscription',
+      category: 'Entertainment',
+      amount: '199.00',
+      time: '2 days ago',
+      type: 'debit'
+    },
+    {
+      id: 4,
+      description: 'Investment Return',
+      category: 'Investments',
+      amount: '3,750.00',
+      time: '3 days ago',
+      type: 'credit'
+    },
+    {
+      id: 5,
+      description: 'Petrol - Shell',
+      category: 'Transport',
+      amount: '850.00',
+      time: '4 days ago',
+      type: 'debit'
+    }
   ];
 
   const securityMetrics = [
-    { label: 'Encryption Status', value: 'AES-256 Active', status: 'secure' },
-    { label: 'COBOL Core', value: '99.9% Uptime', status: 'secure' },
-    { label: 'Fraud Detection', value: 'Real-time', status: 'secure' },
-    { label: 'Data Integrity', value: 'Verified', status: 'secure' }
+    { label: '2FA Status', value: 'Active' },
+    { label: 'Encryption', value: '256-bit' },
+    { label: 'Last Scan', value: '2 min ago' },
+    { label: 'Threats', value: '0 detected' }
   ];
-  
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -100,7 +133,6 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      {/* Header */}
       <header className="dashboard-header">
         <div className="header-content">
           <div className="header-left">
@@ -144,68 +176,71 @@ const Dashboard = () => {
               <div className="nav-section">
                 <div className="nav-section-title">AI Powered</div>
                 <div className="nav-links">
-                  <a href="#" className="nav-link nav-link-active">
+                  <Link to="/dashboard" className="nav-link nav-link-active">
                     <Brain className="nav-icon" />
                     <span>Dashboard</span>
-                  </a>
-                  <a href="#" className="nav-link">
+                  </Link>
+                  <Link to="/dashboard/analytics" className="nav-link">
                     <PieChart className="nav-icon" />
                     <span>Analytics</span>
-                  </a>
-                  <a href="#" className="nav-link">
+                  </Link>
+                  <Link to="/dashboard/goals" className="nav-link">
                     <Target className="nav-icon" />
                     <span>Goals</span>
-                  </a>
-                  <a href="#" className="nav-link">
+                  </Link>
+                  <Link to="/dashboard/offers" className="nav-link">
                     <Tag className="nav-icon" />
                     <span>Offers</span>
-                  </a>
-                  <a href="#" className="nav-link">
+                  </Link>
+                  <Link to="/dashboard/credit-health" className="nav-link">
                     <Activity className="nav-icon" />
                     <span>Credit Health</span>
-                  </a>
-                  <a href="#" className="nav-link">
+                  </Link>
+                  <Link to="/dashboard/money-tracker" className="nav-link">
                     <Banknote className="nav-icon" />
                     <span>Money Tracker</span>
-
-                  </a>
+                  </Link>
                 </div>
               </div>
 
               <div className="nav-section">
                 <div className="nav-section-title">Financial</div>
                 <div className="nav-links">
-                  <a href="#" className="nav-link">
+                  <Link to="/dashboard/transactions" className="nav-link">
                     <Wallet className="nav-icon" />
                     <span>Transactions</span>
-                  </a>
-                  <a href="#" className="nav-link">
+                  </Link>
+                  <Link to="/dashboard/cards" className="nav-link">
                     <CreditCard className="nav-icon" />
                     <span>Cards</span>
-                  </a>
-                  <a href="#" className="nav-link">
+                  </Link>
+                  <Link to="/dashboard/investments" className="nav-link">
                     <BarChart3 className="nav-icon" />
                     <span>Investments</span>
-                  </a>
+                  </Link>
                 </div>
               </div>
 
               <div className="nav-section">
                 <div className="nav-section-title">Security</div>
                 <div className="nav-links">
-                  <a href="#" className="nav-link">
+                  <Link to="/dashboard/profile" className="nav-link">
                     <UserCircle className="nav-icon" />
                     <span>Profile</span>
-                  </a>
-                  <a href="#" className="nav-link">
+                  </Link>
+                  <Link to="/dashboard/settings" className="nav-link">
                     <Settings className="nav-icon" />
                     <span>Settings</span>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </nav>
           </div>
         </aside>
+
+        {/* This is where routed content (like Analytics, Goals, etc.) will appear */}
+        <Outlet />
+          
 
         {/* Main Content */}
         <main className="main-content">
@@ -226,13 +261,12 @@ const Dashboard = () => {
                   <span>AI Active</span>
                 </div>
                 <div className="status-badge status-phone">
-                    <Phone className="status-icon" />
-                    <span>Phone Call</span>
+                  <Phone className="status-icon" />
+                  <span>Phone Call</span>
                 </div>
-
                 <div className="status-badge status-video">
-                    <Video className="status-icon" />
-                    <span>Video Call</span>
+                  <Video className="status-icon" />
+                  <span>Video Call</span>
                 </div>
               </div>
             </div>
@@ -285,7 +319,6 @@ const Dashboard = () => {
             </div>
           </div>
 
-          
           {/* Financial Overview Section */}
           <div className="financial-overview">
             {/* Charts Grid */}
@@ -416,7 +449,6 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-
 
           <div className="content-grid">
             {/* AI Insights */}
