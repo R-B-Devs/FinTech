@@ -1,14 +1,32 @@
 const express = require('express');
 const router = express.Router();
-const { loginUser, registerUser, forgotPassword } = require('../cyberBackend/validateAndSecure');
+const loginLimiter = require('../rateLimiter'); // security feature
 
-// POST /api/auth/login
-router.post('/login', loginUser);
+// Dummy user for demo
+const validUser = {
+  userId: 'Maneo',
+  password: '0123456789101',
+};
 
-// POST /api/auth/register
-router.post('/register', registerUser);
+// Login endpoint (rate limited)
+router.post('/login', loginLimiter, (req, res) => {
+  const { userId, password } = req.body;
 
-// POST /api/auth/forgot-password
-router.post('/forgot-password', forgotPassword);
+  if (userId === validUser.userId && password === validUser.password) {
+    res.json({ token: 'hardcoded-access-token-1234' });
+  } else {
+    res.status(401).json({ message: 'Invalid credentials' });
+  }
+});
+
+// Registration endpoint
+router.post('/register', (req, res) => {
+  res.json({ message: 'User registered successfully (fake backend)' });
+});
+
+// Forgot password endpoint
+router.post('/forgot-password', (req, res) => {
+  res.json({ message: 'Password reset instructions sent (fake)' });
+});
 
 module.exports = router;

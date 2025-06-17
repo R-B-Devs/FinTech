@@ -1,10 +1,15 @@
-// Hardcoded dummy user (you can upgrade this later to DB)
+const express = require('express');
+const router = express.Router();
+const loginLimiter = require('./rateLimiter'); // ✅ Rate limiter
+
+// ✅ Dummy user credentials (for now)
 const validUser = {
   userId: 'Maneo',
   password: '0123456789101',
 };
 
-exports.loginUser = (req, res) => {
+// ✅ Login route with rate limiter
+router.post('/api/auth/login', loginLimiter, async (req, res) => {
   const { userId, password } = req.body;
 
   if (userId === validUser.userId && password === validUser.password) {
@@ -12,14 +17,18 @@ exports.loginUser = (req, res) => {
   } else {
     res.status(401).json({ message: 'Invalid credentials' });
   }
-};
+});
 
-exports.registerUser = (req, res) => {
+// ✅ Registration route
+router.post('/api/auth/register', (req, res) => {
   // For now, just respond with success
   res.json({ message: 'User registered successfully (fake backend)' });
-};
+});
 
-exports.forgotPassword = (req, res) => {
+// ✅ Forgot password route
+router.post('/api/auth/forgot-password', (req, res) => {
   // Respond as if an email was sent
   res.json({ message: 'Password reset instructions sent (fake)' });
-};
+});
+
+module.exports = router;
