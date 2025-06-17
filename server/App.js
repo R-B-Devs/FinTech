@@ -1,729 +1,483 @@
 // moodule to execute shell commands
-const { execSync } = require( 'child_process' )
+// const { execSync } = require( 'child_process' )
 const path = require( 'path' )
+const express = require('express');
+const cors = require('cors');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 
-try
-{
-    console.log( 'Begin database sh execution' )
-    const scriptPath = path.join( __dirname, '..', 'scripts', 'setup-database.sh' )
+// Load environment variables
+require('dotenv').config();
 
-    // Execute script synchronously and show output
-    const output = execSync( `bash "${ scriptPath }"`, {
-        stdio: 'inherit',
-        env: {
-            ...process.env,
-            PGPASSWORD: process.env.DB_PASSWORD
-        }
-    } )
+const app = express();
+const PORT = process.env.PORT || 3001;
 
-    console.log( 'Database setup completed' )
-} catch ( error )
-{
-    console.error( 'Database setup failed:', error.message )
-    process.exit( 1 )
+// MongoDB connection
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://fintech:LccZN30XfIVtugue@fintech-cluster.nvugcmv.mongodb.net/?retryWrites=true&w=majority&appName=fintech-cluster';
+const MONGO_DB = process.env.MONGO_DB || 'fintech_db';
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(MONGO_URI, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
+run().catch(console.dir);
+
+// try
+// {
+//     console.log( 'Begin database sh execution' )
+//     const scriptPath = path.join( __dirname, '..', 'scripts', 'setup-database.sh' )
+
+//     // Execute script synchronously and show output
+//     const output = execSync( `bash "${ scriptPath }"`, {
+//         stdio: 'inherit',
+//         env: {
+//             ...process.env,
+//             PGUSER: process.env.DB_USER || 'fintech',
+//             PGPASSWORD: process.env.DB_PASSWORD
+//         }
+//     } )
+
+//     console.log( 'Database setup completed' )
+// } catch ( error )
+// {
+//     console.error( 'Database setup failed:', error.message )
+//     process.exit( 1 )
+// }
+
+
+if (!MONGO_URI) {
+    console.error('MONGO_URI environment variable is not set');
+    process.exit(1);
 }
 
-require( 'dotenv' ).config()
-// Add this debug section
-console.log( '🔧 Environment Variables Check:' )
-console.log( 'DB_HOST:', process.env.DB_HOST )
-console.log( 'DB_PORT:', process.env.DB_PORT )
-console.log( 'DB_NAME:', process.env.DB_NAME )
-console.log( 'DB_USER:', process.env.DB_USER )
-console.log( 'DB_PASSWORD:', process.env.DB_PASSWORD ? '***set***' : 'NOT SET' )
-console.log( 'NODE_ENV:', process.env.NODE_ENV )
-const express = require( 'express' )
-const cors = require( 'cors' )
-const { Pool } = require( 'pg' )
-const bcrypt = require( 'bcrypt' )
-const jwt = require( 'jsonwebtoken' )
-const { stderr } = require( 'process' )
+mongoose.connect(`${MONGO_URI}`, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+}).then(() => {
+    console.log('✅ Connected to MongoDB');
+}).catch((err) => {
+    console.error('❌ MongoDB connection error:', err);
+    process.exit(1);
+});
 
-const app = express()
-const PORT = process.env.PORT || 3001
+// Schemas
+const userSchema = new mongoose.Schema({
+    account_number: { type: String, required: true, unique: true },
+    id_number: { type: String, required: true, unique: true },
+    first_name: String,
+    last_name: String,
+    password: String,
+});
 
-/// Database connection using environment variables
-const pool = new Pool( {
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_NAME,
-    password: process.env.DB_PASSWORD,
-    port: parseInt( process.env.DB_PORT ),
-} )
+const accountSchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    balance: Number,
+    account_type: String,
+});
 
-// Add connection validation
-if ( !process.env.DB_USER || !process.env.DB_HOST || !process.env.DB_NAME || !process.env.DB_PASSWORD )
-{
-    console.error( '❌ Missing required database environment variables' )
-    console.error( 'Required: DB_USER, DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT' )
-    process.exit( 1 )
-}
+const transactionSchema = new mongoose.Schema({
+    user_id: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    amount: Number,
+    type: String,
+    date: { type: Date, default: Date.now },
+});
 
-const JWT_SECRET = process.env.JWT_SECRET
+const User = mongoose.model('User', userSchema);
+const Account = mongoose.model('Account', accountSchema);
+const Transaction = mongoose.model('Transaction', transactionSchema);
 
-// Add this for immediate testing
-async function testDatabaseConnection ()
-{
-    try
-    {
-        console.log( '🔍 Testing database connection...' )
-        const result = await pool.query( 'SELECT NOW() as current_time, current_user as user_name' )
-        console.log( '✅ Database test successful:', result.rows[ 0 ] )
-    } catch ( error )
-    {
-        console.error( '❌ Database test failed:', error.message )
-        console.error( 'Error code:', error.code )
-    }
-}
-
-// Call the test immediately
-testDatabaseConnection()
-
-// Test database connection
-pool.on( 'connect', () =>
-{
-    console.log( '✅ Connected to PostgreSQL database' )
-} )
-
-pool.on( 'error', ( err ) =>
-{
-    console.error( '❌ Database connection error:', err )
-} )
-
-// =============================================
-// await for database connection
-// =============================================
-
-async function waitForDatabase ( maxAttempts = 5 )
-{
-    for ( let attempt = 1; attempt <= maxAttempts; attempt++ )
-    {
-        try
-        {
-            console.log( `Database connection attempt ${ attempt }/${ maxAttempts }...` )
-            await pool.query( 'SELECT 1' )
-            console.log( '✅ Database is ready!' )
-            return true
-        } catch ( error )
-        {
-            console.warn( `Attempt ${ attempt } failed:`, error.message )
-            if ( attempt === maxAttempts )
-            {
-                console.error( 'Could not connect to database after maximum attempts' )
-                process.exit( 1 )
-            }
-            await new Promise( resolve => setTimeout( resolve, 2000 ) )
-        }
-    }
-    return false
-}
-
-// Start server only after database is ready
-const startServer = async () =>
-{
-    await waitForDatabase()
-    app.listen( PORT, () =>
-    {
-        console.log( `Server is running at path: http://localhost:${ PORT }` )
-        console.log( `Health check: http://localhost:${ PORT }/api/health` )
-        console.log( `Register: POST http://localhost:${ PORT }/api/auth/register` )
-        console.log( `Login: POST http://localhost:${ PORT }/api/auth/login` )
-    } )
-}
-
-startServer().catch( error =>
-{
-    console.error( 'Failed to start server:', error )
-    process.exit( 1 )
-} )
-
-// =============================================
 // Middleware
-// =============================================
-app.use( cors() )
-app.use( express.json() )
-app.use( express.urlencoded( { extended: true } ) )
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// =============================================
-// DATABASE FUNCTIONS
-// =============================================
-
-// User registration function
-async function registerUser ( account_number, id_number, first_name, last_name, password )
-{
-    const client = await pool.connect()
-
-    try
-    {
-        await client.query( 'BEGIN' )
-
-        // 1. Check if user exists with account_number and id_number
-        const findUserQuery = `
-            SELECT user_id, account_number, id_number, first_name, last_name, 
-                   email, phone, is_active, password_hash
-            FROM users 
-            WHERE account_number = $1 AND id_number = $2
-        `
-
-        const findResult = await client.query( findUserQuery, [ account_number, id_number ] )
-
-        if ( findResult.rows.length === 0 )
-        {
-            await client.query( 'ROLLBACK' )
-            return { success: false, code: -1, message: 'User not found with these details' }
-        }
-
-        const user = findResult.rows[ 0 ]
-
-        // 2. Validate that the provided names match
-        if ( user.first_name.toLowerCase() !== first_name.toLowerCase() ||
-            user.last_name.toLowerCase() !== last_name.toLowerCase() )
-        {
-            await client.query( 'ROLLBACK' )
-            return { success: false, code: -2, message: 'User details do not match our records' }
-        }
-
-        // 3. Check if user is already registered
-        if ( user.is_active && user.password_hash )
-        {
-            await client.query( 'ROLLBACK' )
-            return { success: false, code: -3, message: 'User is already registered' }
-        }
-
-        // 4. Hash password
-        const salt = await bcrypt.genSalt( 10 )
-        const password_hash = await bcrypt.hash( password, salt )
-
-        // 5. Update user with registration details
-        const updateQuery = `
-            UPDATE users 
-            SET password_hash = $1, salt = $2, is_active = TRUE, updated_at = CURRENT_TIMESTAMP
-            WHERE account_number = $3 AND id_number = $4
-        `
-
-        await client.query( updateQuery, [ password_hash, salt, account_number, id_number ] )
-
-        await client.query( 'COMMIT' )
-
-        return {
-            success: true,
-            code: 0,
-            message: 'Registration successful',
-            user: {
-                user_id: user.user_id,
-                account_number: user.account_number,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                email: user.email
-            }
-        }
-
-    } catch ( error )
-    {
-        await client.query( 'ROLLBACK' )
-        console.error( 'Registration error:', error )
-        return { success: false, code: -999, message: 'Registration failed due to server error' }
-    } finally
-    {
-        client.release()
-    }
-}
-
-// User login function
-async function loginUser ( id_number, password )
-{
-    try
-    {
-        // 1. Get user by ID number
-        const getUserQuery = `
-            SELECT user_id, account_number, id_number, first_name, last_name, 
-                   email, phone, password_hash, salt, is_active, last_login,
-                   failed_login_attempts
-            FROM users 
-            WHERE id_number = $1
-        `
-
-        const userResult = await pool.query( getUserQuery, [ id_number ] )
-
-        // 2. Check if user exists
-        if ( userResult.rows.length === 0 )
-        {
-            return { success: false, code: -1, message: 'User does not exist' }
-        }
-
-        const user = userResult.rows[ 0 ]
-
-        // 3. Check if user is active (registered)
-        if ( !user.is_active )
-        {
-            return { success: false, code: 1, message: 'Account not activated. Please register first.' }
-        }
-
-        // 4. Check password
-        const isPasswordValid = await bcrypt.compare( password, user.password_hash )
-
-        if ( !isPasswordValid )
-        {
-            // Increment failed login attempts
-            await pool.query(
-                'UPDATE users SET failed_login_attempts = failed_login_attempts + 1 WHERE id_number = $1',
-                [ id_number ]
-            )
-
-            return { success: false, code: 2, message: 'Invalid password' }
-        }
-
-        // 5. Successful login - update last login and reset failed attempts
-        await pool.query(
-            `UPDATE users 
-             SET last_login = CURRENT_TIMESTAMP, failed_login_attempts = 0 
-             WHERE id_number = $1`,
-            [ id_number ]
-        )
-
-        // 6. Generate JWT token
-        const token = jwt.sign(
-            { user_id: user.user_id, id_number: user.id_number },
-            JWT_SECRET,
-            { expiresIn: '24h' }
-        )
-
-        return {
-            success: true,
-            code: 0,
-            message: 'Login successful',
-            token,
-            user: {
-                user_id: user.user_id,
-                account_number: user.account_number,
-                id_number: user.id_number,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                email: user.email,
-                phone: user.phone,
-                last_login: user.last_login
-            }
-        }
-
-    } catch ( error )
-    {
-        console.error( 'Login error:', error )
-        return { success: false, code: -999, message: 'Login failed due to server error' }
-    }
-}
-
-// Get user details by ID
-async function getUserById ( user_id )
-{
-    try
-    {
-        const query = `
-            SELECT user_id, account_number, id_number, first_name, last_name, 
-                   email, phone, is_active, last_login, created_at
-            FROM users 
-            WHERE user_id = $1 AND is_active = TRUE
-        `
-
-        const result = await pool.query( query, [ user_id ] )
-
-        if ( result.rows.length === 0 )
-        {
-            return { success: false, message: 'User not found' }
-        }
-
-        return { success: true, user: result.rows[ 0 ] }
-
-    } catch ( error )
-    {
-        console.error( 'Get user error:', error )
-        return { success: false, message: 'Failed to get user details' }
-    }
-}
-
-// Get user accounts
-async function getUserAccounts ( user_id )
-{
-    try
-    {
-        const query = `
-            SELECT account_id, account_type, balance, credit_limit, 
-                   interest_rate, created_at, status
-            FROM accounts 
-            WHERE user_id = $1 AND status = 'ACTIVE'
-            ORDER BY created_at DESC
-        `
-
-        const result = await pool.query( query, [ user_id ] )
-
-        return { success: true, accounts: result.rows }
-
-    } catch ( error )
-    {
-        console.error( 'Get accounts error:', error )
-        return { success: false, message: 'Failed to get user accounts' }
-    }
-}
-
-// Get user transactions
-async function getUserTransactions ( user_id, limit = 50, offset = 0 )
-{
-    try
-    {
-        const query = `
-            SELECT t.transaction_id, t.account_id, t.transaction_type, t.amount,
-                   t.description, t.category, t.merchant_name, t.transaction_date,
-                   t.balance_after, t.location, a.account_type
-            FROM transactions t
-            JOIN accounts a ON t.account_id = a.account_id
-            WHERE a.user_id = $1
-            ORDER BY t.transaction_date DESC
-            LIMIT $2 OFFSET $3
-        `
-
-        const result = await pool.query( query, [ user_id, limit, offset ] )
-
-        return { success: true, transactions: result.rows }
-
-    } catch ( error )
-    {
-        console.error( 'Get transactions error:', error )
-        return { success: false, message: 'Failed to get user transactions' }
-    }
-}
-
-// Get all users function (for testing)
-async function getAllUsers ()
-{
-    try
-    {
-        const query = `
-            SELECT user_id, account_number, id_number, first_name, last_name, 
-                   email, phone, is_active, created_at, last_login,
-                   CASE 
-                       WHEN password_hash IS NULL THEN 'Not Registered'
-                       ELSE 'Registered'
-                   END as registration_status
-            FROM users 
-            ORDER BY created_at DESC
-        `
-
-        const result = await pool.query( query )
-
-        return { success: true, users: result.rows, count: result.rows.length }
-
-    } catch ( error )
-    {
-        console.error( 'Get all users error:', error )
-        return { success: false, message: 'Failed to get users' }
-    }
-}
-
-
-// =============================================
-// MIDDLEWARE
-// =============================================
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // JWT Authentication middleware
-async function authenticateToken ( req, res, next )
-{
-    const authHeader = req.headers[ 'authorization' ]
-    const token = authHeader && authHeader.split( ' ' )[ 1 ]
+async function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'No token provided' });
 
-    if ( !token )
-    {
-        return res.status( 401 ).json( { error: 'Access token required' } )
-    }
-
-    try
-    {
-        const decoded = jwt.verify( token, JWT_SECRET )
-        const userResult = await getUserById( decoded.user_id )
-
-        if ( !userResult.success )
-        {
-            return res.status( 401 ).json( { error: 'Invalid token - user not found' } )
-        }
-
-        req.user = userResult.user
-        next()
-
-    } catch ( error )
-    {
-        console.error( 'Token verification error:', error )
-        return res.status( 403 ).json( { error: 'Invalid or expired token' } )
+    try {
+        const user = jwt.verify(token, JWT_SECRET);
+        req.user = user;
+        next();
+    } catch (error) {
+        res.status(403).json({ error: 'Invalid token' });
     }
 }
 
-// =============================================
-// ROUTES
-// =============================================
-// Get all users endpoint (for testing)
-app.get( '/api/users/all', async ( req, res ) =>
-{
-    try
-    {
-        const result = await getAllUsers()
-
-        if ( result.success )
-        {
-            res.json( {
-                message: 'All users retrieved successfully',
-                count: result.count,
-                users: result.users
-            } )
-        } else
-        {
-            res.status( 500 ).json( { error: result.message } )
-        }
-
-    } catch ( error )
-    {
-        console.error( 'Get all users route error:', error )
-        res.status( 500 ).json( { error: 'Failed to get all users' } )
-    }
-} )
-// Get user by ID endpoint (for testing)
-app.get( '/api/users/:user_id', async ( req, res ) =>
-{
-    try
-    {
-        const { user_id } = req.params
-
-        // Validate UUID format (basic check)
-        if ( !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test( user_id ) )
-        {
-            return res.status( 400 ).json( { error: 'Invalid user ID format' } )
-        }
-
-        const result = await getUserById( user_id )
-
-        if ( result.success )
-        {
-            res.json( {
-                message: 'User retrieved successfully',
-                user: result.user
-            } )
-        } else
-        {
-            res.status( 404 ).json( { error: result.message } )
-        }
-
-    } catch ( error )
-    {
-        console.error( 'Get user by ID route error:', error )
-        res.status( 500 ).json( { error: 'Failed to get user' } )
-    }
-} )
-
-// Health check endpoint
-app.get( '/api/health', async ( req, res ) =>
-{
-    try
-    {
-        const result = await pool.query( 'SELECT NOW()' )
-        res.json( {
-            status: 'OK',
-            message: 'ABSA Financial Assistant API is running',
-            database: 'Connected',
-            timestamp: result.rows[ 0 ].now
-        } )
-    } catch ( error )
-    {
-        res.status( 500 ).json( {
-            status: 'ERROR',
-            message: 'Database connection failed',
-            error: error.message
-        } )
-    }
-} )
-
 // Registration endpoint
-app.post( '/api/auth/register', async ( req, res ) =>
-{
-    const { account_number, id_number, first_name, last_name, password } = req.body
-
-    // Validation
-    if ( !account_number || !id_number || !first_name || !last_name || !password )
-    {
-        return res.status( 400 ).json( {
-            error: 'All fields are required',
-            required: [ 'account_number', 'id_number', 'first_name', 'last_name', 'password' ]
-        } )
+app.post('/api/auth/register', async (req, res) => {
+    const { account_number, id_number, first_name, last_name, password } = req.body;
+    if (!account_number || !id_number || !first_name || !last_name || !password) {
+        return res.status(400).json({ error: 'Missing required fields' });
     }
-
-    // Validate South African ID number (13 digits)
-    if ( !/^\d{13}$/.test( id_number ) )
-    {
-        return res.status( 400 ).json( { error: 'Invalid ID number format. Must be 13 digits.' } )
+    if (!/^\d{13}$/.test(id_number)) {
+        return res.status(400).json({ error: 'Invalid South African ID number' });
     }
-
-    try
-    {
-        const result = await registerUser( account_number, id_number, first_name, last_name, password )
-
-        if ( result.success )
-        {
-            res.status( 201 ).json( {
-                message: result.message,
-                user: result.user
-            } )
-        } else
-        {
-            const statusCode = result.code === -1 ? 404 : 400
-            res.status( statusCode ).json( {
-                error: result.message,
-                code: result.code
-            } )
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = new User({ account_number, id_number, first_name, last_name, password: hashedPassword });
+        await user.save();
+        res.status(201).json({ message: 'User registered successfully' });
+    } catch (error) {
+        if (error.code === 11000) {
+            res.status(409).json({ error: 'Account number or ID number already exists' });
+        } else {
+            res.status(500).json({ error: 'Registration failed' });
         }
-
-    } catch ( error )
-    {
-        console.error( 'Registration route error:', error )
-        res.status( 500 ).json( { error: 'Registration failed' } )
     }
-} )
+});
 
 // Login endpoint
-app.post( '/api/auth/login', async ( req, res ) =>
-{
-    const { id_number, password } = req.body
-
-    // Validation
-    if ( !id_number || !password )
-    {
-        return res.status( 400 ).json( {
-            error: 'ID number and password are required',
-            required: [ 'id_number', 'password' ]
-        } )
+app.post('/api/auth/login', async (req, res) => {
+    const { id_number, password } = req.body;
+    if (!id_number || !password) {
+        return res.status(400).json({ error: 'Missing credentials' });
     }
+    try {
+        const user = await User.findOne({ id_number });
+        if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+        const valid = await bcrypt.compare(password, user.password);
+        if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
 
-    try
-    {
-        const result = await loginUser( id_number, password )
-
-        if ( result.success )
-        {
-            res.json( {
-                message: result.message,
-                token: result.token,
-                user: result.user
-            } )
-        } else
-        {
-            const statusCode = result.code === -999 ? 500 : 401
-            res.status( statusCode ).json( {
-                error: result.message,
-                code: result.code
-            } )
-        }
-
-    } catch ( error )
-    {
-        console.error( 'Login route error:', error )
-        res.status( 500 ).json( { error: 'Login failed' } )
+        const token = jwt.sign(
+            { user_id: user._id, id_number: user.id_number, first_name: user.first_name, last_name: user.last_name },
+            JWT_SECRET,
+            { expiresIn: '1d' }
+        );
+        res.json({ token });
+    } catch (error) {
+        res.status(500).json({ error: 'Login failed' });
     }
-} )
+});
 
 // Get user profile
-app.get( '/api/users/profile', authenticateToken, async ( req, res ) =>
-{
-    res.json( {
-        message: 'User profile retrieved successfully',
-        user: req.user
-    } )
-} )
+app.get('/api/users/profile', authenticateToken, async (req, res) => {
+    try {
+        const user = await User.findById(req.user.user_id).select('-password');
+        if (!user) return res.status(404).json({ error: 'User not found' });
+        res.json({ user });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch profile' });
+    }
+});
 
 // Get user accounts
-app.get( '/api/users/accounts', authenticateToken, async ( req, res ) =>
-{
-    try
-    {
-        const result = await getUserAccounts( req.user.user_id )
-
-        if ( result.success )
-        {
-            res.json( {
-                message: 'Accounts retrieved successfully',
-                accounts: result.accounts
-            } )
-        } else
-        {
-            res.status( 500 ).json( { error: result.message } )
-        }
-
-    } catch ( error )
-    {
-        console.error( 'Get accounts error:', error )
-        res.status( 500 ).json( { error: 'Failed to get user accounts' } )
+app.get('/api/users/accounts', authenticateToken, async (req, res) => {
+    try {
+        const accounts = await Account.find({ user_id: req.user.user_id });
+        res.json({ accounts });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch accounts' });
     }
-} )
+});
 
 // Get user transactions
-app.get( '/api/users/transactions', authenticateToken, async ( req, res ) =>
-{
-    try
-    {
-        const limit = parseInt( req.query.limit ) || 50
-        const offset = parseInt( req.query.offset ) || 0
-
-        const result = await getUserTransactions( req.user.user_id, limit, offset )
-
-        if ( result.success )
-        {
-            res.json( {
-                message: 'Transactions retrieved successfully',
-                transactions: result.transactions,
-                pagination: {
-                    limit,
-                    offset,
-                    count: result.transactions.length
-                }
-            } )
-        } else
-        {
-            res.status( 500 ).json( { error: result.message } )
-        }
-
-    } catch ( error )
-    {
-        console.error( 'Get transactions error:', error )
-        res.status( 500 ).json( { error: 'Failed to get user transactions' } )
+app.get('/api/users/transactions', authenticateToken, async (req, res) => {
+    try {
+        const transactions = await Transaction.find({ user_id: req.user.user_id }).sort({ date: -1 }).limit(50);
+        res.json({ transactions });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch transactions' });
     }
-} )
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'ok' });
+});
 
 // Default route
-app.get( '/', ( req, res ) =>
-{
-    res.json( {
-        message: 'Welcome to ABSA Financial Assistant API',
-        version: '1.0.0',
-        endpoints: {
-            health: '/api/health',
-            auth: {
-                register: 'POST /api/auth/register',
-                login: 'POST /api/auth/login'
-            },
-            users: {
-                profile: 'GET /api/users/profile',
-                accounts: 'GET /api/users/accounts',
-                transactions: 'GET /api/users/transactions'
-            }
-        }
-    } )
-} )
+app.get('/', (req, res) => {
+    res.send('FinTech API running with MongoDB');
+});
 
 // Error handling
-app.use( ( err, req, res, next ) =>
-{
-    console.error( err.stack )
-    res.status( 500 ).json( { error: 'Something went wrong!' } )
-} )
+app.use((err, req, res, next) => {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+});
 
 // 404 handler
-app.use( '*', ( req, res ) =>
-{
-    res.status( 404 ).json( { error: 'Route not found' } )
-} )
+app.use('*', (req, res) => {
+    res.status(404).json({ error: 'Not found' });
+});
 
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+});
+
+// Seeding function
+async function seedDatabase() {
+    if (await User.countDocuments() > 0) {
+        console.log('Database already seeded.');
+        return;
+    }
+    console.log('Seeding MongoDB with initial data...');
+
+    // USERS
+    const users = await User.insertMany([
+        { account_number: 'ACC001234567890', id_number: '9001010001080', first_name: 'John', last_name: 'Doe', email: 'john.doe@email.com', phone: '+27123456789', is_active: false },
+        { account_number: 'ACC002345678901', id_number: '8505050002084', first_name: 'Jane', last_name: 'Smith', email: 'jane.smith@email.com', phone: '+27234567890', is_active: false },
+        { account_number: 'ACC003456789012', id_number: '7712120003088', first_name: 'Michael', last_name: 'Johnson', email: 'michael.johnson@email.com', phone: '+27345678901', is_active: false },
+        { account_number: 'ACC004567890123', id_number: '9203030004082', first_name: 'Sarah', last_name: 'Williams', email: 'sarah.williams@email.com', phone: '+27456789012', is_active: false },
+        { account_number: 'ACC005678901234', id_number: '8801010005086', first_name: 'David', last_name: 'Brown', email: 'david.brown@email.com', phone: '+27567890123', is_active: false },
+        { account_number: 'ACC006789012345', id_number: '9506060006080', first_name: 'Lisa', last_name: 'Davis', email: 'lisa.davis@email.com', phone: '+27678901234', is_active: false },
+        { account_number: 'ACC007890123456', id_number: '8109090007084', first_name: 'Robert', last_name: 'Miller', email: 'robert.miller@email.com', phone: '+27789012345', is_active: false },
+        { account_number: 'ACC008901234567', id_number: '9404040008088', first_name: 'Emily', last_name: 'Wilson', email: 'emily.wilson@email.com', phone: '+27890123456', is_active: false },
+        { account_number: 'ACC009012345678', id_number: '8702020009082', first_name: 'James', last_name: 'Moore', email: 'james.moore@email.com', phone: '+27901234567', is_active: false },
+        { account_number: 'ACC010123456789', id_number: '9008080010086', first_name: 'Amanda', last_name: 'Taylor', email: 'amanda.taylor@email.com', phone: '+27012345678', is_active: false }
+    ]);
+    const userMap = {};
+    users.forEach(u => { userMap[u.account_number] = u; });
+
+    // ACCOUNTS
+    const accounts = await Account.insertMany([
+        // Cheque
+        { user_id: userMap['ACC001234567890']._id, account_type: 'CHEQUE', balance: 15420.50, credit_limit: 0, interest_rate: 0.0125 },
+        { user_id: userMap['ACC002345678901']._id, account_type: 'CHEQUE', balance: 8750.25, credit_limit: 0, interest_rate: 0.0125 },
+        { user_id: userMap['ACC003456789012']._id, account_type: 'CHEQUE', balance: 23150.75, credit_limit: 0, interest_rate: 0.0125 },
+        { user_id: userMap['ACC004567890123']._id, account_type: 'CHEQUE', balance: 5280.10, credit_limit: 0, interest_rate: 0.0125 },
+        { user_id: userMap['ACC005678901234']._id, account_type: 'CHEQUE', balance: 31250.80, credit_limit: 0, interest_rate: 0.0125 },
+        { user_id: userMap['ACC006789012345']._id, account_type: 'CHEQUE', balance: 12980.45, credit_limit: 0, interest_rate: 0.0125 },
+        { user_id: userMap['ACC007890123456']._id, account_type: 'CHEQUE', balance: 45670.30, credit_limit: 0, interest_rate: 0.0125 },
+        { user_id: userMap['ACC008901234567']._id, account_type: 'CHEQUE', balance: 9840.60, credit_limit: 0, interest_rate: 0.0125 },
+        { user_id: userMap['ACC009012345678']._id, account_type: 'CHEQUE', balance: 18750.90, credit_limit: 0, interest_rate: 0.0125 },
+        { user_id: userMap['ACC010123456789']._id, account_type: 'CHEQUE', balance: 27350.20, credit_limit: 0, interest_rate: 0.0125 },
+        // Savings
+        { user_id: userMap['ACC001234567890']._id, account_type: 'SAVINGS', balance: 50000.00, credit_limit: 0, interest_rate: 0.0425 },
+        { user_id: userMap['ACC003456789012']._id, account_type: 'SAVINGS', balance: 75000.00, credit_limit: 0, interest_rate: 0.0425 },
+        { user_id: userMap['ACC005678901234']._id, account_type: 'SAVINGS', balance: 120000.00, credit_limit: 0, interest_rate: 0.0425 },
+        { user_id: userMap['ACC007890123456']._id, account_type: 'SAVINGS', balance: 200000.00, credit_limit: 0, interest_rate: 0.0425 },
+        { user_id: userMap['ACC010123456789']._id, account_type: 'SAVINGS', balance: 85000.00, credit_limit: 0, interest_rate: 0.0425 },
+        // Credit Card
+        { user_id: userMap['ACC002345678901']._id, account_type: 'CREDIT_CARD', balance: -2450.50, credit_limit: 15000.00, interest_rate: 0.1995 },
+        { user_id: userMap['ACC004567890123']._id, account_type: 'CREDIT_CARD', balance: -1800.25, credit_limit: 10000.00, interest_rate: 0.1995 },
+        { user_id: userMap['ACC006789012345']._id, account_type: 'CREDIT_CARD', balance: -5670.80, credit_limit: 25000.00, interest_rate: 0.1995 },
+        { user_id: userMap['ACC008901234567']._id, account_type: 'CREDIT_CARD', balance: -890.40, credit_limit: 8000.00, interest_rate: 0.1995 },
+        { user_id: userMap['ACC009012345678']._id, account_type: 'CREDIT_CARD', balance: -3250.60, credit_limit: 20000.00, interest_rate: 0.1995 }
+    ]);
+    const accountMap = {};
+    accounts.forEach(a => { accountMap[`${a.user_id}_${a.account_type}`] = a; });
+
+    // TRANSACTIONS
+    const transactions = await Transaction.insertMany([
+        {
+            account_id: accountMap[`${userMap['ACC001234567890']._id}_CHEQUE`]._id,
+            transaction_type: 'DEBIT',
+            amount: -850.00,
+            description: 'Grocery Shopping',
+            category: 'GROCERIES',
+            merchant_name: 'Pick n Pay',
+            transaction_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+            balance_after: 15420.50 - 850.00,
+            location: 'Johannesburg, SA'
+        },
+        {
+            account_id: accountMap[`${userMap['ACC003456789012']._id}_CHEQUE`]._id,
+            transaction_type: 'CREDIT',
+            amount: 25000.00,
+            description: 'Salary Deposit',
+            category: 'INCOME',
+            merchant_name: 'ABC Company',
+            transaction_date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+            balance_after: 23150.75 + 25000.00,
+            location: 'Cape Town, SA'
+        },
+        {
+            account_id: accountMap[`${userMap['ACC002345678901']._id}_CHEQUE`]._id,
+            transaction_type: 'DEBIT',
+            amount: -450.00,
+            description: 'Restaurant',
+            category: 'DINING',
+            merchant_name: 'Spur Steak Ranch',
+            transaction_date: new Date(Date.now() - 3 * 60 * 60 * 1000),
+            balance_after: 8750.25 - 450.00,
+            location: 'Pretoria, SA'
+        },
+        {
+            account_id: accountMap[`${userMap['ACC004567890123']._id}_CHEQUE`]._id,
+            transaction_type: 'DEBIT',
+            amount: -1200.00,
+            description: 'Fuel',
+            category: 'TRANSPORT',
+            merchant_name: 'Shell Garage',
+            transaction_date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
+            balance_after: 5280.10 - 1200.00,
+            location: 'Durban, SA'
+        },
+        {
+            account_id: accountMap[`${userMap['ACC005678901234']._id}_CHEQUE`]._id,
+            transaction_type: 'CREDIT',
+            amount: 15000.00,
+            description: 'Freelance Payment',
+            category: 'INCOME',
+            merchant_name: 'XYZ Client',
+            transaction_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
+            balance_after: 31250.80 + 15000.00,
+            location: 'Cape Town, SA'
+        }
+    ]);
+
+    // INCOME
+    await Income.insertMany([
+        {
+            user_id: userMap['ACC001234567890']._id,
+            source: 'Salary - ABC Company',
+            amount: 25000.00,
+            frequency: 'MONTHLY',
+            next_payment_date: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 25)
+        },
+        {
+            user_id: userMap['ACC003456789012']._id,
+            source: 'Salary - Tech Corp',
+            amount: 35000.00,
+            frequency: 'MONTHLY',
+            next_payment_date: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 30)
+        }
+    ]);
+
+    // CREDIT SCORES
+    await CreditScore.insertMany([
+        {
+            user_id: userMap['ACC001234567890']._id,
+            score: 720,
+            factors: {
+                payment_history: "Good",
+                credit_utilization: "Medium",
+                length_of_credit: "Good",
+                types_of_credit: "Excellent",
+                new_credit: "Good"
+            },
+            recommendations: "Maintain current good credit habits"
+        },
+        {
+            user_id: userMap['ACC002345678901']._id,
+            score: 650,
+            factors: {
+                payment_history: "Good",
+                credit_utilization: "Medium",
+                length_of_credit: "Good",
+                types_of_credit: "Excellent",
+                new_credit: "Good"
+            },
+            recommendations: "Reduce credit card balances to improve credit utilization ratio"
+        },
+        {
+            user_id: userMap['ACC003456789012']._id,
+            score: 780,
+            factors: {
+                payment_history: "Good",
+                credit_utilization: "Medium",
+                length_of_credit: "Good",
+                types_of_credit: "Excellent",
+                new_credit: "Good"
+            },
+            recommendations: "Maintain current good credit habits"
+        },
+        {
+            user_id: userMap['ACC004567890123']._id,
+            score: 590,
+            factors: {
+                payment_history: "Good",
+                credit_utilization: "Medium",
+                length_of_credit: "Good",
+                types_of_credit: "Excellent",
+                new_credit: "Good"
+            },
+            recommendations: "Make payments on time and reduce overall debt"
+        },
+        {
+            user_id: userMap['ACC005678901234']._id,
+            score: 820,
+            factors: {
+                payment_history: "Good",
+                credit_utilization: "Medium",
+                length_of_credit: "Good",
+                types_of_credit: "Excellent",
+                new_credit: "Good"
+            },
+            recommendations: "Maintain current good credit habits"
+        }
+    ]);
+
+    // LOAN SUGGESTIONS
+    await LoanSuggestion.insertMany([
+        {
+            user_id: userMap['ACC001234567890']._id,
+            current_loans: [{ type: "Personal", balance: 20000 }],
+            suggested_plan: { type: "Consolidation", rate: 0.09 },
+            potential_savings: 2500,
+            status: "PENDING"
+        }
+    ]);
+
+    // AI CONVERSATIONS
+    await AIConversation.insertMany([
+        {
+            user_id: userMap['ACC001234567890']._id,
+            message: "What is my current account balance?",
+            response: "Your current cheque account balance is R15,420.50. Would you like to see details of your recent transactions?",
+            sentiment: "NEUTRAL"
+        },
+        {
+            user_id: userMap['ACC003456789012']._id,
+            message: "I want to apply for a personal loan",
+            response: "Based on your credit score of 780 and income history, you may qualify for a personal loan up to R500,000. Would you like me to start the application process?",
+            sentiment: "POSITIVE"
+        }
+    ]);
+
+    // CALL LOGS
+    await CallLog.insertMany([
+        {
+            user_id: userMap['ACC001234567890']._id,
+            call_type: "SUPPORT",
+            duration: 320,
+            status: "COMPLETED",
+            started_at: new Date(Date.now() - 2 * 60 * 60 * 1000),
+            ended_at: new Date(Date.now() - 2 * 60 * 60 * 1000 + 320 * 1000),
+            notes: "Assisted with online banking registration"
+        }
+    ]);
+
+    // SUSPICIOUS ACTIVITIES
+    await SuspiciousActivity.insertMany([
+        {
+            user_id: userMap['ACC002345678901']._id,
+            transaction_id: transactions[2]._id,
+            activity_type: "Unusual Location",
+            risk_level: "MEDIUM",
+            description: "Transaction from unexpected location",
+            detected_at: new Date(Date.now() - 1 * 60 * 60 * 1000),
+            resolved: false
+        }
+    ]);
+
+    console.log('✅ MongoDB database seeded.');
+}
+
+seedDatabase().catch(console.error);
 
 module.exports = app
