@@ -87,7 +87,7 @@ const Chat = () => {
         <div className="chat-header-left">
           <img src={Logo} alt="LynqAI Logo" className="chat-logo" />
           <div className="chat-title">
-            <h1>LynqAI</h1>
+            <h1>Lynq Chat</h1>
             <span className="chat-status">Online</span>
           </div>
         </div>
