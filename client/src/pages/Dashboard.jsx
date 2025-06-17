@@ -27,6 +27,7 @@ import {
   Eye,
   EyeOff,
   Menu,
+  MessageCircle,
   Phone,
   Video,
   UserCircle,
@@ -199,6 +200,10 @@ const Dashboard = () => {
                   <Link to="/dashboard/money-tracker" className="nav-link">
                     <Banknote className="nav-icon" />
                     <span>Money Tracker</span>
+                  </Link>
+                  <Link to="/dashboard/chat" className="nav-link nav-link">
+                    <MessageCircle className="nav-icon" />
+                    <span>AI Chat</span>
                   </Link>
                 </div>
               </div>
