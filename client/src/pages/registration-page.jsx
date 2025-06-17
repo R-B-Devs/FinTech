@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import registerImage from '../assets/register.png';
 import '../styles/registration-page.css'; 
+import { validateLogin } from '../cyberFrontend/validation';
 
 function RegistrationForm() {
   const [idNumber, setIdNumber] = useState('');
