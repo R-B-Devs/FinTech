@@ -119,48 +119,48 @@ The ABSA Financial Assistant is designed to provide ABSA Bank clients with:
    cd financial-assistant
 2. Database Setup
    
-   sudo apt install postgresql postgresql-contrib
+    - sudo apt install postgresql postgresql-contrib
 
-   sudo -u postgres createdb absa_financial_db
+    - sudo -u postgres createdb absa_financial_db
   
-   cd backend && npm run migrate
+    - cd backend && npm run migrate
 3. Backend Configuration
    
-   cd backend
+    - cd backend
    
-   npm install
+    - npm install
 
-   cp .env.example .env
+    - cp .env.example .env
 
-   npm run start
+    - npm run start
 4. Frontend Configuration
  
-   cd frontend
+    - cd frontend
 
-   npm install
+    - npm install
 
-   npm start
+    - npm start
 ## Performance Monitoring 📈
   Key Metrics:
-- Response Time < 200ms ⏱️
-- Database Queries optimized with indexing. 📊]
+ - Response Time < 200ms ⏱️
+ - Database Queries optimized with indexing. 📊]
   
 Monitoring Tools:
   
-- Application Performance - New Relic/DataDog. 📊
-- Database Monitoring - PostgreSQL tools. 🛠️
-- Testing Strategy 🧪
+ - Application Performance - New Relic/DataDog. 📊
+ - Database Monitoring - PostgreSQL tools. 🛠️
+ - Testing Strategy 🧪
 
 ## Testing Strategy 🧪
 1. Unit Tests
    
-   cd backend && npm test
+ - cd backend && npm test
    
-   cd frontend && npm test
+ - cd frontend && npm test
 
 2. Integration Tests
 
--  API endpoint testing. 🔄
+ - API endpoint testing. 🔄
  
 3. Performance Tests
 
