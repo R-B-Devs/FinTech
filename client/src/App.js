@@ -17,6 +17,7 @@ import Goals from './pages/Goals';
 import Offers from './pages/Offers';
 import CreditHealth from './pages/CreditHealth';
 import MoneyTracker from './pages/MoneyTracker';
+import Chat from './pages/Chat';
 import Transactions from './pages/Transactions';
 import Cards from './pages/Cards';
 import Investments from './pages/Investments';
@@ -40,11 +41,12 @@ function App() {
         <Route path="/otp" element={<OtpPage />} />
         <Route path="/verifyOtp" element={<VerifyOtp />} />
 
-        {/* Each page is separate */}
+        {/* Dashboard routes */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/analytics" element={<Analytics />} />
         <Route path="/dashboard/goals" element={<Goals />} />
         <Route path="/dashboard/offers" element={<Offers />} />
+        <Route path="/dashboard/chat" element={<Chat />} />
         <Route path="/dashboard/credit-health" element={<CreditHealth />} />
         <Route path="/dashboard/money-tracker" element={<MoneyTracker />} />
         <Route path="/dashboard/transactions" element={<Transactions />} />

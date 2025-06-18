@@ -27,6 +27,7 @@ import {
   Eye,
   EyeOff,
   Menu,
+  MessageCircle,
   Phone,
   Video,
   UserCircle,
@@ -132,42 +133,47 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="dashboard-container">
-      <header className="dashboard-header">
-        <div className="header-content">
-          <div className="header-left">
-            <button className="mobile-menu-btn" onClick={toggleSidebar}>
-              <Menu className="menu-icon" />
-            </button>
-            <div className="logo">
-              <span className="logo-text">Lynq</span>
-              <span className="logo-accent">AI</span>
-            </div>
-            <div className="header-divider"></div>
-            <h1 className="page-title">Financial Dashboard</h1>
+  <div className="dashboard-container">
+    <header className="dashboard-header">
+      <div className="header-content">
+        <div className="header-left">
+          <button className="mobile-menu-btn" onClick={toggleSidebar}>
+            <Menu className="menu-icon" />
+          </button>
+          <div className="logo">
+            <span className="logo-text">Lynq</span>
+            <span className="logo-accent">AI</span>
           </div>
-  
-          <div className="header-right">
-            <div className="current-time">
-              {currentTime.toLocaleTimeString()}
-            </div>
-            
-              <Link to="/dashboard/notification">
-                <button className="header-btn">
-                  <Bell className="header-icon" />
-                </button>
+          <div className="header-divider"></div>
+          <h1 className="page-title">Financial Dashboard</h1>
+        </div>
 
+        <div className="header-right">
+          <div className="current-time">
+            {currentTime.toLocaleTimeString()}
+          </div>
+
+          <button className="header-btn">
+            <Bell className="header-icon" />
+          </button>
+
+          {/* Settings and Profile Links */}
+          <div className="header-container">
+            <div className="header-content">
+              {/* Settings Button */}
+              <Link to="/dashboard/settings" className="header-btn">
+                <Settings className="header-icon" />
               </Link>
-            <button className="header-btn">
-              <Settings className="header-icon" />
-            </button>
-            
-            <div className="user-avatar">
-              <User className="user-icon" />
+
+              {/* User Avatar Button */}
+              <Link to="/dashboard/profile" className="user-avatar">
+                <User className="user-icon" />
+              </Link>
             </div>
           </div>
         </div>
-      </header>
+      </div>
+    </header>
 
       <div className="dashboard-layout">
         {/* Sidebar */}
@@ -204,6 +210,10 @@ const Dashboard = () => {
                   <Link to="/dashboard/money-tracker" className="nav-link">
                     <Banknote className="nav-icon" />
                     <span>Money Tracker</span>
+                  </Link>
+                  <Link to="/dashboard/chat" className="nav-link nav-link">
+                    <MessageCircle className="nav-icon" />
+                    <span>AI Chat</span>
                   </Link>
                 </div>
               </div>
@@ -573,25 +583,29 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Quick Actions */}
+              {/* Personalized Financial Advice */}
               <div className="actions-card">
-                <h3 className="card-title">Quick Actions</h3>
+                <h3 className="card-title">Personalized Financial Tips</h3>
                 <div className="actions-list">
                   <button className="action-btn action-btn-primary">
                     <Zap className="action-icon" />
-                    <span className="action-text">AI Optimization</span>
+                    <span className="action-text">Spend Less Than You Earn</span>
                   </button>
-                  <button className="action-btn">
+                  <button className="action-btn action-btn-primary">
                     <PieChart className="action-icon" />
-                    <span className="action-text">Generate Report</span>
+                    <span className="action-text">Invest Early and Regularly</span>
                   </button>
-                  <button className="action-btn">
+                  <button className="action-btn action-btn-primary">
                     <Target className="action-icon" />
-                    <span className="action-text">Set New Goal</span>
+                    <span className="action-text">Track Your Expenses</span>
                   </button>
-                  <button className="action-btn">
+                  <button className="action-btn action-btn-primary">
                     <Database className="action-icon" />
-                    <span className="action-text">System Check</span>
+                    <span className="action-text">Avoid High-Interest Debt</span>
+                  </button>
+                  <button className="action-btn action-btn-primary">
+                    <Database className="action-icon" />
+                    <span className="action-text">Build an Emergency Fund</span>
                   </button>
                 </div>
               </div>
