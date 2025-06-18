@@ -1,9 +1,17 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const DemoPage = () => {
   return (
     <div style={styles.container}>
-      {/* Brand Name */}
+      {/* Navigation Back Button */}
+      <Link to="/" className="nav-link">
+        <span className="material-symbols-outlined">arrow_back</span>
+        <span>Back</span>
+      </Link>
+
+
+
       <div style={styles.brandContainer}>
         <h1 style={styles.brandName}>
           <span style={styles.brand}>Lynq</span>

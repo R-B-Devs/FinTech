@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import ForgotPasswordImg from "../assets/forgot.png";
 import Logo from "../assets/logo.png";
 import "../styles/ForgotPassword.css";

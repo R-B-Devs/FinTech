@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'; 
 import { Link, Outlet } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import "../styles/Dashboard.css";
 import { 
   TrendingUp, 
@@ -134,6 +135,10 @@ const Dashboard = () => {
 
   return (
   <div className="dashboard-container">
+     <Link to="/" className="nav-link">
+            <span className="material-symbols-outlined">arrow_back</span>
+            <span>Back</span>
+          </Link>
     <header className="dashboard-header">
       <div className="header-content">
         <div className="header-left">

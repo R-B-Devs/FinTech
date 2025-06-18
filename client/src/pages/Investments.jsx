@@ -1,5 +1,6 @@
 import React from 'react';
 import { BarChart2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import '../styles/Investments.css';
 
 const investments = [
