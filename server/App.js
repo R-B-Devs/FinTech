@@ -129,7 +129,8 @@ app.post('/send-reset-link', async (req, res) => {
     res.status(500).json({ success: false, message: 'Failed to send reset link' });
   }
 });
-//reset password 
+
+//reset password code
 
 app.post('/send-reset-link', async (req, res) => {
   const { email } = req.body;
