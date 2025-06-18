@@ -146,17 +146,22 @@ const Dashboard = () => {
             <div className="header-divider"></div>
             <h1 className="page-title">Financial Dashboard</h1>
           </div>
-          
+  
           <div className="header-right">
             <div className="current-time">
               {currentTime.toLocaleTimeString()}
             </div>
-            <button className="header-btn">
-              <Bell className="header-icon" />
-            </button>
+            
+              <Link to="/dashboard/notification">
+                <button className="header-btn">
+                  <Bell className="header-icon" />
+                </button>
+
+              </Link>
             <button className="header-btn">
               <Settings className="header-icon" />
             </button>
+            
             <div className="user-avatar">
               <User className="user-icon" />
             </div>

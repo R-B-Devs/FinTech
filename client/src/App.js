@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
+
 import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import DemoPage from "./pages/DemoPage";
@@ -21,6 +22,9 @@ import Cards from './pages/Cards';
 import Investments from './pages/Investments';
 import Profile from './pages/Profile';
 import SettingsPage from './pages/Settings';
+import Notification from './pages/notification.jsx';
+
+
 
 function App() {
   return (
@@ -48,6 +52,7 @@ function App() {
         <Route path="/dashboard/investments" element={<Investments />} />
         <Route path="/dashboard/profile" element={<Profile />} />
         <Route path="/dashboard/settings" element={<SettingsPage />} />
+        <Route path="/dashboard/notification" element={<Notification />} />
       </Routes>
     </Router>
   );
