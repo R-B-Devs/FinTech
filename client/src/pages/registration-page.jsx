@@ -216,12 +216,17 @@ function RegistrationForm() {
         </div>
 
         <div className="registration-image-section">
-          <img src={registerImage} alt="Registration illustration" className="register-image"/>
+          <img src={registerImage} alt="Registration illustration" className="register-image" />
+  
+        {/* New wrapper for text + button */}
+        <div className="register-cta">
           <h3 className="register-text">Already have an account?</h3>
           <button className="register-button" onClick={() => navigate('/login')}>
             Sign In
           </button>
         </div>
+      </div>
+
       </div>
 
       {showTermsModal && (
