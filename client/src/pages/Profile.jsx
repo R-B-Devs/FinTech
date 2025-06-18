@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { FaUserCircle, FaUser, FaSave } from 'react-icons/fa'; // imported icons
 import '../styles/Profile.css';
 
 const Profile = () => {
@@ -23,14 +24,14 @@ const Profile = () => {
 
   return (
     <div className="profile-page">
-      <h2>👤 My Profile</h2>
+      <h2>
+        <FaUser style={{ marginRight: '8px' }} />
+        My Profile
+      </h2>
 
       <div className="profile-card">
-        <div className="profile-avatar">
-          <img
-            src="https://i.imgur.com/1X3qCq2.png"
-            alt="User Avatar"
-          />
+        <div className="profile-avatar" style={{ fontSize: '6rem', color: '#888' }}>
+          <FaUserCircle />
         </div>
 
         <div className="profile-details">
@@ -73,7 +74,10 @@ const Profile = () => {
             <input type="text" name="address" value={profile.address} onChange={handleChange} />
           </div>
 
-          <button className="save-btn" onClick={handleSave}>💾 Save Changes</button>
+          <button className="save-btn" onClick={handleSave}>
+            <FaSave style={{ marginRight: '6px' }} />
+            Save Changes
+          </button>
         </div>
       </div>
     </div>

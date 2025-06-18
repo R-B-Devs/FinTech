@@ -585,23 +585,27 @@ const Dashboard = () => {
 
               {/* Quick Actions */}
               <div className="actions-card">
-                <h3 className="card-title">Quick Actions</h3>
+                <h3 className="card-title">Personalized Financial Tips</h3>
                 <div className="actions-list">
                   <button className="action-btn action-btn-primary">
                     <Zap className="action-icon" />
-                    <span className="action-text">AI Optimization</span>
+                    <span className="action-text">Spend Less Than You Earn</span>
                   </button>
-                  <button className="action-btn">
+                  <button className="action-btn action-btn-primary">
                     <PieChart className="action-icon" />
-                    <span className="action-text">Generate Report</span>
+                    <span className="action-text">Invest Early and Regularly</span>
                   </button>
-                  <button className="action-btn">
+                  <button className="action-btn action-btn-primary">
                     <Target className="action-icon" />
-                    <span className="action-text">Set New Goal</span>
+                    <span className="action-text">Track Your Expenses</span>
                   </button>
-                  <button className="action-btn">
+                  <button className="action-btn action-btn-primary">
                     <Database className="action-icon" />
-                    <span className="action-text">System Check</span>
+                    <span className="action-text">Avoid High-Interest Debt</span>
+                  </button>
+                  <button className="action-btn action-btn-primary">
+                    <Database className="action-icon" />
+                    <span className="action-text">Build an Emergency Fund</span>
                   </button>
                 </div>
               </div>
