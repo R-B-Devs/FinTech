@@ -104,7 +104,7 @@ function RegistrationForm() {
         setAcceptedAt(null);
         setErrors({});
         setLoading(false);
-        navigate('/login'); // Redirect to login page
+        navigate('/otp'); // Redirect to login page
       }, 2000);
     }
   };
