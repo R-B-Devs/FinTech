@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import { CreditCard } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import '../styles/Cards.css';
+
+<Link to="/" className="nav-link">
+  <span className="material-symbols-outlined">arrow_back</span>
+  <span>Back</span>
+</Link>
+
 
 const savedCards = [
   {
@@ -24,7 +31,6 @@ const savedCards = [
 ];
 
 const Cards = () => {
-  // track flipped cards by id
   const [flippedIds, setFlippedIds] = useState([]);
 
   const toggleFlip = (id) => {
@@ -36,48 +42,65 @@ const Cards = () => {
   };
 
   return (
-    <div className="cards-page">
-      <h2><CreditCard size={28} /> Saved Cards</h2>
-      <p>Click on a card to see more details.</p>
+    <div className="dashboard-layout">
+      {/* Sidebar with Back link using Material Symbol */}
+      <aside className="sidebar">
+        <nav>
+          <div className="nav-section">
+            <div className="nav-links">
+              <Link to="/" className="nav-link">
+                <span className="material-symbols-outlined">arrow_back</span>
+                <span>Back</span>
+              </Link>
+            </div>
+          </div>
+        </nav>
+      </aside>
 
-      <div className="cards-container">
-        {savedCards.map((card) => {
-          const isFlipped = flippedIds.includes(card.id);
+      {/* Main Content */}
+      <div className="cards-page">
+        <h2><CreditCard size={28} /> Saved Cards</h2>
+        <p>Click on a card to see more details.</p>
 
-          return (
-            <div
-              key={card.id}
-              className={`card ${isFlipped ? 'flipped' : ''}`}
-              onClick={() => toggleFlip(card.id)}
-              role="button"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  toggleFlip(card.id);
-                }
-              }}
-            >
-              <div className="card-inner">
-                {/* Front Side */}
-                <div className="card-front">
-                  <div className="card-header">{card.cardType}</div>
-                  <div className="card-number">{card.cardNumber}</div>
-                  <div className="card-footer">
-                    <span className="card-holder">{card.cardHolder}</span>
-                    <span className="expiry">Exp: {card.expiry}</span>
+        <div className="cards-container">
+          {savedCards.map((card) => {
+            const isFlipped = flippedIds.includes(card.id);
+
+            return (
+              <div
+                key={card.id}
+                className={`card ${isFlipped ? 'flipped' : ''}`}
+                onClick={() => toggleFlip(card.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    toggleFlip(card.id);
+                  }
+                }}
+              >
+                <div className="card-inner">
+                  {/* Front Side */}
+                  <div className="card-front">
+                    <div className="card-header">{card.cardType}</div>
+                    <div className="card-number">{card.cardNumber}</div>
+                    <div className="card-footer">
+                      <span className="card-holder">{card.cardHolder}</span>
+                      <span className="expiry">Exp: {card.expiry}</span>
+                    </div>
+                  </div>
+
+                  {/* Back Side */}
+                  <div className="card-back">
+                    <div className="card-bank">{card.bank}</div>
+                    <div className="card-cvv">CVV: {card.cvv}</div>
+                    <div className="card-note">Keep your CVV confidential</div>
                   </div>
                 </div>
-
-                {/* Back Side */}
-                <div className="card-back">
-                  <div className="card-bank">{card.bank}</div>
-                  <div className="card-cvv">CVV: {card.cvv}</div>
-                  <div className="card-note">Keep your CVV confidential</div>
-                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

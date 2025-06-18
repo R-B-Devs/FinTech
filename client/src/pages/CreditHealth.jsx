@@ -1,10 +1,15 @@
 import React from 'react';
 import { Activity, TrendingUp, ShieldCheck, Info } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import '../styles/CreditHealth.css';
 
 const CreditHealth = () => {
   return (
     <div className="credit-health-page">
+      <Link to="/" className="nav-link">
+        <span className="material-symbols-outlined">arrow_back</span>
+        <span>Back</span>
+      </Link>
       <h2><Activity className="icon" /> Credit Health Overview</h2>
 
       <div className="credit-score-section">
