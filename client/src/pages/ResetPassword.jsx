@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/ResetPassword.css";
-import ResetImage from "../assets/Reset3.png"; // make sure this path is correct
+import ResetImage from "../assets/Reset.png"; // make sure this path is correct
 
 const ResetPassword = () => {
   const [userId, setUserId] = useState("");
