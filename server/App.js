@@ -59,16 +59,16 @@ app.post('/send-otp', async (req, res) => {
     await transporter.sendMail({
       from: '" LynqAI " <absacobol@gmail.com>', 
       to: email,
-      subject: '🔐 Your OTP Code',
+      subject: ' Your OTP Code',
       html: `
         <div style="font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: auto; padding: 20px; background-color: #f9f9f9; border-radius: 10px; border: 1px solid #ddd;">
       <h1 style="color: #8A1F2C; text-align: center;">🔐 LynqAI Verification</h1>
-      <p>Hey there! 👋</p>
+      <p>Hey there! </p>
       <p>Your OTP code is:</p>
       <h2 style="text-align:center; background-color:#8A1F2C; color:#fff; padding:10px; border-radius:5px;">${otp}</h2>
       <p>This code will expire in <strong>5 minutes</strong>.</p>
       <p>If you didn’t request this, just ignore it.</p>
-      <p>Stay awesome,<br/>— The LynqAI Team 💚</p>
+      <p>Stay awesome,<br/>— The LynqAI Team </p>
     </div>
       `,
     });
@@ -98,37 +98,6 @@ app.post('/verify-otp', (req, res) => {
   res.json({ success: true, message: 'OTP verified successfully!' });
 });
 
-//reset password 
-
-app.post('/send-reset-link', async (req, res) => {
-  const { email } = req.body;
-
-  const token = crypto.randomBytes(32).toString('hex');
-  resetTokens[email] = { token, expires: Date.now() + 15 * 60 * 1000 }; // 15 min expiry
-
-  const resetLink = `http://localhost:3000/reset-password/${token}`;
-
-  try {
-    await transporter.sendMail({
-      from: '"LynqAI" <absacobol@gmail.com>',
-      to: email,
-      subject: '🔑 Reset Your Password',
-      html: `
-        <div style="font-family:Arial,sans-serif;padding:20px;border:1px solid #eee;border-radius:10px;">
-          <h2 style="color:#8A1F2C;">Reset Your LynqAI Password</h2>
-          <p>Click the link below to reset your password. This link is valid for 15 minutes.</p>
-          <a href="${resetLink}" style="display:inline-block;background:#8A1F2C;color:#fff;padding:10px 15px;border-radius:5px;text-decoration:none;">Reset Password</a>
-          <p>If you didn’t request this, ignore it.</p>
-        </div>
-      `,
-    });
-
-    res.json({ success: true, message: 'Reset link sent' });
-  } catch (err) {
-    console.error('Error sending reset link:', err);
-    res.status(500).json({ success: false, message: 'Failed to send reset link' });
-  }
-});
 
 //reset password code
 
@@ -144,7 +113,7 @@ app.post('/send-reset-link', async (req, res) => {
     await transporter.sendMail({
       from: '"LynqAI" <absacobol@gmail.com>',
       to: email,
-      subject: '🔑 Reset Your Password',
+      subject: ' Reset Your Password',
       html: `
         <div style="font-family:Arial,sans-serif;padding:20px;border:1px solid #eee;border-radius:10px;">
           <h2 style="color:#8A1F2C;">Reset Your LynqAI Password</h2>
@@ -175,7 +144,7 @@ app.post('/reset-password/:token', async (req, res) => {
   }
 
   // Now update the password (you can later hook this to a DB update)
-  console.log(`✅ New password for ${email}: ${password}`);
+  console.log(`New password for ${email}: ${password}`);
 
   // Clean up token after use
   delete resetTokens[email];
