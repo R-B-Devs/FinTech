@@ -133,37 +133,47 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="dashboard-container">
-      <header className="dashboard-header">
-        <div className="header-content">
-          <div className="header-left">
-            <button className="mobile-menu-btn" onClick={toggleSidebar}>
-              <Menu className="menu-icon" />
-            </button>
-            <div className="logo">
-              <span className="logo-text">Lynq</span>
-              <span className="logo-accent">AI</span>
-            </div>
-            <div className="header-divider"></div>
-            <h1 className="page-title">Financial Dashboard</h1>
+  <div className="dashboard-container">
+    <header className="dashboard-header">
+      <div className="header-content">
+        <div className="header-left">
+          <button className="mobile-menu-btn" onClick={toggleSidebar}>
+            <Menu className="menu-icon" />
+          </button>
+          <div className="logo">
+            <span className="logo-text">Lynq</span>
+            <span className="logo-accent">AI</span>
           </div>
-          
-          <div className="header-right">
-            <div className="current-time">
-              {currentTime.toLocaleTimeString()}
-            </div>
-            <button className="header-btn">
-              <Bell className="header-icon" />
-            </button>
-            <button className="header-btn">
-              <Settings className="header-icon" />
-            </button>
-            <div className="user-avatar">
-              <User className="user-icon" />
+          <div className="header-divider"></div>
+          <h1 className="page-title">Financial Dashboard</h1>
+        </div>
+
+        <div className="header-right">
+          <div className="current-time">
+            {currentTime.toLocaleTimeString()}
+          </div>
+
+          <button className="header-btn">
+            <Bell className="header-icon" />
+          </button>
+
+          {/* Settings and Profile Links */}
+          <div className="header-container">
+            <div className="header-content">
+              {/* Settings Button */}
+              <Link to="/dashboard/settings" className="header-btn">
+                <Settings className="header-icon" />
+              </Link>
+
+              {/* User Avatar Button */}
+              <Link to="/dashboard/profile" className="user-avatar">
+                <User className="user-icon" />
+              </Link>
             </div>
           </div>
         </div>
-      </header>
+      </div>
+    </header>
 
       <div className="dashboard-layout">
         {/* Sidebar */}
