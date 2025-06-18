@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "../styles/ResetPassword.css";
-import ResetImage from "../assets/Reset3.png"; // make sure this path is correct
+import ResetImage from "../assets/Reset.png"; 
 
 const ResetPassword = () => {
   const [userId, setUserId] = useState("");
@@ -9,7 +9,7 @@ const ResetPassword = () => {
   const [strength, setStrength] = useState("");
   const [idError, setIdError] = useState("");
   const navigate = useNavigate();
-  const { token } = useParams(); // ✅ placed at top level (this is the fix)
+  const { token } = useParams(); 
 
   const validateId = (val) => {
     setUserId(val);
