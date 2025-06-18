@@ -583,7 +583,7 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Quick Actions */}
+              {/* Personalized Financial Advice */}
               <div className="actions-card">
                 <h3 className="card-title">Personalized Financial Tips</h3>
                 <div className="actions-list">
