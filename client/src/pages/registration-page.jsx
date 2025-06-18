@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from "react-router-dom";
 import registerImage from '../assets/register.png';
-import '../styles/registration-page.css';
+import '../styles/registration-page.css'; 
 
 function RegistrationForm() {
-  const navigate = useNavigate();
   const [idNumber, setIdNumber] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
-  const [accountNumber, setAccountNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -39,6 +36,7 @@ function RegistrationForm() {
     const citizenship = parseInt(id.charAt(10));
     if (![0, 1].includes(citizenship)) return false;
 
+    // Luhn algorithm
     const digits = id.split('').map(Number);
     let evenDigits = '';
     for (let i = 1; i < 12; i += 2) evenDigits += digits[i];
@@ -74,9 +72,6 @@ function RegistrationForm() {
     if (!firstName.trim()) newErrors.firstName = 'First name is required.';
     if (!lastName.trim()) newErrors.lastName = 'Last name is required.';
     if (!validateEmail(email)) newErrors.email = 'Invalid email format.';
-    if (!accountNumber.trim() || !/^\d{6,20}$/.test(accountNumber)) {
-      newErrors.accountNumber = 'Account Number must be 6–20 digits.';
-    }
     if (!validatePassword(password)) {
       newErrors.password = 'Password must be 8+ chars, 1 symbol & 2 numbers.';
     }
@@ -97,7 +92,6 @@ function RegistrationForm() {
         setFirstName('');
         setLastName('');
         setEmail('');
-        setAccountNumber('');
         setPassword('');
         setConfirmPassword('');
         setTermsAccepted(false);
@@ -150,14 +144,6 @@ function RegistrationForm() {
               onChange={(e) => setEmail(e.target.value)}
             />
             {errors.email && <p className="error">{errors.email}</p>}
-
-            <input
-              type="text"
-              placeholder="Account Number"
-              value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value)}
-            />
-            {errors.accountNumber && <p className="error">{errors.accountNumber}</p>}
 
             <div className="password-wrapper">
               <input
@@ -216,19 +202,15 @@ function RegistrationForm() {
         </div>
 
         <div className="registration-image-section">
-          <img src={registerImage} alt="Registration illustration" className="register-image" />
-  
-        {/* New wrapper for text + button */}
-        <div className="register-cta">
-          <h3 className="register-text">Already have an account?</h3>
-          <button className="register-button" onClick={() => navigate('/login')}>
-            Sign In
-          </button>
+          <img 
+            src={registerImage} 
+            alt="Registration illustration" 
+            className="register-image"
+          />
         </div>
       </div>
 
-      </div>
-
+      {/* Terms Modal */}
       {showTermsModal && (
         <div className="modal-overlay">
           <div className="modal-content">
