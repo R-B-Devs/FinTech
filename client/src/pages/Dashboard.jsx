@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react'; 
+import React, { useState, useEffect } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import "../styles/Dashboard.css";
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  Shield, 
+import InAppCall from './InAppCall';
+import {
+  TrendingUp,
+  TrendingDown,
+  Shield,
   Brain,
   Banknote,
-  Wallet, 
-  CreditCard, 
-  PieChart, 
-  BarChart3, 
-  AlertTriangle, 
-  CheckCircle, 
-  DollarSign, 
-  Target, 
+  Wallet,
+  CreditCard,
+  PieChart,
+  BarChart3,
+  AlertTriangle,
+  CheckCircle,
+  DollarSign,
+  Target,
   Tag,
   Activity,
   Zap,
@@ -27,6 +28,7 @@ import {
   Eye,
   EyeOff,
   Menu,
+  MessageCircle,
   Phone,
   Video,
   UserCircle,
@@ -34,11 +36,119 @@ import {
 } from 'lucide-react';
 
 const Dashboard = () => {
+  // UI State
   const [selectedTimeframe, setSelectedTimeframe] = useState('month');
   const [aiInsightsVisible, setAiInsightsVisible] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
 
+  // Call Feature State
+  const [callFeature, setCallFeature] = useState({
+    isOpen: false,
+    microphoneAllowed: false,
+    currentPage: 'welcome',
+    activeDepartment: null,
+    callStatus: 'idle',
+    error: null,
+    mediaStream: null
+  });
+
+  // Toggle call panel
+  const toggleCallFeature = () => {
+    if (callFeature.isOpen) {
+      // Clean up when closing
+      if (callFeature.mediaStream) {
+        callFeature.mediaStream.getTracks().forEach(track => track.stop());
+      }
+      setCallFeature({
+        isOpen: false,
+        microphoneAllowed: false,
+        currentPage: 'welcome',
+        activeDepartment: null,
+        callStatus: 'idle',
+        error: null,
+        mediaStream: null
+      });
+    } else {
+      // Open with fresh state
+      setCallFeature(prev => ({
+        ...prev,
+        isOpen: true,
+        currentPage: 'welcome',
+        activeDepartment: null,
+        callStatus: 'idle',
+        error: null
+      }));
+    }
+  };
+
+  // Request microphone permission
+  const requestMicrophonePermission = async () => {
+    try {
+      setCallFeature(prev => ({
+        ...prev,
+        callStatus: 'connecting',
+        error: null
+      }));
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      
+      setCallFeature(prev => ({
+        ...prev,
+        microphoneAllowed: true,
+        currentPage: 'main-menu',
+        callStatus: 'idle',
+        mediaStream: stream
+      }));
+      
+    } catch (err) {
+      console.error("Microphone access denied:", err);
+      setCallFeature(prev => ({
+        ...prev,
+        microphoneAllowed: false,
+        callStatus: 'idle',
+        error: 'Microphone access is required for voice calls'
+      }));
+    }
+  };
+
+  // Start a call to a department
+  const startCall = (department) => {
+    setCallFeature(prev => ({
+      ...prev,
+      activeDepartment: department,
+      currentPage: 'active-call',
+      callStatus: 'active'
+    }));
+    
+    // Here you would typically initiate the actual call connection
+    // For example: connectToCallService(department);
+  };
+
+  // End the current call
+  const endCall = () => {
+    if (callFeature.mediaStream) {
+      callFeature.mediaStream.getTracks().forEach(track => track.stop());
+    }
+    
+    setCallFeature(prev => ({
+      ...prev,
+      activeDepartment: null,
+      currentPage: 'main-menu',
+      callStatus: 'idle',
+      mediaStream: null
+    }));
+  };
+
+  // Navigate between call pages
+  const navigateCallPage = (page) => {
+    setCallFeature(prev => ({
+      ...prev,
+      currentPage: page
+    }));
+  };
+
+  // Financial data
   const financialData = {
     totalBalance: 127500,
     investments: 85300,
@@ -122,6 +232,7 @@ const Dashboard = () => {
     { label: 'Threats', value: '0 detected' }
   ];
 
+  // Update current time every second
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
@@ -146,13 +257,13 @@ const Dashboard = () => {
             <div className="header-divider"></div>
             <h1 className="page-title">Financial Dashboard</h1>
           </div>
-          
+         
           <div className="header-right">
             <div className="current-time">
               {currentTime.toLocaleTimeString()}
             </div>
-            <button className="header-btn">
-              <Bell className="header-icon" />
+            <button className="header-btn" onClick={toggleCallFeature}>
+              <Phone className="header-icon" />
             </button>
             <button className="header-btn">
               <Settings className="header-icon" />
@@ -172,6 +283,7 @@ const Dashboard = () => {
             <button className="sidebar-close" onClick={toggleSidebar}>
               <X className="close-icon" />
             </button>
+
             <nav className="sidebar-nav">
               <div className="nav-section">
                 <div className="nav-section-title">AI Powered</div>
@@ -200,9 +312,13 @@ const Dashboard = () => {
                     <Banknote className="nav-icon" />
                     <span>Money Tracker</span>
                   </Link>
+                  <Link to="/dashboard/chat" className="nav-link nav-link">
+                    <MessageCircle className="nav-icon" />
+                    <span>AI Chat</span>
+                  </Link>
                 </div>
               </div>
-
+ 
               <div className="nav-section">
                 <div className="nav-section-title">Financial</div>
                 <div className="nav-links">
@@ -220,7 +336,7 @@ const Dashboard = () => {
                   </Link>
                 </div>
               </div>
-
+ 
               <div className="nav-section">
                 <div className="nav-section-title">Security</div>
                 <div className="nav-links">
@@ -238,17 +354,13 @@ const Dashboard = () => {
           </div>
         </aside>
 
-        {/* This is where routed content (like Analytics, Goals, etc.) will appear */}
-        <Outlet />
-          
-
         {/* Main Content */}
         <main className="main-content">
           {/* Welcome Section */}
           <div className="welcome-section">
             <div className="welcome-content">
               <div className="welcome-text">
-                <h2 className="welcome-title">Welcome back, Alex</h2>
+                <h2 className="welcome-title">Welcome back, Palesa</h2>
                 <p className="welcome-subtitle">Your financial intelligence is powered by AI and secured by enterprise-grade systems</p>
               </div>
               <div className="status-badges">
@@ -260,7 +372,7 @@ const Dashboard = () => {
                   <Brain className="status-icon" />
                   <span>AI Active</span>
                 </div>
-                <div className="status-badge status-phone">
+                <div className="status-badge status-phone" onClick={toggleCallFeature}>
                   <Phone className="status-icon" />
                   <span>Phone Call</span>
                 </div>
@@ -284,7 +396,7 @@ const Dashboard = () => {
               <div className="metric-value">R{financialData.totalBalance.toLocaleString()}</div>
               <div className="metric-label">Total Balance</div>
             </div>
-
+ 
             <div className="metric-card">
               <div className="metric-header">
                 <div className="metric-icon metric-icon-blue">
@@ -295,7 +407,7 @@ const Dashboard = () => {
               <div className="metric-value">R{financialData.investments.toLocaleString()}</div>
               <div className="metric-label">Investments</div>
             </div>
-
+ 
             <div className="metric-card">
               <div className="metric-header">
                 <div className="metric-icon metric-icon-purple">
@@ -306,7 +418,7 @@ const Dashboard = () => {
               <div className="metric-value">Excellent</div>
               <div className="metric-label">Credit Score</div>
             </div>
-
+ 
             <div className="metric-card">
               <div className="metric-header">
                 <div className="metric-icon metric-icon-orange">
@@ -318,7 +430,7 @@ const Dashboard = () => {
               <div className="metric-label">Savings Goal</div>
             </div>
           </div>
-
+ 
           {/* Financial Overview Section */}
           <div className="financial-overview">
             {/* Charts Grid */}
@@ -386,7 +498,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-
+ 
               {/* Monthly Income vs Expenses */}
               <div className="chart-card">
                 <div className="chart-header">
@@ -449,7 +561,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-
+ 
           <div className="content-grid">
             {/* AI Insights */}
             <div className="content-left">
@@ -461,14 +573,14 @@ const Dashboard = () => {
                     </div>
                     <h3 className="card-title">AI Financial Insights</h3>
                   </div>
-                  <button 
+                  <button
                     onClick={() => setAiInsightsVisible(!aiInsightsVisible)}
                     className="toggle-btn"
                   >
                     {aiInsightsVisible ? <Eye className="toggle-icon" /> : <EyeOff className="toggle-icon" />}
                   </button>
                 </div>
-
+ 
                 {aiInsightsVisible && (
                   <div className="insights-content">
                     {aiInsights.map((insight, index) => (
@@ -489,7 +601,7 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
-
+ 
               {/* Recent Transactions */}
               <div className="transactions-card">
                 <div className="card-header">
@@ -506,14 +618,14 @@ const Dashboard = () => {
                     ))}
                   </div>
                 </div>
-
+ 
                 <div className="transactions-list">
                   {recentTransactions.map((transaction) => (
                     <div key={transaction.id} className="transaction-item">
                       <div className="transaction-info">
                         <div className={`transaction-icon ${transaction.type === 'credit' ? 'transaction-icon-credit' : 'transaction-icon-debit'}`}>
-                          {transaction.type === 'credit' ? 
-                            <TrendingUp className="icon" /> : 
+                          {transaction.type === 'credit' ?
+                            <TrendingUp className="icon" /> :
                             <TrendingDown className="icon" />
                           }
                         </div>
@@ -530,7 +642,7 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-
+ 
             {/* Right Sidebar Content */}
             <div className="content-right">
               {/* Security Status */}
@@ -547,7 +659,7 @@ const Dashboard = () => {
                     <span className="live-text">Live</span>
                   </div>
                 </div>
-
+ 
                 <div className="security-metrics">
                   {securityMetrics.map((metric, index) => (
                     <div key={index} className="security-metric">
@@ -559,7 +671,7 @@ const Dashboard = () => {
                     </div>
                   ))}
                 </div>
-
+ 
                 <div className="cobol-status">
                   <div className="cobol-indicator">
                     <Lock className="cobol-icon" />
@@ -567,7 +679,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
-
+ 
               {/* Quick Actions */}
               <div className="actions-card">
                 <h3 className="card-title">Quick Actions</h3>
@@ -590,7 +702,7 @@ const Dashboard = () => {
                   </button>
                 </div>
               </div>
-
+ 
               {/* Performance Metrics */}
               <div className="performance-card">
                 <h3 className="card-title">System Performance</h3>
@@ -627,6 +739,16 @@ const Dashboard = () => {
             </div>
           </div>
         </main>
+
+        {/* In-App Call Panel - Positioned outside main content */}
+        <InAppCall
+          callFeature={callFeature}
+          toggleCallFeature={toggleCallFeature}
+          navigateCallPage={navigateCallPage}
+          requestMicrophonePermission={requestMicrophonePermission}
+          startCall={startCall}
+          endCall={endCall}
+        />
       </div>
     </div>
   );
