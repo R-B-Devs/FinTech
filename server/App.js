@@ -9,6 +9,12 @@ const nodemailer = require('nodemailer');
 const bodyParser = require('body-parser');
 const crypto = require("crypto");
 
+// Supabase client initialization
+const { createClient } = require('@supabase/supabase-js');
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
 async function testSupabaseConnection() {
   const { data, error } = await supabase
     .from('users')
