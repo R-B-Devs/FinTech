@@ -16,9 +16,14 @@ const ForgotPassword = () => {
   };
 
   return (
+    
     <div className="forgot-password-container">
       <div className="forgot-password-content">
         <div className="forgot-password-left">
+           <Link to="/" className="nav-link">
+                      <span className="material-symbols-outlined">arrow_back</span>
+                      <span>Back</span>
+                    </Link>
           <img src={Logo} alt="Logo" className="forgot-password-logo" />
           <h2 className="forgot-password-heading">Forgot<br />Password</h2>
           <p className="forgot-password-text">
