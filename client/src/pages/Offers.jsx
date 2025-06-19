@@ -248,7 +248,7 @@ const Offers = () => {
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '32px' }}>
         <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: '#ffffff', margin: '0 0 8px 0' }}>
-          ✨ Personalized Offers for You
+          Personalized Offers for You
         </h2>
         <p style={{ fontSize: '18px', color: '#b3b3b3', margin: 0 }}>
           Based on your excellent credit score of {userCreditScore}, you qualify for our best rates
