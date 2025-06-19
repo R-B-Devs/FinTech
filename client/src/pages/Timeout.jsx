@@ -65,7 +65,7 @@ const Timeout = ({ timeout = 30000, gracePeriod = 15000 }) => {
       <Outlet />
       {showModal && (
         <div className="timeout-modal">
-          <Link to="/" className="nav-link">
+          <Link to="/Dashboard" className="nav-link">
                   <span className="material-symbols-outlined">arrow_back</span>
                   <span>Back</span>
         </Link>

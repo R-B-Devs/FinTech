@@ -192,6 +192,7 @@ body {
   .otp-form-container input[type="email"] {
     padding: 12px;
     font-size: 0.95rem;
+    
   }
   
   .otp-form-container button {
@@ -629,3 +630,20 @@ body {
 .modal-content::-webkit-scrollbar-thumb:hover {
   background: rgba(138, 31, 44, 0.8);
 }
+
+.send-otp-btn {
+  width: 250px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  background-color: #a10d2f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.send-otp-btn:hover {
+  background-color: #8d0b29;
+}
+
