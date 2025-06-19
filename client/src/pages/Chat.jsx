@@ -1,7 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Logo from "../assets/logo.png";
 import "../styles/Chat.css";
+
+
 
 const Chat = () => {
   const [messages, setMessages] = useState([
@@ -86,6 +89,10 @@ const Chat = () => {
       <div className="chat-header">
         <div className="chat-header-left">
           <img src={Logo} alt="LynqAI Logo" className="chat-logo" />
+          <Link to="/" className="nav-link back-link">
+            <span className="material-symbols-outlined">arrow_back</span>
+            <span>Back</span>
+          </Link>
           <div className="chat-title">
             <h1>Lynq Chat</h1>
             <span className="chat-status">Online</span>

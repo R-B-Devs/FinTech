@@ -5,6 +5,7 @@ import loginImg from "../assets/login-image.jpg";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { validateLogin } from '../cyberFrontend/validation';
+import { Link } from 'react-router-dom';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -50,6 +51,10 @@ const LoginPage = () => {
 
   return (
     <div className="login-page">
+       <Link to="/" className="nav-link">
+                        <span className="material-symbols-outlined">arrow_back</span>
+                        <span>Back</span>
+                      </Link>
       <div className="login-container">
         <div className="login-form-section">
           <h1><span className="brand">Lynq</span><span className="highlight">AI</span></h1>

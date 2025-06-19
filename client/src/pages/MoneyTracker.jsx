@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { TrendingUp, TrendingDown, Brain, Target, AlertTriangle, Lightbulb, Calendar, DollarSign, PieChart, Zap } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import '../styles/MoneyTracker.css';
 
 const AIFinancialTracker = () => {

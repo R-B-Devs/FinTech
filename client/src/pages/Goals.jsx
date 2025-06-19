@@ -1,9 +1,14 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/Goals.css'; // Optional CSS for goals styling
 
 const Goals = () => {
   return (
     <div className="goals-page">
+       <Link to="/" className="nav-link">
+                  <span className="material-symbols-outlined">arrow_back</span>
+                  <span>Back</span>
+                </Link>
       <h2>Your Financial Goals</h2>
       <p>Track your progress and set new goals to stay on top of your finances.</p>
 

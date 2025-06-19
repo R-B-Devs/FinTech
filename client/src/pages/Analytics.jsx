@@ -1,8 +1,18 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/Analytics.css';
+
+
 
 const Analytics = () => {
   return (
+    <div>
+
+      <Link to="/" className="nav-link">
+        <span className="material-symbols-outlined">arrow_back</span>
+        <span>Back</span>
+      </Link>
+     
     <div className="analytics-page">
       <h1 className="page-title">Analytics Overview</h1>
       <p className="page-subtitle">
@@ -41,8 +51,10 @@ const Analytics = () => {
             <p>Comparison of your planned budget and actual spending</p>
           </div>
         </section>
+        
       </div>
     </div>
+   </div>
   );
 };
 
