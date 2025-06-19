@@ -11,6 +11,7 @@ import OtpPage from "./pages/OtpVerification.jsx";
 import VerifyOtp from "./pages/VerifyOtp.jsx";
 
 import Dashboard from './pages/Dashboard';
+import CallContainer from './pages/CallContainer';  // Adjust path
 import Analytics from './pages/Analytics';
 import Goals from './pages/Goals';
 import Offers from './pages/Offers';
@@ -22,6 +23,7 @@ import Cards from './pages/Cards';
 import Investments from './pages/Investments';
 import Profile from './pages/Profile';
 import SettingsPage from './pages/Settings';
+import InAppCall from './pages/InAppCall'; // 👈 Make sure this exists!
 
 function App() {
   return (
@@ -39,6 +41,7 @@ function App() {
 
         {/* Dashboard routes */}
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/call" element={<CallContainer />} />
         <Route path="/dashboard/analytics" element={<Analytics />} />
         <Route path="/dashboard/goals" element={<Goals />} />
         <Route path="/dashboard/offers" element={<Offers />} />
@@ -50,6 +53,9 @@ function App() {
         <Route path="/dashboard/investments" element={<Investments />} />
         <Route path="/dashboard/profile" element={<Profile />} />
         <Route path="/dashboard/settings" element={<SettingsPage />} />
+
+        {/* Call route for testing */}
+        <Route path="/in-app-call" element={<InAppCall />} />
       </Routes>
     </Router>
   );
