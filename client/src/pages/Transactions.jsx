@@ -1,5 +1,6 @@
 import React from 'react';
 import { Activity } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import '../styles/Transactions.css';
 
 const transactionsData = [
@@ -40,6 +41,10 @@ const transactionsData = [
 const Transactions = () => {
   return (
     <div className="transactions-page">
+      <Link to="/" className="nav-link">
+                  <span className="material-symbols-outlined">arrow_back</span>
+                  <span>Back</span>
+        </Link>
       <h2><Activity size={28} /> Recent Transactions</h2>
       <table className="transactions-table">
         <thead>

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import '../styles/Timeout.css';
 
 const Timeout = ({ timeout = 30000, gracePeriod = 15000 }) => {
@@ -64,6 +65,10 @@ const Timeout = ({ timeout = 30000, gracePeriod = 15000 }) => {
       <Outlet />
       {showModal && (
         <div className="timeout-modal">
+          <Link to="/" className="nav-link">
+                  <span className="material-symbols-outlined">arrow_back</span>
+                  <span>Back</span>
+        </Link>
           <div className="timeout-content">
             <h3>Session Timeout</h3>
             <p>

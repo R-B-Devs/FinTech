@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaUserCircle, FaUser, FaSave } from 'react-icons/fa'; // imported icons
+import { Link } from 'react-router-dom';
 import '../styles/Profile.css';
 
 const Profile = () => {
@@ -24,6 +25,10 @@ const Profile = () => {
 
   return (
     <div className="profile-page">
+      <Link to="/" className="nav-link">
+                  <span className="material-symbols-outlined">arrow_back</span>
+                  <span>Back</span>
+        </Link>
       <h2>
         <FaUser style={{ marginRight: '8px' }} />
         My Profile

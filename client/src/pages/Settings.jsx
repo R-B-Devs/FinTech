@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import '../styles/Settings.css';
 
 const Settings = () => {
@@ -22,6 +23,10 @@ const Settings = () => {
 
   return (
     <div className="settings-page">
+      <Link to="/" className="nav-link">
+                  <span className="material-symbols-outlined">arrow_back</span>
+                  <span>Back</span>
+        </Link>
       <h2>Account Settings</h2>
 
       <div className="settings-section">

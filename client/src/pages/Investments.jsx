@@ -13,6 +13,10 @@ const investments = [
 const Investments = () => {
   return (
     <div className="investments-page">
+        <Link to="/" className="nav-link">
+              <span className="material-symbols-outlined">arrow_back</span>
+              <span>Back</span>
+        </Link>
       <h2><BarChart2 size={28} /> Investments Portfolio</h2>
       <p>Overview of your current investments and their performance.</p>
 

@@ -206,6 +206,10 @@ const AIFinancialTracker = () => {
 
   const renderDashboard = () => (
     <div className="dashboard">
+        <Link to="/" className="nav-link">
+                  <span className="material-symbols-outlined">arrow_back</span>
+                  <span>Back</span>
+        </Link>
       <div className="balance-card">
         <h2>Current Balance</h2>
         <p className="balance">${balance.toFixed(2)}</p>

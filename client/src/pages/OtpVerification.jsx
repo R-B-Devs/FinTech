@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import "../styles/OtpVerification.css";
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const SendOtpForm = () => {
   const [email, setEmail] = useState('');
@@ -117,6 +118,10 @@ const handleVerify = async () => {
   return (
     <>
       <div className="otp-form-container" style={{ padding: '2rem' }}>
+        <Link to="/" className="nav-link">
+                  <span className="material-symbols-outlined">arrow_back</span>
+                  <span>Back</span>
+        </Link>
         <h2>Send OTP</h2>
         <form onSubmit={sendOtp}>
           <input

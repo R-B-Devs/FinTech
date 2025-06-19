@@ -50,7 +50,10 @@ const LandingPage = () => {
 
   return (
     <div style={styles.container}>
-      {/* Animated Background */}
+        <Link to="/" className="nav-link">
+              <span className="material-symbols-outlined">arrow_back</span>
+              <span>Back</span>
+        </Link>
       <div style={styles.backgroundContainer}>
         {/* Gradient Orbs */}
         <div 

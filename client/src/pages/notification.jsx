@@ -1,8 +1,13 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Notification() {
   return (
     <div style={{ padding: '1rem', fontFamily: 'Arial, sans-serif' }}>
+        <Link to="/" className="nav-link">
+                  <span className="material-symbols-outlined">arrow_back</span>
+                  <span>Back</span>
+        </Link>
       <h2>🔔 Notifications</h2>
 
       <div style={{ backgroundColor: '#e6ffed', padding: '1rem', marginBottom: '1rem', borderRadius: '8px' }}>
