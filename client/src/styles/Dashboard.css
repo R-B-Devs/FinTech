@@ -385,12 +385,12 @@
 }
  
 .btn.primary {
-  background-color: #3b82f6;
+  background-color: rgba(239, 68, 68, 0.2);
   color: white;
 }
  
 .btn.primary:hover {
-  background-color: #2563eb;
+  background-color: grey;
 }
  
 .btn.secondary {
@@ -955,14 +955,14 @@
   transition: all 0.2s ease;
 }
  
-.btn.primary {
+/* .btn.primary {
   background-color: #0066cc;
   color: white;
-}
+} */
  
-.btn.primary:hover {
+/* .btn.primary:hover {
   background-color: #0052a3;
-}
+} */
  
 .btn.secondary {
   background-color: white;
