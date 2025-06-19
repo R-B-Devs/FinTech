@@ -157,9 +157,11 @@ const Dashboard = () => {
             {currentTime.toLocaleTimeString()}
           </div>
 
+        <Link to="/dashboard/notification">
           <button className="header-btn">
             <Bell className="header-icon" />
           </button>
+        </Link>
 
           {/* Settings and Profile Links */}
           <div className="header-container">
