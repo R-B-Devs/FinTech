@@ -1,411 +1,404 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { TrendingUp, TrendingDown, Brain, Target, AlertTriangle, Lightbulb, Calendar, DollarSign, PieChart, Zap } from 'lucide-react';
-import '../styles/MoneyTracker.css';
+import React, { useState, useEffect } from 'react';
+import "../styles/MoneyTracker.css";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Area, AreaChart } from 'recharts';
+import { TrendingUp, TrendingDown, DollarSign, Calendar, AlertTriangle, Target, CreditCard, PiggyBank, Brain, Users } from 'lucide-react';
 
-const AIFinancialTracker = () => {
-  const [transactions, setTransactions] = useState([]);
-  const [goals, setGoals] = useState([]);
-  const [aiInsights, setAiInsights] = useState([]);
-  const [newTransaction, setNewTransaction] = useState({ amount: '', description: '', category: '', date: new Date().toISOString().split('T')[0] });
-  const [newGoal, setNewGoal] = useState({ name: '', target: '', deadline: '', category: 'savings' });
-  const [balance, setBalance] = useState(5000);
-  const [selectedTab, setSelectedTab] = useState('dashboard');
+const MoneyTracker = () => {
+  const [activeTab, setActiveTab] = useState('overview');
+  const [timeRange, setTimeRange] = useState('6months');
 
-  // Advanced AI Logic: Pattern Recognition and Behavioral Analysis
-  const aiAnalytics = useMemo(() => {
-    if (transactions.length === 0) return { patterns: [], predictions: [], recommendations: [] };
+  // Mock data for demonstrations (South African Rands)
+  const cashFlowData = [
+    { month: 'Jan', income: 28500, expenses: 22800, netFlow: 5700 },
+    { month: 'Feb', income: 28500, expenses: 24200, netFlow: 4300 },
+    { month: 'Mar', income: 28500, expenses: 21900, netFlow: 6600 },
+    { month: 'Apr', income: 28500, expenses: 23400, netFlow: 5100 },
+    { month: 'May', income: 28500, expenses: 24700, netFlow: 3800 },
+    { month: 'Jun', income: 28500, expenses: 22800, netFlow: 5700 }
+  ];
 
-    // Spending pattern analysis
-    const categorySpending = transactions.reduce((acc, t) => {
-      if (t.amount < 0) {
-        acc[t.category] = (acc[t.category] || 0) + Math.abs(t.amount);
-      }
-      return acc;
-    }, {});
+  const spendingPatternData = [
+    { day: 'Mon', amount: 250, transactions: 3 },
+    { day: 'Tue', amount: 210, transactions: 2 },
+    { day: 'Wed', amount: 340, transactions: 4 },
+    { day: 'Thu', amount: 305, transactions: 5 },
+    { day: 'Fri', amount: 495, transactions: 7 },
+    { day: 'Sat', amount: 690, transactions: 8 },
+    { day: 'Sun', amount: 420, transactions: 4 }
+  ];
 
-    // Temporal pattern recognition
-    const weeklySpending = transactions.reduce((acc, t) => {
-      const date = new Date(t.date);
-      const week = getWeekNumber(date);
-      acc[week] = (acc[week] || 0) + (t.amount < 0 ? Math.abs(t.amount) : 0);
-      return acc;
-    }, {});
+  const financialHealthMetrics = [
+    { metric: 'Debt-to-Income', value: 28, target: 30, status: 'good' },
+    { metric: 'Emergency Fund', value: 4.2, target: 6, status: 'warning' },
+    { metric: 'Savings Rate', value: 18, target: 20, status: 'good' },
+    { metric: 'Credit Utilization', value: 15, target: 30, status: 'excellent' }
+  ];
 
-    // Behavioral anomaly detection
-    const avgDailySpending = Object.values(weeklySpending).reduce((a, b) => a + b, 0) / (Object.keys(weeklySpending).length * 7);
-    const recentSpending = transactions.slice(-7).reduce((sum, t) => sum + (t.amount < 0 ? Math.abs(t.amount) : 0), 0);
-    const spendingAnomaly = recentSpending > avgDailySpending * 7 * 1.5 ? 'high' : recentSpending < avgDailySpending * 7 * 0.5 ? 'low' : 'normal';
+  const topMerchants = [
+    { name: 'Takealot', amount: 1890, transactions: 12, category: 'Shopping' },
+    { name: 'Mugg & Bean', amount: 865, transactions: 24, category: 'Food' },
+    { name: 'Shell', amount: 1605, transactions: 8, category: 'Transport' },
+    { name: 'Pick n Pay', amount: 2470, transactions: 6, category: 'Groceries' },
+    { name: 'Netflix', amount: 169, transactions: 1, category: 'Entertainment' }
+  ];
 
-    // Cash flow prediction
-    const monthlyIncome = transactions.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
-    const monthlyExpenses = transactions.filter(t => t.amount < 0).reduce((sum, t) => sum + Math.abs(t.amount), 0);
-    const projectedBalance = balance + (monthlyIncome - monthlyExpenses);
+  const upcomingBills = [
+    { name: 'Rent', amount: 6500, date: '2025-06-25', status: 'upcoming' },
+    { name: 'Car Insurance', amount: 495, date: '2025-06-28', status: 'upcoming' },
+    { name: 'Cell Phone', amount: 360, date: '2025-07-02', status: 'scheduled' },
+    { name: 'Fibre Internet', amount: 439, date: '2025-07-05', status: 'scheduled' }
+  ];
 
-    // Smart recommendations based on spending patterns and goals
-    const recommendations = generateSmartRecommendations(categorySpending, goals, spendingAnomaly, projectedBalance);
-
-    return {
-      patterns: categorySpending,
-      predictions: { projectedBalance, spendingAnomaly },
-      recommendations,
-      weeklyTrends: weeklySpending
-    };
-  }, [transactions, balance, goals]);
-
-  // Context-aware transaction categorization
-  const smartCategorize = (description, amount, date) => {
-    const desc = description.toLowerCase();
-    const transactionDate = new Date(date);
-    const month = transactionDate.getMonth();
-    const dayOfWeek = transactionDate.getDay();
-    
-    // Seasonal and contextual logic
-    if (month === 11 && (desc.includes('gift') || desc.includes('decoration') || amount > 100)) return 'holiday';
-    if (dayOfWeek === 0 || dayOfWeek === 6) {
-      if (desc.includes('restaurant') || desc.includes('coffee') || desc.includes('bar')) return 'entertainment';
+  const aiInsights = [
+    {
+      type: 'prediction',
+      title: 'Spending Forecast',
+      message: 'Based on your patterns, you\'ll likely spend R23,600 next month - R830 more than usual due to vacation season.',
+      confidence: 89
+    },
+    {
+      type: 'opportunity',
+      title: 'Savings Opportunity',
+      message: 'You could save R250/month by switching to a different coffee subscription plan.',
+      confidence: 76
+    },
+    {
+      type: 'alert',
+      title: 'Unusual Activity',
+      message: 'Your dining out expenses are 34% higher than last month. Consider meal planning.',
+      confidence: 92
     }
-    
-    // Pattern-based categorization
-    if (desc.includes('grocery') || desc.includes('food') || desc.includes('supermarket')) return 'groceries';
-    if (desc.includes('gas') || desc.includes('fuel') || desc.includes('station')) return 'transportation';
-    if (desc.includes('netflix') || desc.includes('spotify') || desc.includes('subscription')) return 'subscriptions';
-    if (desc.includes('salary') || desc.includes('paycheck') || amount > 1000) return 'income';
-    if (desc.includes('rent') || desc.includes('mortgage') || desc.includes('utilities')) return 'housing';
-    if (desc.includes('coffee') || desc.includes('lunch') || desc.includes('dinner')) return 'dining';
-    
-    return 'other';
-  };
+  ];
 
-  // Generate contextual recommendations
-  const generateSmartRecommendations = (spending, goals, anomaly, projectedBalance) => {
-    const recs = [];
-    
-    // Goal-based recommendations
-    goals.forEach(goal => {
-      const daysUntilDeadline = Math.ceil((new Date(goal.deadline) - new Date()) / (1000 * 60 * 60 * 24));
-      const dailySavingsNeeded = (goal.target - (goal.saved || 0)) / Math.max(daysUntilDeadline, 1);
-      
-      if (dailySavingsNeeded > 0) {
-        recs.push({
-          type: 'goal',
-          priority: 'high',
-          message: `To reach "${goal.name}", save $${dailySavingsNeeded.toFixed(2)} daily. Consider reducing ${getHighestSpendingCategory(spending)} by 15%.`,
-          action: 'optimize'
-        });
-      }
-    });
-
-    // Spending pattern recommendations
-    if (anomaly === 'high') {
-      const highestCategory = getHighestSpendingCategory(spending);
-      recs.push({
-        type: 'warning',
-        priority: 'high',
-        message: `Unusual spending spike detected! Your ${highestCategory} spending is 50% higher than usual. Consider meal planning this week.`,
-        action: 'reduce'
-      });
-    }
-
-    // Predictive cash flow recommendations
-    if (projectedBalance < 1000) {
-      recs.push({
-        type: 'alert',
-        priority: 'critical',
-        message: `Cash flow alert: Projected balance will be $${projectedBalance.toFixed(2)}. Consider increasing income or reducing discretionary spending.`,
-        action: 'urgent'
-      });
-    }
-
-    // Optimization opportunities
-    if (spending.subscriptions > 100) {
-      recs.push({
-        type: 'optimization',
-        priority: 'medium',
-        message: `Subscription audit recommended: $${spending.subscriptions.toFixed(2)}/month. Cancel unused services to save $30-50/month.`,
-        action: 'audit'
-      });
-    }
-
-    return recs;
-  };
-
-  const getHighestSpendingCategory = (spending) => {
-    return Object.entries(spending).reduce((a, b) => spending[a] > spending[b[0]] ? a : b[0], Object.keys(spending)[0]);
-  };
-
-  const getWeekNumber = (date) => {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    const dayNum = d.getUTCDay() || 7;
-    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-  };
-
-  const addTransaction = () => {
-    if (!newTransaction.amount || !newTransaction.description) return;
-    
-    const amount = parseFloat(newTransaction.amount);
-    const smartCategory = smartCategorize(newTransaction.description, amount, newTransaction.date);
-    
-    const transaction = {
-      id: Date.now(),
-      ...newTransaction,
-      amount: amount,
-      category: newTransaction.category || smartCategory,
-      aiSuggested: !newTransaction.category
-    };
-    
-    setTransactions([transaction, ...transactions]);
-    setBalance(prev => prev + amount);
-    setNewTransaction({ amount: '', description: '', category: '', date: new Date().toISOString().split('T')[0] });
-  };
-
-  const addGoal = () => {
-    if (!newGoal.name || !newGoal.target) return;
-    
-    const goal = {
-      id: Date.now(),
-      ...newGoal,
-      target: parseFloat(newGoal.target),
-      saved: 0,
-      progress: 0
-    };
-    
-    setGoals([...goals, goal]);
-    setNewGoal({ name: '', target: '', deadline: '', category: 'savings' });
-  };
-
-  // Real-time AI insights generation
-  useEffect(() => {
-    const insights = [
-      {
-        id: 1,
-        type: 'pattern',
-        title: 'Spending Pattern Detected',
-        message: 'You spend 40% more on weekends. Consider setting weekend budgets.',
-        confidence: 0.85
-      },
-      {
-        id: 2,
-        type: 'prediction',
-        title: 'Cash Flow Forecast',
-        message: `Based on current trends, you'll have $${aiAnalytics.predictions?.projectedBalance?.toFixed(2) || '0'} by month-end.`,
-        confidence: 0.92
-      },
-      {
-        id: 3,
-        type: 'opportunity',
-        title: 'Optimization Opportunity',
-        message: 'Switching to a credit card with 2% cashback could save you $40/month.',
-        confidence: 0.78
-      }
-    ];
-    setAiInsights(insights);
-  }, [transactions, aiAnalytics]);
-
-  const renderDashboard = () => (
-    <div className="dashboard">
-      <div className="balance-card">
-        <h2>Current Balance</h2>
-        <p className="balance">${balance.toFixed(2)}</p>
-        <div className="balance-trend">
-          {balance > 0 ? <TrendingUp className="positive" /> : <TrendingDown className="negative" />}
-          <span>Projected: ${aiAnalytics.predictions?.projectedBalance?.toFixed(2) || '0'}</span>
+  const StatusCard = ({ title, value, change, icon: Icon, trend }) => (
+    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium text-gray-600">{title}</p>
+          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+        </div>
+        <div className={`flex items-center space-x-1 ${trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : 'text-gray-600'}`}>
+          <Icon className="w-8 h-8" />
         </div>
       </div>
-
-      <div className="ai-insights">
-        <h3><Brain /> AI Insights</h3>
-        {aiInsights.map(insight => (
-          <div key={insight.id} className={`insight-card ${insight.type}`}>
-            <div className="insight-header">
-              <span className="insight-title">{insight.title}</span>
-              <span className="confidence">{Math.round(insight.confidence * 100)}%</span>
-            </div>
-            <p>{insight.message}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="recommendations">
-        <h3><Lightbulb /> Smart Recommendations</h3>
-        {aiAnalytics.recommendations.map((rec, index) => (
-          <div key={index} className={`recommendation ${rec.priority}`}>
-            <div className="rec-icon">
-              {rec.type === 'warning' && <AlertTriangle />}
-              {rec.type === 'goal' && <Target />}
-              {rec.type === 'optimization' && <Zap />}
-              {rec.type === 'alert' && <AlertTriangle />}
-            </div>
-            <p>{rec.message}</p>
-          </div>
-        ))}
-      </div>
+      {change && (
+        <div className={`flex items-center mt-2 ${trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+          {trend === 'up' ? <TrendingUp className="w-4 h-4 mr-1" /> : <TrendingDown className="w-4 h-4 mr-1" />}
+          <span className="text-sm font-medium">{change}</span>
+        </div>
+      )}
     </div>
   );
 
-  const renderTransactions = () => (
-    <div className="transactions">
-      <div className="add-transaction">
-        <h3>Add Transaction</h3>
-        <div className="transaction-form">
-          <input
-            type="number"
-            placeholder="Amount (+ for income, - for expense)"
-            value={newTransaction.amount}
-            onChange={(e) => setNewTransaction({...newTransaction, amount: e.target.value})}
+  const MetricCard = ({ metric, value, target, status }) => {
+    const percentage = (value / target) * 100;
+    const getStatusColor = () => {
+      switch(status) {
+        case 'excellent': return 'bg-green-500';
+        case 'good': return 'bg-blue-500';
+        case 'warning': return 'bg-yellow-500';
+        case 'danger': return 'bg-red-500';
+        default: return 'bg-gray-500';
+      }
+    };
+
+    return (
+      <div className="bg-white rounded-lg p-4 border border-gray-100">
+        <div className="flex justify-between items-center mb-2">
+          <h4 className="text-sm font-medium text-gray-700">{metric}</h4>
+          <span className={`px-2 py-1 text-xs rounded-full text-white ${getStatusColor()}`}>
+            {status}
+          </span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-lg font-bold text-gray-900">
+            {metric.includes('Fund') ? `${value} months` : `${value}%`}
+          </span>
+          <span className="text-sm text-gray-500">
+            / {metric.includes('Fund') ? `${target} months` : `${target}%`}
+          </span>
+        </div>
+        <div className="mt-2 bg-gray-200 rounded-full h-2">
+          <div 
+            className={`h-2 rounded-full ${getStatusColor()}`}
+            style={{ width: `${Math.min(percentage, 100)}%` }}
           />
-          <input
-            type="text"
-            placeholder="Description"
-            value={newTransaction.description}
-            onChange={(e) => setNewTransaction({...newTransaction, description: e.target.value})}
-          />
-          <select
-            value={newTransaction.category}
-            onChange={(e) => setNewTransaction({...newTransaction, category: e.target.value})}
-          >
-            <option value="">AI Auto-categorize</option>
-            <option value="groceries">Groceries</option>
-            <option value="dining">Dining</option>
-            <option value="transportation">Transportation</option>
-            <option value="entertainment">Entertainment</option>
-            <option value="housing">Housing</option>
-            <option value="income">Income</option>
-            <option value="other">Other</option>
-          </select>
-          <input
-            type="date"
-            value={newTransaction.date}
-            onChange={(e) => setNewTransaction({...newTransaction, date: e.target.value})}
-          />
-          <button onClick={addTransaction}>Add Transaction</button>
         </div>
       </div>
-
-      <div className="transaction-list">
-        <h3>Recent Transactions</h3>
-        {transactions.slice(0, 10).map(transaction => (
-          <div key={transaction.id} className="transaction-item">
-            <div className="transaction-info">
-              <span className="description">{transaction.description}</span>
-              <span className={`category ${transaction.aiSuggested ? 'ai-suggested' : ''}`}>
-                {transaction.category} {transaction.aiSuggested && <Brain size={12} />}
-              </span>
-            </div>
-            <div className="transaction-details">
-              <span className={`amount ${transaction.amount > 0 ? 'positive' : 'negative'}`}>
-                ${Math.abs(transaction.amount).toFixed(2)}
-              </span>
-              <span className="date">{transaction.date}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderGoals = () => (
-    <div className="goals">
-      <div className="add-goal">
-        <h3>Add Financial Goal</h3>
-        <div className="goal-form">
-          <input
-            type="text"
-            placeholder="Goal name"
-            value={newGoal.name}
-            onChange={(e) => setNewGoal({...newGoal, name: e.target.value})}
-          />
-          <input
-            type="number"
-            placeholder="Target amount"
-            value={newGoal.target}
-            onChange={(e) => setNewGoal({...newGoal, target: e.target.value})}
-          />
-          <input
-            type="date"
-            value={newGoal.deadline}
-            onChange={(e) => setNewGoal({...newGoal, deadline: e.target.value})}
-          />
-          <select
-            value={newGoal.category}
-            onChange={(e) => setNewGoal({...newGoal, category: e.target.value})}
-          >
-            <option value="savings">Savings</option>
-            <option value="vacation">Vacation</option>
-            <option value="emergency">Emergency Fund</option>
-            <option value="investment">Investment</option>
-            <option value="purchase">Major Purchase</option>
-          </select>
-          <button onClick={addGoal}>Add Goal</button>
-        </div>
-      </div>
-
-      <div className="goals-list">
-        <h3>Your Goals</h3>
-        {goals.map(goal => {
-          const daysLeft = Math.ceil((new Date(goal.deadline) - new Date()) / (1000 * 60 * 60 * 24));
-          const dailySavingsNeeded = (goal.target - goal.saved) / Math.max(daysLeft, 1);
-          
-          return (
-            <div key={goal.id} className="goal-card">
-              <div className="goal-header">
-                <h4>{goal.name}</h4>
-                <span className="goal-category">{goal.category}</span>
-              </div>
-              <div className="goal-progress">
-                <div className="progress-bar">
-                  <div 
-                    className="progress-fill" 
-                    style={{width: `${(goal.saved / goal.target) * 100}%`}}
-                  ></div>
-                </div>
-                <span>${goal.saved.toFixed(2)} / ${goal.target.toFixed(2)}</span>
-              </div>
-              <div className="goal-insights">
-                <p>Days remaining: {daysLeft}</p>
-                <p>Daily savings needed: ${dailySavingsNeeded.toFixed(2)}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
-    <div className="ai-financial-tracker">
-      <header className="header">
-        <h1><Brain /> AI Financial Tracker</h1>
-        <div className="nav-tabs">
-          <button 
-            className={selectedTab === 'dashboard' ? 'active' : ''}
-            onClick={() => setSelectedTab('dashboard')}
-          >
-            <PieChart size={16} /> Dashboard
-          </button>
-          <button 
-            className={selectedTab === 'transactions' ? 'active' : ''}
-            onClick={() => setSelectedTab('transactions')}
-          >
-            <DollarSign size={16} /> Transactions
-          </button>
-          <button 
-            className={selectedTab === 'goals' ? 'active' : ''}
-            onClick={() => setSelectedTab('goals')}
-          >
-            <Target size={16} /> Goals
-          </button>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">MoneyTracker</h1>
+          <p className="text-gray-600">AI-powered financial insights and cash flow monitoring</p>
         </div>
-      </header>
 
-      <main className="main-content">
-        {selectedTab === 'dashboard' && renderDashboard()}
-        {selectedTab === 'transactions' && renderTransactions()}
-        {selectedTab === 'goals' && renderGoals()}
-      </main>
+        {/* Time Range Selector */}
+        <div className="mb-6">
+          <div className="flex space-x-2">
+            {['3months', '6months', '1year'].map((range) => (
+              <button
+                key={range}
+                onClick={() => setTimeRange(range)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium ${
+                  timeRange === range 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-white text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {range === '3months' ? '3 Months' : range === '6months' ? '6 Months' : '1 Year'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Overview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatusCard
+            title="Net Cash Flow"
+            value="R5,700"
+            change="+R830 vs last month"
+            icon={DollarSign}
+            trend="up"
+          />
+          <StatusCard
+            title="Avg Daily Spending"
+            value="R790"
+            change="-R45 vs last month"
+            icon={TrendingDown}
+            trend="down"
+          />
+          <StatusCard
+            title="Financial Health"
+            value="8.4/10"
+            change="+0.3 improvement"
+            icon={Target}
+            trend="up"
+          />
+          <StatusCard
+            title="Savings Rate"
+            value="18%"
+            change="Steady"
+            icon={PiggyBank}
+            trend="neutral"
+          />
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex space-x-1 mb-6 bg-white rounded-lg p-1 shadow-sm">
+          {[
+            { id: 'overview', label: 'Cash Flow', icon: TrendingUp },
+            { id: 'patterns', label: 'Spending Patterns', icon: Calendar },
+            { id: 'health', label: 'Financial Health', icon: Target },
+            { id: 'insights', label: 'AI Insights', icon: Brain }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                  ? 'bg-blue-600 text-white'
+                  : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+              }`}
+            >
+              <tab.icon className="w-4 h-4" />
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
+            {/* Cash Flow Chart */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Cash Flow Trends</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={cashFlowData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => [`R${value}`, '']} />
+                  <Area type="monotone" dataKey="income" stackId="1" stroke="#10B981" fill="#10B981" fillOpacity={0.3} />
+                  <Area type="monotone" dataKey="expenses" stackId="2" stroke="#EF4444" fill="#EF4444" fillOpacity={0.3} />
+                  <Line type="monotone" dataKey="netFlow" stroke="#3B82F6" strokeWidth={3} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Upcoming Bills */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Bills</h3>
+              <div className="space-y-3">
+                {upcomingBills.map((bill, index) => (
+                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-3 h-3 rounded-full ${bill.status === 'upcoming' ? 'bg-yellow-500' : 'bg-green-500'}`} />
+                      <div>
+                        <p className="font-medium text-gray-900">{bill.name}</p>
+                        <p className="text-sm text-gray-600">{bill.date}</p>
+                      </div>
+                    </div>
+                    <span className="font-semibold text-gray-900">R{bill.amount}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'patterns' && (
+          <div className="space-y-6">
+            {/* Weekly Spending Pattern */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Weekly Spending Patterns</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={spendingPatternData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="day" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => [`R${value}`, 'Amount']} />
+                  <Bar dataKey="amount" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Top Merchants */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Top Merchants</h3>
+              <div className="space-y-4">
+                {topMerchants.map((merchant, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <span className="text-sm font-semibold text-gray-700">
+                          {merchant.name.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">{merchant.name}</p>
+                        <p className="text-sm text-gray-600">{merchant.transactions} transactions • {merchant.category}</p>
+                      </div>
+                    </div>
+                    <span className="font-semibold text-gray-900">R{merchant.amount}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'health' && (
+          <div className="space-y-6">
+            {/* Financial Health Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {financialHealthMetrics.map((item, index) => (
+                <MetricCard key={index} {...item} />
+              ))}
+            </div>
+
+            {/* Health Score Breakdown */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Financial Health Score: 8.4/10</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-700">Debt Management</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-32 bg-gray-200 rounded-full h-2">
+                      <div className="bg-green-500 h-2 rounded-full" style={{width: '85%'}}></div>
+                    </div>
+                    <span className="text-sm font-medium">8.5/10</span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-700">Emergency Preparedness</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-32 bg-gray-200 rounded-full h-2">
+                      <div className="bg-yellow-500 h-2 rounded-full" style={{width: '70%'}}></div>
+                    </div>
+                    <span className="text-sm font-medium">7.0/10</span>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-700">Investment Growth</span>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-32 bg-gray-200 rounded-full h-2">
+                      <div className="bg-blue-500 h-2 rounded-full" style={{width: '90%'}}></div>
+                    </div>
+                    <span className="text-sm font-medium">9.0/10</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'insights' && (
+          <div className="space-y-6">
+            {/* AI Insights */}
+            <div className="grid gap-6">
+              {aiInsights.map((insight, index) => (
+                <div key={index} className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-blue-500">
+                  <div className="flex items-start space-x-3">
+                    <div className="flex-shrink-0">
+                      {insight.type === 'prediction' && <Brain className="w-6 h-6 text-blue-600" />}
+                      {insight.type === 'opportunity' && <Target className="w-6 h-6 text-green-600" />}
+                      {insight.type === 'alert' && <AlertTriangle className="w-6 h-6 text-yellow-600" />}
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2">{insight.title}</h4>
+                      <p className="text-gray-700 mb-3">{insight.message}</p>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-sm text-gray-500">Confidence:</span>
+                        <div className="w-24 bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-blue-500 h-2 rounded-full" 
+                            style={{width: `${insight.confidence}%`}}
+                          ></div>
+                        </div>
+                        <span className="text-sm font-medium text-gray-700">{insight.confidence}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Predictive Analytics */}
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Spending Forecast</h3>
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-4 mb-4">
+                <p className="text-sm text-gray-700 mb-2">Next Month Prediction</p>
+                <p className="text-2xl font-bold text-gray-900">R23,600</p>
+                <p className="text-sm text-gray-600">+R830 increase expected due to seasonal trends</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600">Groceries</p>
+                  <p className="text-lg font-semibold text-gray-900">R3,780</p>
+                  <p className="text-xs text-green-600">-5% vs avg</p>
+                </div>
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600">Entertainment</p>
+                  <p className="text-lg font-semibold text-gray-900">R1,890</p>
+                  <p className="text-xs text-red-600">+25% vs avg</p>
+                </div>
+                <div className="text-center p-3 bg-gray-50 rounded-lg">
+                  <p className="text-sm text-gray-600">Transport</p>
+                  <p className="text-lg font-semibold text-gray-900">R1,610</p>
+                  <p className="text-xs text-gray-600">Steady</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default AIFinancialTracker;
+export default MoneyTracker;
