@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import registerImage from '../assets/register.png';
 import '../styles/registration-page.css'; 
 
 function RegistrationForm() {
+  const navigate = useNavigate();
   const [idNumber, setIdNumber] = useState('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -72,6 +75,9 @@ function RegistrationForm() {
     if (!firstName.trim()) newErrors.firstName = 'First name is required.';
     if (!lastName.trim()) newErrors.lastName = 'Last name is required.';
     if (!validateEmail(email)) newErrors.email = 'Invalid email format.';
+    if (!accountNumber.trim() || !/^\d{6,20}$/.test(accountNumber)) {
+      newErrors.accountNumber = 'Account Number must be 6–20 digits.';
+    }
     if (!validatePassword(password)) {
       newErrors.password = 'Password must be 8+ chars, 1 symbol & 2 numbers.';
     }
@@ -92,6 +98,7 @@ function RegistrationForm() {
         setFirstName('');
         setLastName('');
         setEmail('');
+        setAccountNumber('');
         setPassword('');
         setConfirmPassword('');
         setTermsAccepted(false);
@@ -144,6 +151,15 @@ function RegistrationForm() {
               onChange={(e) => setEmail(e.target.value)}
             />
             {errors.email && <p className="error">{errors.email}</p>}
+
+            <input
+              type="text"
+              placeholder="Account Number"
+              value={accountNumber}
+              onChange={(e) => setAccountNumber(e.target.value)}
+            />
+            {errors.accountNumber && <p className="error">{errors.accountNumber}</p>}
+ 
 
             <div className="password-wrapper">
               <input
