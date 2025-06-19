@@ -105,37 +105,85 @@ app.post('/verify-otp', (req, res) => {
 });
 
 
-//reset password code
+// ======================================================================
+//                            Password Reset
+// ======================================================================
 
 app.post('/send-reset-link', async (req, res) => {
   const { email } = req.body;
 
-  const token = crypto.randomBytes(32).toString('hex');
-  resetTokens[email] = { token, expires: Date.now() + 15 * 60 * 1000 }; // 15 min expiry
+  let { data: user, error } = await supabaseClient.from('users').select('*').eq('email', email).single();;
 
-  const resetLink = `http://localhost:3000/reset-password/${token}`;
+  if ( !error ) {
+    console.log(`// ================
+//              Password Reset link sent
+//              ${user.email}
+// =======================`);
+    // res.json({ success: true, message: `Rest link sent to email: ${user.email}.` });
 
-  try {
-    await transporter.sendMail({
-      from: '"LynqAI" <absacobol@gmail.com>',
-      to: email,
-      subject: ' Reset Your Password',
-      html: `
-        <div style="font-family:Arial,sans-serif;padding:20px;border:1px solid #eee;border-radius:10px;">
-          <h2 style="color:#8A1F2C;">Reset Your LynqAI Password</h2>
-          <p>Click the link below to reset your password. This link is valid for 15 minutes.</p>
-          <a href="${resetLink}" style="display:inline-block;background:#8A1F2C;color:#fff;padding:10px 15px;border-radius:5px;text-decoration:none;">Reset Password</a>
-          <p>If you didn’t request this, ignore it.</p>
-        </div>
-      `,
-    });
+    const token = crypto.randomBytes(32).toString('hex');
+    resetTokens[email] = { token, expires: Date.now() + 15 * 60 * 1000 }; // 15 min lifetime
 
-    res.json({ success: true, message: 'Reset link sent' });
-  } catch (err) {
-    console.error('Error sending reset link:', err);
-    res.status(500).json({ success: false, message: 'Failed to send reset link' });
+    const resetLink = `https://lynqai.com/reset-password/${token}`;
+
+    try {
+        await transporter.sendMail({
+        from: '"LynqAI" <absacobol@gmail.com>',
+        to: email,
+        subject: ' Reset Your Password',
+        html: `
+          <div style="font-family:Arial,sans-serif;padding:20px;border:1px solid #eee;border-radius:10px;">
+            <h2 style="color:#8A1F2C;">Reset Your LynqAI Password</h2>
+            <p>Click the link below to reset your password. This link is valid for 15 minutes.</p>
+            <a href="${resetLink}" style="display:inline-block;background:#8A1F2C;color:#fff;padding:10px 15px;border-radius:5px;text-decoration:none;">Reset Password</a>
+            <p>If you didn’t request this, ignore it.</p>
+          </div>
+        `,
+      });
+      res.status(200).json( { success: true, message: 'Reset link sent successfully' });
+    } catch (error) {
+      console.error('Error sending reset link:', error.message);
+      res.status(500).json({ success: false, message: 'Failed to send reset link' });
+      
+    }
+  }
+  else {
+    console.error(`// ================
+//              Password Reset link error
+//              That email may not exist
+//              ${error.message}
+// =======================`)
+      res.status(404).json( { success: false, message: 'That account does not exist. Please try again.' });
   }
 });
+
+//   const token = crypto.randomBytes(32).toString('hex');
+//   resetTokens[email] = { token, expires: Date.now() + 15 * 60 * 1000 }; // 15 min expiry
+
+//   const resetLink = `http://localhost:3000/reset-password/${token}`;
+
+//   try {
+//     await transporter.sendMail({
+//       from: '"LynqAI" <absacobol@gmail.com>',
+//       to: email,
+//       subject: ' Reset Your Password',
+//       html: `
+//         <div style="font-family:Arial,sans-serif;padding:20px;border:1px solid #eee;border-radius:10px;">
+//           <h2 style="color:#8A1F2C;">Reset Your LynqAI Password</h2>
+//           <p>Click the link below to reset your password. This link is valid for 15 minutes.</p>
+//           <a href="${resetLink}" style="display:inline-block;background:#8A1F2C;color:#fff;padding:10px 15px;border-radius:5px;text-decoration:none;">Reset Password</a>
+//           <p>If you didn’t request this, ignore it.</p>
+//         </div>
+//       `,
+//     });
+
+//     res.json({ success: true, message: 'Reset link sent' });
+//   } catch (err) {
+//     console.error('Error sending reset link:', err);
+//     res.status(500).json({ success: false, message: 'Failed to send reset link' });
+//   }
+// });
+
 //reset password token
 app.post('/reset-password/:token', async (req, res) => {
   const { token } = req.params;
