@@ -275,7 +275,7 @@ const Offers = () => {
                 alignItems: 'center',
                 gap: '6px',
                 padding: '8px 16px',
-                border: selectedFilter === category.id ? '1px solid #dc2626' : '1px solid #404040',
+                border: selectedFilter === category.id ? '1px solid #8A1F2C' : '1px solid #404040',
                 borderRadius: '20px',
                 fontSize: '14px',
                 fontWeight: '500',
@@ -460,7 +460,7 @@ const Offers = () => {
                         backgroundColor: '#dc2626',
                         color: '#ffffff',
                         borderRadius: '12px',
-                        border: '1px solid #dc2626'
+                        border: '1px solid #8A1F2C'
                       }}
                     >
                       {benefit}
@@ -517,7 +517,7 @@ const Offers = () => {
                     padding: '12px 16px',
                     backgroundColor: 'transparent',
                     color: '#dc2626',
-                    border: '1px solid #dc2626',
+                    border: '1px solid #8A1F2C',
                     borderRadius: '8px',
                     fontSize: '14px',
                     fontWeight: '600',
