@@ -19,53 +19,53 @@
   margin-right: auto;
 }
 
-/* Background colors */
+/* Background colors - LynqAI Theme */
 .bg-gray-50 {
-  background-color: #f9fafb;
+  background-color: #0a0a0a;
 }
 
 .bg-white {
-  background-color: #ffffff;
+  background-color: #1a1a1a;
 }
 
 .bg-gray-100 {
-  background-color: #f3f4f6;
+  background-color: #2a2a2a;
 }
 
 .bg-gray-200 {
-  background-color: #e5e7eb;
+  background-color: #3a3a3a;
 }
 
 .bg-blue-50 {
-  background-color: #eff6ff;
+  background-color: #1a2332;
 }
 
 .bg-indigo-50 {
-  background-color: #eef2ff;
+  background-color: #1e2238;
 }
 
 .bg-blue-600 {
-  background-color: #2563eb;
+  background-color: #ff6b47;
 }
 
 .bg-green-500 {
-  background-color: #10b981;
+  background-color: #4ade80;
 }
 
 .bg-red-500 {
-  background-color: #ef4444;
+  background-color: #ff6b47;
 }
 
 .bg-yellow-500 {
-  background-color: #eab308;
+  background-color: #fbbf24;
 }
 
 .bg-blue-500 {
-  background-color: #3b82f6;
+  background-color: #1e3a8a;
 }
 
 .bg-gray-500 {
-  background-color: #6b7280;
+  background-color: #4a5568;
 }
 
 .bg-gradient-to-r {
@@ -73,34 +73,34 @@
 }
 
 .from-blue-50 {
-  --tw-gradient-from: #eff6ff;
-  --tw-gradient-to: rgb(239 246 255 / 0);
+  --tw-gradient-from: #1a2332;
+  --tw-gradient-to: rgb(26 35 50 / 0);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
 .to-indigo-50 {
-  --tw-gradient-to: #eef2ff;
+  --tw-gradient-to: #1e2238;
 }
 
-/* Text colors */
+/* Text colors - LynqAI Theme */
 .text-gray-900 {
-  color: #111827;
+  color: #ffffff;
 }
 
 .text-gray-800 {
-  color: #1f2937;
+  color: #f1f5f9;
 }
 
 .text-gray-700 {
-  color: #374151;
+  color: #e2e8f0;
 }
 
 .text-gray-600 {
-  color: #4b5563;
+  color: #cbd5e1;
 }
 
 .text-gray-500 {
-  color: #6b7280;
+  color: #94a3b8;
 }
 
 .text-white {
@@ -108,19 +108,19 @@
 }
 
 .text-green-600 {
-  color: #059669;
+  color: #4ade80;
 }
 
 .text-red-600 {
-  color: #dc2626;
+  color: #ff6b47;
 }
 
 .text-blue-600 {
-  color: #2563eb;
+  color: #ff6b47;
 }
 
 .text-yellow-600 {
-  color: #d97706;
+  color: #fbbf24;
 }
 
 /* Padding */
@@ -314,13 +314,13 @@
   font-weight: 500;
 }
 
-/* Borders */
+/* Borders - LynqAI Theme */
 .border {
   border-width: 1px;
 }
 
 .border-gray-100 {
-  border-color: #f3f4f6;
+  border-color: #2a2a2a;
 }
 
 .border-l-4 {
@@ -328,7 +328,7 @@
 }
 
 .border-blue-500 {
-  border-color: #3b82f6;
+  border-color: #ff6b47;
 }
 
 /* Border radius */
@@ -419,15 +419,15 @@ button:hover {
 }
 
 .hover\:bg-gray-50:hover {
-  background-color: #f9fafb;
+  background-color: #2a2a2a;
 }
 
 .hover\:bg-gray-100:hover {
-  background-color: #f3f4f6;
+  background-color: #3a3a3a;
 }
 
 .hover\:text-gray-900:hover {
-  color: #111827;
+  color: #ffffff;
 }
 
 /* Transitions */
@@ -475,7 +475,7 @@ button:hover {
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
-/* Tab styles */
+/* Tab styles - LynqAI Theme */
 .tab-button {
   display: flex;
   align-items: center;
@@ -491,17 +491,17 @@ button:hover {
 }
 
 .tab-button.active {
-  background-color: #2563eb;
+  background-color: #ff6b47;
   color: #ffffff;
 }
 
 .tab-button:not(.active) {
-  color: #4b5563;
+  color: #cbd5e1;
 }
 
 .tab-button:not(.active):hover {
-  color: #111827;
-  background-color: #f9fafb;
+  color: #ffffff;
+  background-color: #2a2a2a;
 }
 
 /* Icon sizing */
@@ -520,11 +520,11 @@ button:hover {
   height: 2rem;
 }
 
-/* Merchant avatar */
+/* Merchant avatar - LynqAI Theme */
 .merchant-avatar {
   width: 2.5rem;
   height: 2.5rem;
-  background-color: #f3f4f6;
+  background-color: #2a2a2a;
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
@@ -540,13 +540,13 @@ button:hover {
   background-color: #10b981;
 }
 
-/* Insight cards */
+/* Insight cards - LynqAI Theme */
 .insight-card {
-  background-color: #ffffff;
+  background-color: #1a1a1a;
   border-radius: 0.75rem;
   padding: 1.5rem;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  border-left: 4px solid #3b82f6;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+  border-left: 4px solid #ff6b47;
 }
 
 /* Responsive utilities */
@@ -566,21 +566,21 @@ button:hover {
   height: 300px;
 }
 
-/* Utility classes for specific use cases */
+/* Utility classes for specific use cases - LynqAI Theme */
 .metric-excellent {
-  background-color: #10b981;
+  background-color: #4ade80;
 }
 
 .metric-good {
-  background-color: #3b82f6;
+  background-color: #1e3a8a;
 }
 
 .metric-warning {
-  background-color: #eab308;
+  background-color: #fbbf24;
 }
 
 .metric-danger {
-  background-color: #ef4444;
+  background-color: #ff6b47;
 }
 
 /* Additional spacing utilities */
