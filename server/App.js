@@ -119,7 +119,7 @@ app.post('/send-reset-link', async (req, res) => {
     const token = crypto.randomBytes(32).toString('hex');
     resetTokens[email] = { token, expires: Date.now() + 15 * 60 * 1000 }; // 15 min lifetime
 
-    const resetLink = `https://lynqai.com/reset-password/${token}`;
+    const resetLink = `http://localhost:3000/reset-password/${token}`;
 
     try {
         await transporter.sendMail({
