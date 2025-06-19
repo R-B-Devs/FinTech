@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import registerImage from '../assets/register.png';
-import { Link } from 'react-router-dom';
 import '../styles/registration-page.css'; 
 
 function RegistrationForm() {
@@ -107,10 +106,6 @@ function RegistrationForm() {
     <div className="registration-container">
       <div className="registration-content">
         <div className="registration-form-section">
-          <Link to="/" className="nav-link">
-                  <span className="material-symbols-outlined">arrow_back</span>
-                  <span>Back</span>
-        </Link>
           <h1>
             <span className="brand">Lynq</span><span className="highlight">AI</span>
           </h1>
