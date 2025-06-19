@@ -45,7 +45,7 @@
 }
 
 .bg-blue-600 {
-  background-color: #ff6b47;
+  background-color: #8A1F2C;
 }
 
 .bg-green-500 {
@@ -53,7 +53,7 @@
 }
 
 .bg-red-500 {
-  background-color: #ff6b47;
+  background-color: #8A1F2C;
 }
 
 .bg-yellow-500 {
@@ -112,11 +112,11 @@
 }
 
 .text-red-600 {
-  color: #ff6b47;
+  color: #8A1F2C;
 }
 
 .text-blue-600 {
-  color: #ff6b47;
+  color: #8A1F2C;
 }
 
 .text-yellow-600 {
@@ -328,7 +328,7 @@
 }
 
 .border-blue-500 {
-  border-color: #ff6b47;
+  border-color: #8A1F2C;
 }
 
 /* Border radius */
@@ -491,7 +491,7 @@ button:hover {
 }
 
 .tab-button.active {
-  background-color: #ff6b47;
+  background-color: #8A1F2C;
   color: #ffffff;
 }
 
@@ -546,7 +546,7 @@ button:hover {
   border-radius: 0.75rem;
   padding: 1.5rem;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-  border-left: 4px solid #ff6b47;
+  border-left: 4px solid #8A1F2C;
 }
 
 /* Responsive utilities */
@@ -580,7 +580,7 @@ button:hover {
 }
 
 .metric-danger {
-  background-color: #ff6b47;
+  background-color: #8A1F2C;
 }
 
 /* Additional spacing utilities */
