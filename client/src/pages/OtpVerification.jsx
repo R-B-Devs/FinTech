@@ -38,7 +38,7 @@ const SendOtpForm = () => {
     setLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5000/send-otp', {
+      const response = await fetch('http://localhost:3001/send-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ const handleVerify = async () => {
   setModalMessage('');
 
   try {
-    const res = await axios.post('http://localhost:5000/verify-otp', { email, otp });
+    const res = await axios.post('http://localhost:3001/verify-otp', { email, otp });
     if (res.data.success) {
       setModalMessage('✅ OTP verified successfully!');
       setTimeout(() => {
@@ -92,7 +92,7 @@ const handleVerify = async () => {
 
   const handleResend = async () => {
     try {
-      await axios.post('http://localhost:5000/send-otp', { email });
+      await axios.post('http://localhost:3001/send-otp', { email });
       setModalMessage('📨 OTP resent!');
       setSecondsLeft(300);
       setOtp('');
