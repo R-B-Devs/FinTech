@@ -1,0 +1,6 @@
+id,user_id,type,amount,category,date
+1,1,credit,5000.00,Salary,2025-06-17
+2,1,debit,1500.00,Groceries,2025-06-17
+3,1,debit,700.00,Transport,2025-06-17
+4,2,credit,3000.00,Freelance,2025-06-17
+5,2,debit,1200.00,Rent,2025-06-17

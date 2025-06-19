@@ -1,0 +1,41 @@
+.goals-page {
+    padding: 2rem;
+    background-color: black;
+    min-height: 100vh;
+    color: #ccc; /* light text for dark bg */
+  }
+  
+  .goals-page h2 {
+    font-size: 2rem;
+    color: #a10d2f;
+    margin-bottom: 1rem;
+  }
+  
+  .goals-page p {
+    font-size: 1rem;
+    color: #888; /* lighter gray for readability */
+    margin-bottom: 2rem;
+  }
+  
+  .goals-section {
+    background: #000; /* changed from white to black */
+    border-left: 5px solid #a10d2f;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(161, 13, 47, 0.6); /* stronger shadow with red tint */
+    color: #ddd; /* light text */
+  }
+  
+  .goals-section h3 {
+    margin-top: 0;
+    font-size: 1.3rem;
+    color: #fff; /* white for headings */
+  }
+  
+  .goals-section p {
+    font-size: 1rem;
+    color: #bbb; /* medium-light text */
+    margin: 0.5rem 0;
+  }
+  

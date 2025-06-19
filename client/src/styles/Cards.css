@@ -1,0 +1,219 @@
+.cards-page {
+  flex: 1; /* Take all available space */
+  background-color: #1e1e1e;
+  color: #f0f0f0;
+  min-height: 100vh;
+  padding: 2rem 4rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Remove max-width and margin: auto */
+}
+
+
+.cards-page h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 2.2rem;
+  margin-bottom: 0.5rem;
+  color: #fff;
+}
+
+.cards-page p {
+  color: #ccc;
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
+}
+
+.cards-container {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.card {
+  perspective: 1000px;
+  width: 360px;      /* Wider */
+  height: 220px;     /* Taller */
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s ease;
+  transform-style: preserve-3d;
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(135deg, #a10d2f, #6b081a);
+  color: white;
+}
+.account-number {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-top: 0.3rem;
+  letter-spacing: 1px;
+}
+
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  padding: 2rem;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+
+
+.card.flipped .card-inner {
+  transform: rotateY(180deg);
+}
+.card-front {
+  background: linear-gradient(135deg, #a10d2f, #6b081a);
+}
+
+.card-back {
+  background: linear-gradient(135deg, #4a2f36, #7b3b43);
+  transform: rotateY(180deg);
+  text-align: center;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 1.2rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.card-type.right {
+  margin-left: auto;
+}
+
+.card-holder-name {
+  font-size: 1.2rem;
+  margin-top: auto;
+}
+
+.card-bank {
+  font-weight: bold;
+  font-size: 1.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-number {
+  font-size: 1.4rem;
+  letter-spacing: 0.15em;
+  margin-bottom: 1rem;
+}
+
+.expiry,
+.card-cvv {
+  font-size: 1rem;
+  margin-bottom: 0.3rem;
+}
+
+.card-note {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: #ffa6a6;
+}
+.dashboard-layout {
+  display: flex;
+}
+.card {
+  perspective: 1000px;
+  width: 320px;       /* keep it slightly narrow */
+  height: 280px;      /* increased height */
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+
+.card-toggles {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  align-items: start;
+}
+
+.card-toggles label {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  cursor: pointer;
+}
+.global-toggles {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* aligns toggles to the left */
+  gap: 2rem;
+  padding-left: 2rem; /* move a bit more to the left */
+}
+
+
+.toggle-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  font-size: 1.4rem;
+  color: #fff;
+  width: 300px;
+}
+
+
+/* Toggle switch style */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 70px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background-color: #ccc;
+  transition: 0.4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px; width: 26px;
+  left: 4px; bottom: 4px;
+  background-color: white;
+  transition: 0.4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+background: linear-gradient(135deg, #a10d2f, #6b081a);
+}
+
+input:checked + .slider:before {
+  transform: translateX(36px);
+}
