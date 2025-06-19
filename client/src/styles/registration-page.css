@@ -199,6 +199,48 @@
   border: 4px solid rgba(138, 31, 44, 0.3);
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
+.register-text {
+  color: #ffffff;
+  font-size: 1.3rem;
+  margin-bottom: 25px;
+  text-align: center;
+  font-weight: 300;
+}
+
+.register-button {
+  padding: 14px 40px;
+  background: transparent;
+  color: #8A1F2C;
+  border: 2px solid #8A1F2C;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.register-button:hover {
+  background: #8A1F2C;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(138, 31, 44, 0.3);
+}
+
+.register-button:active {
+  transform: translateY(0);
+}
+
+.register-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+
 
 /* Modal Styles */
 .modal-overlay {
@@ -255,6 +297,8 @@
   line-height: 1.6;
   font-size: 1rem;
 }
+
+
 
 /* Responsive Design */
 @media (max-width: 968px) {
