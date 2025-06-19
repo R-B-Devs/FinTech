@@ -1,0 +1,85 @@
+.transactions-page {
+    background-color: #1e1e1e;
+    color: #f0f0f0;
+    min-height: 100vh;
+    padding: 2.5rem 3rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .transactions-page h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    color: #fff;
+  }
+  
+  .transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1rem;
+    box-shadow: 0 0 15px rgba(161, 13, 47, 0.3);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .transactions-table thead {
+    background-color: #a10d2f;
+  }
+  
+  .transactions-table thead th {
+    padding: 12px 20px;
+    text-align: left;
+    font-weight: 700;
+    color: white;
+    user-select: none;
+  }
+  
+  .transactions-table tbody tr {
+    border-bottom: 1px solid #444;
+    transition: background-color 0.3s ease;
+    cursor: default;
+  }
+  
+  .transactions-table tbody tr:hover {
+    background-color: #330014;
+  }
+  
+  .transactions-table tbody td {
+    padding: 12px 20px;
+    vertical-align: middle;
+  }
+  
+  .credit {
+    color: #6ee76e; /* light green for credits */
+  }
+  
+  .debit {
+    color: #e76e6e; /* light red for debits */
+  }
+  
+  .status {
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 12px;
+    text-align: center;
+    width: 100px;
+    user-select: none;
+  }
+  
+  .status.completed {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .status.pending {
+    background-color: #ffa500;
+    color: #333;
+  }
+  
+  .status.failed {
+    background-color: #f44336;
+    color: white;
+  }
+  

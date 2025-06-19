@@ -1,0 +1,64 @@
+.analytics-page {
+    min-height: 100vh;
+    background-color: #1e1e1e;  /* light black */
+    color: #f0f0f0;
+    padding: 3rem 4rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .page-title {
+    font-size: 2.8rem;
+    margin-bottom: 0.2rem;
+    font-weight: 700;
+    color: #a10d2f; /* Absa red accent */
+  }
+  
+  .page-subtitle {
+    font-size: 1.2rem;
+    color: #ccc;
+    margin-bottom: 2.5rem;
+    max-width: 650px;
+  }
+  
+  .analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+  }
+  
+  .analytics-card {
+    background: #2c2c2c;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 6px 15px rgba(161, 13, 47, 0.4);
+    transition: transform 0.3s ease;
+  }
+  
+  .analytics-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 25px rgba(161, 13, 47, 0.7);
+  }
+  
+  .analytics-card h2 {
+    color: #ffa3a6;
+    font-weight: 600;
+    margin-bottom: 1.2rem;
+    font-size: 1.6rem;
+  }
+  
+  .chart-placeholder {
+    background: #3b3b3b;
+    border-radius: 10px;
+    height: 180px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #bbb;
+    font-style: italic;
+    font-size: 1rem;
+    user-select: none;
+    text-align: center;
+    padding: 1rem;
+  }
+  
+  
