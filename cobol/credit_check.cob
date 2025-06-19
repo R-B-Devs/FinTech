@@ -4,76 +4,106 @@
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
-           SELECT TRANS-FILE ASSIGN TO 'transactions.csv'
-               ORGANIZATION IS LINE SEQUENTIAL
-               FILE STATUS IS WS-STATUS.
+           SELECT TRANSACTION-FILE ASSIGN TO 'transactions.csv'
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT OUTPUT-FILE ASSIGN TO 'credit_score_output.csv'
+               ORGANIZATION IS LINE SEQUENTIAL.
 
        DATA DIVISION.
        FILE SECTION.
-       FD  TRANS-FILE
-           RECORD CONTAINS 80 CHARACTERS
-           BLOCK CONTAINS 0 RECORDS
-           DATA RECORD IS TRANS-REC.
-       01  TRANS-REC                 PIC X(80).
+       FD TRANSACTION-FILE.
+       01 TRANSACTION-LINE         PIC X(200).
+
+       FD OUTPUT-FILE.
+       01 OUTPUT-LINE              PIC X(200).
 
        WORKING-STORAGE SECTION.
-       01  WS-STATUS                 PIC XX.
-       01  WS-ID                     PIC 9(4).
-       01  WS-USER-ID                PIC 9(4).
-       01  WS-TYPE                   PIC X(10).
-       01  WS-AMOUNT                 PIC 9(7)V99.
-       01  WS-CATEGORY               PIC X(30).
-       01  WS-DATE                   PIC X(10).
+       01 HEADER-FLAG              PIC X VALUE 'Y'.
+       01 WS-END-FILE              PIC X VALUE 'N'.
 
-       01  WS-CREDIT-TOTAL           PIC 9(7)V99 VALUE 0.
-       01  WS-DEBIT-TOTAL            PIC 9(7)V99 VALUE 0.
-       01  WS-NET-BALANCE            PIC 9(7)V99 VALUE 0.
+       01 WS-TRANSACTION-FIELDS.
+          05 F-CUSTOMER-ID         PIC X(10).
+          05 F-TYPE                PIC X(6).
+          05 F-AMOUNT              PIC 9(7)V99.
+          05 F-DATE                PIC X(10).
+          05 F-ACCOUNT-AGE         PIC 9(3).
+          05 F-MISSED-PAYMENTS     PIC 9(3).
 
-       01  EOF-FLAG                  PIC X VALUE 'N'.
-           88  EOF-YES              VALUE 'Y'.
-           88  EOF-NO               VALUE 'N'.
+       01 WS-AGGREGATES.
+          05 WS-TOTAL-CREDIT       PIC 9(7)V99 VALUE 0.
+          05 WS-TOTAL-DEBIT        PIC 9(7)V99 VALUE 0.
+          05 WS-SCORE              PIC 9(3)     VALUE 0.
+          05 WS-CREDIT-STATUS      PIC X(10)    VALUE SPACES.
 
        PROCEDURE DIVISION.
-       MAIN-PROCEDURE.
-           OPEN INPUT TRANS-FILE
-           PERFORM UNTIL EOF-YES
-               READ TRANS-FILE
+       MAIN-LOGIC.
+           OPEN INPUT TRANSACTION-FILE
+           OPEN OUTPUT OUTPUT-FILE
+
+           PERFORM UNTIL WS-END-FILE = 'Y'
+               READ TRANSACTION-FILE
                    AT END
-                       SET EOF-YES TO TRUE
+                       MOVE 'Y' TO WS-END-FILE
                    NOT AT END
-                       PERFORM PARSE-RECORD
+                       IF HEADER-FLAG = 'Y'
+                           MOVE 'N' TO HEADER-FLAG
+                       ELSE
+                           PERFORM PARSE-AND-PROCESS
+                       END-IF
                END-READ
            END-PERFORM
-           CLOSE TRANS-FILE
-           PERFORM DISPLAY-RESULT
+
+           CLOSE TRANSACTION-FILE
+           CLOSE OUTPUT-FILE
            STOP RUN.
 
-       PARSE-RECORD.
-           UNSTRING TRANS-REC
+       PARSE-AND-PROCESS.
+           UNSTRING TRANSACTION-LINE
                DELIMITED BY ","
-               INTO WS-ID, WS-USER-ID, WS-TYPE, WS-AMOUNT, WS-CATEGORY, WS-DATE
-           EVALUATE FUNCTION TRIM(WS-TYPE)
-               WHEN 'credit'
-                   ADD WS-AMOUNT TO WS-CREDIT-TOTAL
-               WHEN 'debit'
-                   ADD WS-AMOUNT TO WS-DEBIT-TOTAL
-           END-EVALUATE.
+               INTO F-CUSTOMER-ID
+                    F-TYPE
+                    F-AMOUNT
+                    F-DATE
+                    F-ACCOUNT-AGE
+                    F-MISSED-PAYMENTS
 
-       DISPLAY-RESULT.
-           COMPUTE WS-NET-BALANCE = WS-CREDIT-TOTAL - WS-DEBIT-TOTAL
-           DISPLAY "Total Credit: " WS-CREDIT-TOTAL
-           DISPLAY "Total Debit : " WS-DEBIT-TOTAL
-           DISPLAY "Net Balance : " WS-NET-BALANCE
-           PERFORM CHECK-CREDIT-SCORE.
+           IF F-TYPE = 'credit'
+               ADD F-AMOUNT TO WS-TOTAL-CREDIT
+           ELSE IF F-TYPE = 'debit'
+               ADD F-AMOUNT TO WS-TOTAL-DEBIT
+           END-IF
 
-       CHECK-CREDIT-SCORE.
-           IF WS-NET-BALANCE > 5000
-               DISPLAY "Credit Score: EXCELLENT"
-           ELSE IF WS-NET-BALANCE > 3000
-               DISPLAY "Credit Score: GOOD"
-           ELSE IF WS-NET-BALANCE > 1000
-               DISPLAY "Credit Score: FAIR"
+           PERFORM CALCULATE-SCORE
+           PERFORM WRITE-RESULTS.
+
+       CALCULATE-SCORE.
+           COMPUTE WS-SCORE = (WS-TOTAL-CREDIT / 100) -
+                              (WS-TOTAL-DEBIT / 100) -
+                              (F-MISSED-PAYMENTS * 5) +
+                              (F-ACCOUNT-AGE)
+
+           IF WS-SCORE < 50
+               MOVE "Poor" TO WS-CREDIT-STATUS
+           ELSE IF WS-SCORE < 75
+               MOVE "Fair" TO WS-CREDIT-STATUS
+           ELSE IF WS-SCORE < 90
+               MOVE "Good" TO WS-CREDIT-STATUS
            ELSE
-               DISPLAY "Credit Score: POOR"
+               MOVE "Excellent" TO WS-CREDIT-STATUS
            END-IF.
-        END PROGRAM CREDITCHECK.
+
+       WRITE-RESULTS.
+           STRING
+               F-CUSTOMER-ID DELIMITED BY SIZE ","
+               WS-SCORE DELIMITED BY SIZE ","
+               WS-TOTAL-DEBIT DELIMITED BY SIZE ","
+               WS-TOTAL-CREDIT DELIMITED BY SIZE ","
+               F-MISSED-PAYMENTS DELIMITED BY SIZE ","
+               F-ACCOUNT-AGE DELIMITED BY SIZE ","
+               WS-CREDIT-STATUS DELIMITED BY SIZE
+               INTO OUTPUT-LINE
+
+           WRITE OUTPUT-LINE
+
+           MOVE 0 TO WS-TOTAL-DEBIT
+           MOVE 0 TO WS-TOTAL-CREDIT.
