@@ -1,11 +1,4 @@
-<<<<<<< HEAD
-import React, { useEffect } from 'react';
-
-import socket from '../utilis/WebRTCService';
-
-=======
 import React, { useState, useEffect } from 'react';
->>>>>>> 4e983ebda0de718990eb206f7219f382f6fe7183
 import {
   Phone,
   X,
@@ -22,12 +15,8 @@ import {
   Clock
 } from 'lucide-react';
 
-<<<<<<< HEAD
-const InAppCall = ({
-=======
 // Customer UI Component
 const CustomerCallUI = ({
->>>>>>> 4e983ebda0de718990eb206f7219f382f6fe7183
   callFeature,
   toggleCallFeature,
   setCallFeature,
@@ -36,39 +25,6 @@ const CustomerCallUI = ({
   endCall,
   activeCall
 }) => {
-<<<<<<< HEAD
-  // 👉 useEffect to handle incoming socket events once component loads
-  useEffect(() => {
-    // Join the room when a department is selected
-    if (callFeature.activeDepartment) {
-      socket.emit('join-room', callFeature.activeDepartment);
-
-      console.log('Joined room:', callFeature.activeDepartment);
-
-      socket.on('user-connected', (userId) => {
-        console.log('Another user joined:', userId);
-        // Here you could initiate a WebRTC connection if needed
-      });
-
-      socket.on('user-disconnected', (userId) => {
-        console.log('User disconnected:', userId);
-        // You might clean up peer connection here
-      });
-
-      socket.on('existing-users', (users) => {
-        console.log('Existing users in room:', users);
-        // You'll use this to start peer connection if users exist
-      });
-    }
-
-    // Clean up when component unmounts or user leaves the room
-    return () => {
-      socket.off('user-connected');
-      socket.off('user-disconnected');
-      socket.off('existing-users');
-    };
-  }, [callFeature.activeDepartment]);
-=======
   const [callDuration, setCallDuration] = useState(0);
 
   // Timer for call duration
@@ -89,7 +45,6 @@ const CustomerCallUI = ({
     const secs = seconds % 60;
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
->>>>>>> 4e983ebda0de718990eb206f7219f382f6fe7183
 
   return (
     <div className={`call-panel ${callFeature.isOpen ? 'open' : ''}`}>
@@ -124,11 +79,7 @@ const CustomerCallUI = ({
           </div>
         )}
 
-<<<<<<< HEAD
-        {callFeature.currentPage === 'microphone-permission' && (
-=======
         {!activeCall && callFeature.currentPage === 'microphone-permission' && (
->>>>>>> 4e983ebda0de718990eb206f7219f382f6fe7183
           <div className="call-page permission-page">
             <div className="call-icon">
               <Mic className="icon-large" />
@@ -154,11 +105,7 @@ const CustomerCallUI = ({
           </div>
         )}
 
-<<<<<<< HEAD
-        {callFeature.currentPage === 'main-menu' && (
-=======
         {!activeCall && callFeature.currentPage === 'main-menu' && (
->>>>>>> 4e983ebda0de718990eb206f7219f382f6fe7183
           <div className="call-page menu-page">
             <h4>How Can We Help You Today?</h4>
 
@@ -203,15 +150,6 @@ const CustomerCallUI = ({
             </div>
           </div>
         )}
-<<<<<<< HEAD
-
-        {callFeature.microphoneAllowed && callFeature.activeDepartment && (
-          <div className="active-call-controls">
-            <div className="call-info">
-              <p>
-                Connected to: <strong>{callFeature.activeDepartment}</strong>
-              </p>
-=======
         
         {activeCall && (
           <div className="active-call-view">
@@ -235,7 +173,6 @@ const CustomerCallUI = ({
                   </div>
                 </>
               )}
->>>>>>> 4e983ebda0de718990eb206f7219f382f6fe7183
             </div>
             
             <div className="active-call-controls">
@@ -267,9 +204,6 @@ const CustomerCallUI = ({
   );
 };
 
-<<<<<<< HEAD
-export default InAppCall;
-=======
 // Agent UI Component
 const AgentCallUI = ({
   activeCall,
@@ -470,4 +404,3 @@ const InAppCall = ({
 };
 
 export default InAppCall;
->>>>>>> 4e983ebda0de718990eb206f7219f382f6fe7183
