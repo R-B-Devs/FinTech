@@ -152,33 +152,6 @@ app.post('/send-reset-link', async (req, res) => {
   }
 });
 
-//   const token = crypto.randomBytes(32).toString('hex');
-//   resetTokens[email] = { token, expires: Date.now() + 15 * 60 * 1000 }; // 15 min expiry
-
-//   const resetLink = `http://localhost:3000/reset-password/${token}`;
-
-//   try {
-//     await transporter.sendMail({
-//       from: '"LynqAI" <absacobol@gmail.com>',
-//       to: email,
-//       subject: ' Reset Your Password',
-//       html: `
-//         <div style="font-family:Arial,sans-serif;padding:20px;border:1px solid #eee;border-radius:10px;">
-//           <h2 style="color:#8A1F2C;">Reset Your LynqAI Password</h2>
-//           <p>Click the link below to reset your password. This link is valid for 15 minutes.</p>
-//           <a href="${resetLink}" style="display:inline-block;background:#8A1F2C;color:#fff;padding:10px 15px;border-radius:5px;text-decoration:none;">Reset Password</a>
-//           <p>If you didn’t request this, ignore it.</p>
-//         </div>
-//       `,
-//     });
-
-//     res.json({ success: true, message: 'Reset link sent' });
-//   } catch (err) {
-//     console.error('Error sending reset link:', err);
-//     res.status(500).json({ success: false, message: 'Failed to send reset link' });
-//   }
-// });
-
 //reset password token
 app.post('/reset-password/:token', async (req, res) => {
   const { token } = req.params;
