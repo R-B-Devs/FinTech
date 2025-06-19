@@ -1,5 +1,5 @@
 import React from 'react';
-import '../styles/Goals.css'; // Optional CSS for goals styling
+// import '../styles/Goals.css'; // Optional CSS for goals styling
 
 const Goals = () => {
   return (

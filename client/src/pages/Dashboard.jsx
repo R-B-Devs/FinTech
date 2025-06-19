@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import "../styles/Dashboard.css";
 import InAppCall from './InAppCall';
 import {
@@ -34,14 +34,15 @@ import {
   UserCircle,
   X
 } from 'lucide-react';
- 
+
 const Dashboard = () => {
   // UI State
   const [selectedTimeframe, setSelectedTimeframe] = useState('month');
   const [aiInsightsVisible, setAiInsightsVisible] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
- 
+  const [userRole, setUserRole] = useState('customer'); // 'customer' or 'agent'
+
   // Call Feature State
   const [callFeature, setCallFeature] = useState({
     isOpen: false,
@@ -52,7 +53,9 @@ const Dashboard = () => {
     error: null,
     mediaStream: null
   });
- 
+
+  const [activeCall, setActiveCall] = useState(null);
+
   // Toggle call panel
   const toggleCallFeature = () => {
     if (callFeature.isOpen) {
@@ -69,6 +72,7 @@ const Dashboard = () => {
         error: null,
         mediaStream: null
       });
+      setActiveCall(null);
     } else {
       // Open with fresh state
       setCallFeature(prev => ({
@@ -81,7 +85,7 @@ const Dashboard = () => {
       }));
     }
   };
- 
+
   // Request microphone permission
   const requestMicrophonePermission = async () => {
     try {
@@ -111,17 +115,37 @@ const Dashboard = () => {
       }));
     }
   };
- 
+
   // Start a call to a department
   const startCall = (department) => {
+    const callData = {
+      department,
+      callerId: 'user-' + Math.random().toString(36).substr(2, 9),
+      timestamp: new Date().toISOString(),
+      status: 'ringing'
+    };
+    
+    setActiveCall(callData);
     setCallFeature(prev => ({
       ...prev,
       activeDepartment: department,
-      currentPage: 'active-call',
-      callStatus: 'active'
+      callStatus: 'ringing',
+      isOpen: true
     }));
   };
- 
+
+  // Accept incoming call (agent side)
+  const acceptCall = () => {
+    setCallFeature(prev => ({
+      ...prev,
+      callStatus: 'active'
+    }));
+    setActiveCall(prev => ({
+      ...prev,
+      status: 'connected'
+    }));
+  };
+
   // End the current call
   const endCall = () => {
     if (callFeature.mediaStream) {
@@ -135,8 +159,9 @@ const Dashboard = () => {
       callStatus: 'idle',
       mediaStream: null
     }));
+    setActiveCall(null);
   };
- 
+
   // Navigate between call pages
   const navigateCallPage = (page) => {
     setCallFeature(prev => ({
@@ -144,7 +169,7 @@ const Dashboard = () => {
       currentPage: page
     }));
   };
- 
+
   // Financial data
   const financialData = {
     totalBalance: 127500,
@@ -152,9 +177,9 @@ const Dashboard = () => {
     creditScore: 820,
     savingsGoal: 78
   };
- 
+
   const timeframes = ['week', 'month', 'quarter', 'year'];
- 
+
   const aiInsights = [
     {
       type: 'success',
@@ -178,7 +203,7 @@ const Dashboard = () => {
       confidence: 91
     }
   ];
- 
+
   const recentTransactions = [
     {
       id: 1,
@@ -221,60 +246,75 @@ const Dashboard = () => {
       type: 'debit'
     }
   ];
- 
+
   const securityMetrics = [
     { label: '2FA Status', value: 'Active' },
     { label: 'Encryption', value: '256-bit' },
     { label: 'Last Scan', value: '2 min ago' },
     { label: 'Threats', value: '0 detected' }
   ];
- 
+
   // Update current time every second
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
- 
+
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
- 
+
+  // Toggle between customer and agent views (for demo purposes)
+  const toggleUserRole = () => {
+    setUserRole(prev => prev === 'customer' ? 'agent' : 'customer');
+    setActiveCall(null);
+    setCallFeature({
+      isOpen: false,
+      microphoneAllowed: false,
+      currentPage: 'welcome',
+      activeDepartment: null,
+      callStatus: 'idle',
+      error: null,
+      mediaStream: null
+    });
+  };
+
   return (
     <div className="dashboard-container">
-     <header className="dashboard-header">
-  <div className="header-content">
-    <div className="header-left">
-      <button className="mobile-menu-btn" onClick={toggleSidebar}>
-        <Menu className="menu-icon" />
-      </button>
-      <div className="logo">
-        <span className="logo-text">Lynq</span>
-        <span className="logo-accent">AI</span>
-      </div>
-      <div className="header-divider"></div>
-      <h1 className="page-title">Financial Dashboard</h1>
-    </div>
-   
-    <div className="header-right">
-      <div className="current-time">
-        {currentTime.toLocaleTimeString()}
-      </div>
-      <button className="header-btn">
-        <Bell className="header-icon" />
-      </button>
-      <button className="header-btn">
-        <Settings className="header-icon" />
-      </button>
-      {/* <button className="header-btn" onClick={toggleCallFeature}>
-        <Phone className="header-icon" />
-      </button> */}
-      <Link to="/dashboard/profile" className="user-avatar">
-        <User className="user-icon" />
-      </Link>
-    </div>
-  </div>
-</header>
- 
+      <header className="dashboard-header">
+        <div className="header-content">
+          <div className="header-left">
+            <button className="mobile-menu-btn" onClick={toggleSidebar}>
+              <Menu className="menu-icon" />
+            </button>
+            <div className="logo">
+              <span className="logo-text">Lynq</span>
+              <span className="logo-accent">AI</span>
+            </div>
+            <div className="header-divider"></div>
+            <h1 className="page-title">Financial Dashboard</h1>
+          </div>
+        
+          <div className="header-right">
+            <div className="current-time">
+              {currentTime.toLocaleTimeString()}
+            </div>
+            {/* <button className="header-btn" onClick={toggleUserRole}>
+              {userRole === 'customer' ? 'Switch to Agent' : 'Switch to Customer'}
+            </button> */}
+            <button className="header-btn">
+              <Bell className="header-icon" />
+            </button>
+            <button className="header-btn">
+              <Settings className="header-icon" />
+            </button>
+            <Link to="/dashboard/profile" className="user-avatar">
+              <User className="user-icon" />
+            </Link>
+          </div>
+        </div>
+      </header>
+
       <div className="dashboard-layout">
         {/* Sidebar */}
         <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
@@ -283,7 +323,7 @@ const Dashboard = () => {
             <button className="sidebar-close" onClick={toggleSidebar}>
               <X className="close-icon" />
             </button>
- 
+
             <nav className="sidebar-nav">
               <div className="nav-section">
                 <div className="nav-section-title">AI Powered</div>
@@ -318,7 +358,7 @@ const Dashboard = () => {
                   </Link>
                 </div>
               </div>
- 
+
               <div className="nav-section">
                 <div className="nav-section-title">Financial</div>
                 <div className="nav-links">
@@ -336,7 +376,7 @@ const Dashboard = () => {
                   </Link>
                 </div>
               </div>
- 
+
               <div className="nav-section">
                 <div className="nav-section-title">Security</div>
                 <div className="nav-links">
@@ -353,7 +393,7 @@ const Dashboard = () => {
             </nav>
           </div>
         </aside>
- 
+
         {/* Main Content */}
         <main className="main-content">
           {/* Welcome Section */}
@@ -372,18 +412,16 @@ const Dashboard = () => {
                   <Brain className="status-icon" />
                   <span>AI Active</span>
                 </div>
-                <div className="status-badge status-phone" onClick={toggleCallFeature}>
-                  <Phone className="status-icon" />
-                  <span>Phone Call</span>
-                </div>
-                <div className="status-badge status-video">
-                  <Video className="status-icon" />
-                  <span>Video Call</span>
-                </div>
+                {userRole === 'customer' && (
+                  <div className="status-badge status-phone" onClick={toggleCallFeature}>
+                    <Phone className="status-icon" />
+                    <span>Phone Call</span>
+                  </div>
+                )}
               </div>
             </div>
           </div>
- 
+
           {/* Key Metrics Grid */}
           <div className="metrics-grid">
             <div className="metric-card">
@@ -396,7 +434,7 @@ const Dashboard = () => {
               <div className="metric-value">R{financialData.totalBalance.toLocaleString()}</div>
               <div className="metric-label">Total Balance</div>
             </div>
- 
+
             <div className="metric-card">
               <div className="metric-header">
                 <div className="metric-icon metric-icon-blue">
@@ -407,7 +445,7 @@ const Dashboard = () => {
               <div className="metric-value">R{financialData.investments.toLocaleString()}</div>
               <div className="metric-label">Investments</div>
             </div>
- 
+
             <div className="metric-card">
               <div className="metric-header">
                 <div className="metric-icon metric-icon-purple">
@@ -418,7 +456,7 @@ const Dashboard = () => {
               <div className="metric-value">Excellent</div>
               <div className="metric-label">Credit Score</div>
             </div>
- 
+
             <div className="metric-card">
               <div className="metric-header">
                 <div className="metric-icon metric-icon-orange">
@@ -430,7 +468,7 @@ const Dashboard = () => {
               <div className="metric-label">Savings Goal</div>
             </div>
           </div>
- 
+
           {/* Financial Overview Section */}
           <div className="financial-overview">
             {/* Charts Grid */}
@@ -498,7 +536,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
- 
+
               {/* Monthly Income vs Expenses */}
               <div className="chart-card">
                 <div className="chart-header">
@@ -561,7 +599,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
- 
+
           <div className="content-grid">
             {/* AI Insights */}
             <div className="content-left">
@@ -580,7 +618,7 @@ const Dashboard = () => {
                     {aiInsightsVisible ? <Eye className="toggle-icon" /> : <EyeOff className="toggle-icon" />}
                   </button>
                 </div>
- 
+
                 {aiInsightsVisible && (
                   <div className="insights-content">
                     {aiInsights.map((insight, index) => (
@@ -601,7 +639,7 @@ const Dashboard = () => {
                   </div>
                 )}
               </div>
- 
+
               {/* Recent Transactions */}
               <div className="transactions-card">
                 <div className="card-header">
@@ -618,7 +656,7 @@ const Dashboard = () => {
                     ))}
                   </div>
                 </div>
- 
+
                 <div className="transactions-list">
                   {recentTransactions.map((transaction) => (
                     <div key={transaction.id} className="transaction-item">
@@ -642,7 +680,7 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
- 
+
             {/* Right Sidebar Content */}
             <div className="content-right">
               {/* Security Status */}
@@ -659,7 +697,7 @@ const Dashboard = () => {
                     <span className="live-text">Live</span>
                   </div>
                 </div>
- 
+
                 <div className="security-metrics">
                   {securityMetrics.map((metric, index) => (
                     <div key={index} className="security-metric">
@@ -671,7 +709,7 @@ const Dashboard = () => {
                     </div>
                   ))}
                 </div>
- 
+
                 <div className="cobol-status">
                   <div className="cobol-indicator">
                     <Lock className="cobol-icon" />
@@ -679,7 +717,7 @@ const Dashboard = () => {
                   </div>
                 </div>
               </div>
- 
+
               {/* Quick Actions */}
               <div className="actions-card">
                 <h3 className="card-title">Quick Actions</h3>
@@ -702,7 +740,7 @@ const Dashboard = () => {
                   </button>
                 </div>
               </div>
- 
+
               {/* Performance Metrics */}
               <div className="performance-card">
                 <h3 className="card-title">System Performance</h3>
@@ -739,9 +777,10 @@ const Dashboard = () => {
             </div>
           </div>
         </main>
-       
+        
         {/* In-App Call Panel - Positioned outside main content */}
         <InAppCall
+          userRole={userRole}
           callFeature={callFeature}
           setCallFeature={setCallFeature}
           toggleCallFeature={toggleCallFeature}
@@ -749,10 +788,12 @@ const Dashboard = () => {
           startCall={startCall}
           endCall={endCall}
           navigateCallPage={navigateCallPage}
+          activeCall={activeCall}
+          setActiveCall={setActiveCall}
         />
       </div>
     </div>
   );
 };
- 
+
 export default Dashboard;
