@@ -115,11 +115,6 @@ app.post('/send-reset-link', async (req, res) => {
   let { data: user, error } = await supabaseClient.from('users').select('*').eq('email', email).single();;
 
   if ( !error ) {
-    console.log(`// ================
-//              Password Reset link sent
-//              ${user.email}
-// =======================`);
-    // res.json({ success: true, message: `Rest link sent to email: ${user.email}.` });
 
     const token = crypto.randomBytes(32).toString('hex');
     resetTokens[email] = { token, expires: Date.now() + 15 * 60 * 1000 }; // 15 min lifetime
