@@ -178,13 +178,13 @@ const ContactSupport = () => {
       transition: 'transform 0.3s ease'
     },
     iconBgEmail: {
-      background: 'linear-gradient(to right, #dc2626, #b91c1c)'
+      background: '#8A1F2C'
     },
     iconBgPhone: {
-      background: 'linear-gradient(to right, #b91c1c, #991b1b)'
+      background: '#8A1F2C'
     },
     iconBgChat: {
-      background: 'linear-gradient(to right, #dc2626, #dc2626)'
+      background: '#8A1F2C'
     },
     iconBgHover: {
       transform: 'scale(1.1)'
@@ -294,7 +294,7 @@ const ContactSupport = () => {
     },
     submitButton: {
       width: '100%',
-      background: 'linear-gradient(to right, #dc2626, #b91c1c)',
+      background: '#8A1F2C',
       color: 'white',
       fontWeight: '600',
       padding: '0.75rem 1.5rem',
@@ -310,7 +310,7 @@ const ContactSupport = () => {
       marginTop: '1rem'
     },
     submitButtonHover: {
-      background: 'linear-gradient(to right, #ef4444, #dc2626)',
+      background: '#8A1F2C',
       transform: 'scale(1.05)',
       boxShadow: '0 25px 50px -12px rgba(220, 38, 38, 0.4)'
     },
@@ -354,7 +354,7 @@ const ContactSupport = () => {
       display: 'inline-block',
       padding: '0.5rem 1rem',
       background: 'rgba(220, 38, 38, 0.3)',
-      border: '1px solid rgba(220, 38, 38, 0.5)',
+      border: '#8A1F2C',
       borderRadius: '0.5rem',
       color: '#fca5a5',
       fontWeight: '500'
