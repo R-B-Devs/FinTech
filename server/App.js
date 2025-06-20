@@ -163,10 +163,12 @@ app.post('/reset-password/:token', async (req, res) => {
 
   if (!email) {
     return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
+  } else {
+      const salt = await bcrypt.genSalt(10);
+      const passwordHash = await bcrypt.hash(password, salt);
+      // let { error } = await supabaseClient.from('users').update( {password_hash: passwordHash, salt: salt,})
   }
 
-  // Now update the password (you can later hook this to a DB update)
-  console.log(`New password for ${email}: ${password}`);
 
   // Clean up token after use
   delete resetTokens[email];
