@@ -75,19 +75,20 @@ import '../styles/Transactions.css';
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchTransactions = async () => {
-      const token = localStorage.getItem('token');     // 🔐  JWT from login
+      const token = localStorage.getItem('jwt'); // ✅ You are using this after login
+
       if (!token) {
-        setError('You must be logged in to view transactions.');
+        setError('No token found. Please log in first.');
         setLoading(false);
         return;
       }
 
       try {
-        const res = await fetch('/api/users/transactions?limit=50&offset=0', {
+        const res = await fetch('http://localhost:3001/api/users/transactions?limit=50&offset=0', {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
@@ -95,14 +96,14 @@ const Transactions = () => {
         });
 
         if (!res.ok) {
-          const { error } = await res.json();
-          throw new Error(error || 'Failed to fetch transactions');
+          const errorData = await res.json();
+          throw new Error(errorData.error || 'Failed to fetch transactions');
         }
 
-        const { transactions } = await res.json();
-        setTransactions(transactions);
+        const data = await res.json();
+        setTransactions(data.transactions || []);
       } catch (err) {
-        setError(err.message);
+        setError(err.message || 'Something went wrong');
       } finally {
         setLoading(false);
       }
@@ -114,25 +115,18 @@ const Transactions = () => {
   if (loading) {
     return (
       <div className="transactions-page">
-        <Loader2 className="spinner" size={24} /> Loading transactions…
+        <Loader2 className="spinner" size={24} /> Loading transactions...
       </div>
     );
   }
 
   if (error) {
-    return (
-      <div className="transactions-page">
-        <p className="error">{error}</p>
-      </div>
-    );
+    return <div className="transactions-page error"><p>{error}</p></div>;
   }
 
   return (
     <div className="transactions-page">
-      <h2>
-        <Activity size={28} /> Recent Transactions
-      </h2>
-
+      <h2><Activity size={28} /> Recent Transactions</h2>
       {transactions.length === 0 ? (
         <p>No transactions found.</p>
       ) : (
@@ -141,39 +135,28 @@ const Transactions = () => {
             <tr>
               <th>Date</th>
               <th>Description</th>
-              <th>Amount (ZAR)</th>
+              <th>Amount (ZAR)</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody>
-            {transactions.map(
-              ({
-                transaction_id,
-                transaction_date,
-                description,
-                amount,
-                transaction_type,
-                status = 'Completed', // Supabase field may be null
-              }) => (
-                <tr
-                  key={transaction_id}
-                  className={
-                    transaction_type?.toLowerCase() === 'credit'
-                      ? 'credit'
-                      : 'debit'
-                  }
-                >
-                  <td>{new Date(transaction_date).toLocaleDateString()}</td>
-                  <td>{description}</td>
-                  <td>
-                    {amount < 0
-                      ? `-R${Math.abs(amount).toFixed(2)}`
-                      : `R${amount.toFixed(2)}`}
-                  </td>
-                  <td className={`status ${status.toLowerCase()}`}>{status}</td>
-                </tr>
-              ),
-            )}
+            {transactions.map((txn) => (
+              <tr
+                key={txn.transaction_id}
+                className={txn.transaction_type?.toLowerCase() === 'credit' ? 'credit' : 'debit'}
+              >
+                <td>{new Date(txn.transaction_date).toLocaleDateString()}</td>
+                <td>{txn.description || txn.category || 'N/A'}</td>
+                <td>
+                  {txn.amount < 0
+                    ? `-R${Math.abs(txn.amount).toFixed(2)}`
+                    : `R${txn.amount.toFixed(2)}`}
+                </td>
+                <td className={`status ${txn.status?.toLowerCase() || 'completed'}`}>
+                  {txn.status || 'Completed'}
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       )}
