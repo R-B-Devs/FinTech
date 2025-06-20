@@ -2,17 +2,29 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ForgotPasswordImg from "../assets/forgot.png";
 import Logo from "../assets/logo.png";
-import "../styles/ForgotPassword.css.css";
+import "../styles/ForgotPassword.css";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    alert(`Password reset link sent to: ${email}`);
-    navigate('/reset-password'); // Navigate to ResetPassword page
-  };
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  try {
+    const res = await fetch('http://localhost:3001/send-reset-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await res.json();
+    alert(data.message);
+  } catch (err) {
+    alert("Error sending reset link");
+  }
+};
+
 
   return (
     <div className="forgot-password-container">

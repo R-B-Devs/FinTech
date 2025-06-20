@@ -27,7 +27,7 @@ const VerifyOtp = () => {
 
   const handleVerify = async () => {
     try {
-      const res = await axios.post('http://localhost:5000/verify-otp', { email, otp });
+      const res = await axios.post('http://localhost:3001/verify-otp', { email, otp });
       if (res.data.success) {
         setMessage('✅ OTP verified! Redirecting...');
         setTimeout(() => {
@@ -43,7 +43,7 @@ const VerifyOtp = () => {
 
   const handleResend = async () => {
     try {
-      await axios.post('http://localhost:5000/send-otp', { email });
+      await axios.post('http://localhost:3001/send-otp', { email });
       setMessage('📨 OTP resent!');
       setSecondsLeft(300);
     } catch (err) {
