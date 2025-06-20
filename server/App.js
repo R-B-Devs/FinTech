@@ -112,7 +112,7 @@ app.post('/verify-otp', (req, res) => {
 app.post('/send-reset-link', async (req, res) => {
   const { email } = req.body;
 
-  let { data: user, error } = await supabaseClient.from('users').select('*').eq('email', email).single();;
+  let { data: user, error } = await supabaseClient.from('users').select('*').eq('email', email).single();
 
   if ( !error ) {
 
