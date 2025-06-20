@@ -64,35 +64,102 @@ function RegistrationForm() {
 
   const validateEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newErrors = {};
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   const newErrors = {};
 
-    if (!isValidSouthAfricanID(idNumber)) {
-      newErrors.idNumber = 'Invalid SA ID Number.';
-    }
-    if (!firstName.trim()) newErrors.firstName = 'First name is required.';
-    if (!lastName.trim()) newErrors.lastName = 'Last name is required.';
-    if (!validateEmail(email)) newErrors.email = 'Invalid email format.';
-    if (!accountNumber.trim() || !/^\d{6,20}$/.test(accountNumber)) {
-      newErrors.accountNumber = 'Account Number must be 6–20 digits.';
-    }
-    if (!validatePassword(password)) {
-      newErrors.password = 'Password must be 8+ chars, 1 symbol & 2 numbers.';
-    }
-    if (password !== confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match.';
-    }
-    if (!termsAccepted) {
-      newErrors.termsAccepted = 'You must accept the terms and conditions.';
-    }
+  //   if (!isValidSouthAfricanID(idNumber)) {
+  //     newErrors.idNumber = 'Invalid SA ID Number.';
+  //   }
+  //   if (!firstName.trim()) newErrors.firstName = 'First name is required.';
+  //   if (!lastName.trim()) newErrors.lastName = 'Last name is required.';
+  //   if (!validateEmail(email)) newErrors.email = 'Invalid email format.';
+  //   if (!accountNumber.trim() || !/^\d{6,20}$/.test(accountNumber)) {
+  //     newErrors.accountNumber = 'Account Number must be 6–20 digits.';
+  //   }
+  //   if (!validatePassword(password)) {
+  //     newErrors.password = 'Password must be 8+ chars, 1 symbol & 2 numbers.';
+  //   }
+  //   if (password !== confirmPassword) {
+  //     newErrors.confirmPassword = 'Passwords do not match.';
+  //   }
+  //   if (!termsAccepted) {
+  //     newErrors.termsAccepted = 'You must accept the terms and conditions.';
+  //   }
 
-    setErrors(newErrors);
+  //   setErrors(newErrors);
 
-    if (Object.keys(newErrors).length === 0) {
-      setLoading(true);
-      setTimeout(() => {
-        alert('Registration successful!');
+  //   if (Object.keys(newErrors).length === 0) {
+  //     setLoading(true);
+  //     setTimeout(() => {
+  //       alert('Registration successful!');
+  //       setIdNumber('');
+  //       setFirstName('');
+  //       setLastName('');
+  //       setEmail('');
+  //       setAccountNumber('');
+  //       setPassword('');
+  //       setConfirmPassword('');
+  //       setTermsAccepted(false);
+  //       setAcceptedAt(null);
+  //       setErrors({});
+  //       setLoading(false);
+  //     }, 2000);
+  //   }
+  // };
+  
+// At the top
+// import axios from 'axios'; // If you prefer axios
+// or just use fetch
+
+// Replace your handleSubmit with this:
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  const newErrors = {};
+
+  if (!isValidSouthAfricanID(idNumber)) {
+    newErrors.idNumber = 'Invalid SA ID Number.';
+  }
+  if (!firstName.trim()) newErrors.firstName = 'First name is required.';
+  if (!lastName.trim()) newErrors.lastName = 'Last name is required.';
+  if (!validateEmail(email)) newErrors.email = 'Invalid email format.';
+  if (!accountNumber.trim() || !/^\d{6,20}$/.test(accountNumber)) {
+    newErrors.accountNumber = 'Account Number must be 6–20 digits.';
+  }
+  if (!validatePassword(password)) {
+    newErrors.password = 'Password must be 8+ chars, 1 symbol & 2 numbers.';
+  }
+  if (password !== confirmPassword) {
+    newErrors.confirmPassword = 'Passwords do not match.';
+  }
+  if (!termsAccepted) {
+    newErrors.termsAccepted = 'You must accept the terms and conditions.';
+  }
+
+  setErrors(newErrors);
+
+  if (Object.keys(newErrors).length === 0) {
+    setLoading(true);
+    try {
+      // Call your server
+      const response = await fetch("http://localhost:3001/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          account_number: accountNumber,
+          id_number: idNumber,
+          first_name: firstName,
+          last_name: lastName,
+          password: password
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Registration successful! You can now login.');
         setIdNumber('');
         setFirstName('');
         setLastName('');
@@ -106,6 +173,22 @@ function RegistrationForm() {
         setLoading(false);
         navigate('/otp'); // Redirect to login page
       }, 2000);
+        // Optionally, redirect to login:
+        navigate('/login');
+      } else {
+        // Handle specific errors
+        setErrors(prevErrs => ({
+          ...prevErrs,
+          accountNumber: data.error || 'Registration failed'
+        }));
+        setLoading(false);
+      }
+    } catch (err) {
+      setErrors(prevErrs => ({
+        ...prevErrs,
+        api: "Failed to connect to server. Please try again."
+      }));
+      setLoading(false);
     }
   };
 
