@@ -71,14 +71,16 @@
   .metric-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(161, 13, 47, 0.4);
+    
   }
 
 
   
   .metric-icon {
     color: #a10d2f;
-    font-size: 2.4rem;
-    margin-bottom: 0.5rem;
+    font-size: 5.2rem;
+    margin-bottom: 1.5rem;
+    transform: scale(1.2);
   }
   
   .metric-card h4 {
@@ -96,4 +98,7 @@
     padding-left: 1.2rem;
     margin: 0.5rem 0 0 0;
   }
+
+  
+
   
