@@ -6,7 +6,7 @@ import '../styles/CreditHealth.css';
 const CreditHealth = () => {
   return (
     <div className="credit-health-page">
-      <Link to="/" className="nav-link">
+      <Link to="/Dashboard" className="nav-link">
         <span className="material-symbols-outlined">arrow_back</span>
         <span>Back</span>
       </Link>

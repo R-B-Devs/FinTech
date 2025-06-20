@@ -85,14 +85,16 @@ const Chat = () => {
 
   return (
     <div className="chat-container">
-      {/* Header */}
-      <div className="chat-header">
-        <div className="chat-header-left">
-          <img src={Logo} alt="LynqAI Logo" className="chat-logo" />
-          <Link to="/" className="nav-link back-link">
+       <Link to="/Dashboard" className="nav-link back-link">
             <span className="material-symbols-outlined">arrow_back</span>
             <span>Back</span>
           </Link>
+      {/* Header */}
+      <div className="chat-header">
+       
+        <div className="chat-header-left">
+          <img src={Logo} alt="LynqAI Logo" className="chat-logo" />
+          
           <div className="chat-title">
             <h1>Lynq Chat</h1>
             <span className="chat-status">Online</span>

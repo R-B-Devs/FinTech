@@ -41,7 +41,7 @@ const transactionsData = [
 const Transactions = () => {
   return (
     <div className="transactions-page">
-      <Link to="/" className="nav-link">
+      <Link to="/Dashboard" className="nav-link">
                   <span className="material-symbols-outlined">arrow_back</span>
                   <span>Back</span>
         </Link>
