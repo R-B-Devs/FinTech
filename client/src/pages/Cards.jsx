@@ -13,6 +13,7 @@ const initialCards = [
     accountnumber: 123456789,
     expiry: '12/26',
     cvv: '123',
+    isBlocked: false,
   },
   {
     id: 2,
@@ -23,19 +24,31 @@ const initialCards = [
     accountnumber: 987654321,
     expiry: '09/27',
     cvv: '456',
+    isBlocked: false,
   },
 ];
 
 const Cards = () => {
-  const [cards] = useState(initialCards);
+  const [cards, setCards] = useState(initialCards);
   const [flippedIds, setFlippedIds] = useState([]);
   const [onlineEnabled, setOnlineEnabled] = useState(true);
   const [internationalEnabled, setInternationalEnabled] = useState(false);
 
   const toggleFlip = (id) => {
+    const card = cards.find((c) => c.id === id);
+    if (card?.isBlocked) return; // Don’t flip if blocked
     setFlippedIds((prev) =>
       prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
     );
+  };
+
+  const toggleBlockCard = (id) => {
+    setCards((prev) =>
+      prev.map((card) =>
+        card.id === id ? { ...card, isBlocked: !card.isBlocked } : card
+      )
+    );
+    setFlippedIds((prev) => prev.filter((fid) => fid !== id)); // reset flip
   };
 
   return (
@@ -55,8 +68,7 @@ const Cards = () => {
 
       <main className="cards-page">
         <h2><CreditCard size={28} /> Saved Cards</h2>
-        <br>
-        </br>
+
         <div className="cards-container">
           {cards.map((card) => {
             const isFlipped = flippedIds.includes(card.id);
@@ -64,7 +76,7 @@ const Cards = () => {
             return (
               <div
                 key={card.id}
-                className={`card ${isFlipped ? 'flipped' : ''}`}
+                className={`card ${isFlipped ? 'flipped' : ''} ${card.isBlocked ? 'blocked' : ''}`}
                 onClick={() => toggleFlip(card.id)}
                 tabIndex={0}
                 role="button"
@@ -73,21 +85,25 @@ const Cards = () => {
                 }}
               >
                 <div className="card-inner">
-                  {/* FRONT */}
                   <div className="card-front">
                     <div className="card-header">
                       <span className="card-type right">{card.cardType}</span>
                     </div>
                     <div className="card-holder-name">{card.cardHolder}</div>
                     <div className="account-number">{card.accountnumber}</div>
+                    {card.isBlocked && (
+                      <div className="block-notice">⚠️ This card is blocked</div>
+                    )}
                   </div>
 
-                  {/* BACK */}
                   <div className="card-back">
                     <div className="card-bank">{card.bank}</div>
                     <div className="card-number">**** **** **** {card.cardNumber.slice(-4)}</div>
                     <div className="expiry">Exp: {card.expiry}</div>
                     <div className="card-cvv">CVV: {card.cvv}</div>
+                    {card.isBlocked && (
+                      <div className="block-message">🔒 Card is blocked</div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -96,7 +112,7 @@ const Cards = () => {
         </div>
 
         {/* GLOBAL TOGGLES */}
-        <div className="global-toggles">
+        <div className="global-toggles-grid">
           <div className="toggle-option">
             <span>Online Transactions</span>
             <label className="switch">
@@ -108,6 +124,19 @@ const Cards = () => {
               <span className="slider round"></span>
             </label>
           </div>
+
+          <div className="toggle-option">
+            <span>Block Card 1</span>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={cards[0].isBlocked}
+                onChange={() => toggleBlockCard(cards[0].id)}
+              />
+              <span className="slider round"></span>
+            </label>
+          </div>
+
           <div className="toggle-option">
             <span>International Transactions</span>
             <label className="switch">
@@ -115,6 +144,18 @@ const Cards = () => {
                 type="checkbox"
                 checked={internationalEnabled}
                 onChange={() => setInternationalEnabled(!internationalEnabled)}
+              />
+              <span className="slider round"></span>
+            </label>
+          </div>
+
+          <div className="toggle-option">
+            <span>Block Card 2</span>
+            <label className="switch">
+              <input
+                type="checkbox"
+                checked={cards[1].isBlocked}
+                onChange={() => toggleBlockCard(cards[1].id)}
               />
               <span className="slider round"></span>
             </label>
