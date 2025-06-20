@@ -44,12 +44,10 @@ export default function SettingsPage() {
 
   const handleSaveChanges = () => {
     alert('Settings saved successfully!');
-    // TODO: Add save logic here (API or context)
   };
 
   const handleSignOut = () => {
     alert('Signing out...');
-    // TODO: Add actual sign out logic
     navigate('/login');
   };
 
@@ -84,32 +82,27 @@ export default function SettingsPage() {
 
   return (
     <div className="settings-container">
-      <div className="settings-header">
-        <h1>Settings</h1>
+      <div className="settings-topbar">
+        <div className="user-info">
+          <div className="avatar-circle">L</div>
+          <div>
+            <h2 className="user-name">LynqAI</h2>
+            <p className="user-role">Local Account</p>
+            <button className="signin-link">Sign In</button>
+          </div>
+        </div>
         <button className="save-button" onClick={handleSaveChanges}>
           <Save className="icon" />
           <span>Save Changes</span>
         </button>
       </div>
 
-      <div className="settings-inner">
-        {/* Profile */}
+      <div className="settings-grid">
         <Section title="Profile">
-          <SettingItem
-            icon={User}
-            title="Personal Information"
-            subtitle="Update your profile details"
-            onClick={() => navigate('/dashboard/settings/personal-info')}
-          />
-          <SettingItem
-            icon={CreditCard}
-            title="Linked Accounts"
-            subtitle="Manage your bank accounts and cards"
-            onClick={() => navigate('/dashboard/settings/linked-accounts')}
-          />
+          <SettingItem icon={User} title="Personal Information" subtitle="Update your profile details" onClick={() => navigate('/dashboard/settings/personal-info')} />
+          <SettingItem icon={CreditCard} title="Linked Accounts" subtitle="Manage your bank accounts and cards" onClick={() => navigate('/dashboard/settings/linked-accounts')} />
         </Section>
 
-        {/* Security */}
         <Section title="Security">
           <SettingItem icon={Shield} title="Two-Factor Authentication" subtitle="Extra security for your account">
             <Toggle checked={security.twoFactor} onChange={() => handleSecurityChange('twoFactor', !security.twoFactor)} />
@@ -127,7 +120,6 @@ export default function SettingsPage() {
           </SettingItem>
         </Section>
 
-        {/* Privacy */}
         <Section title="Privacy">
           <SettingItem icon={privacy.hideBalances ? EyeOff : Eye} title="Hide Balances" subtitle="Hide account balances on main screen">
             <Toggle checked={privacy.hideBalances} onChange={() => handlePrivacyChange('hideBalances')} />
@@ -137,7 +129,6 @@ export default function SettingsPage() {
           </SettingItem>
         </Section>
 
-        {/* Notifications */}
         <Section title="Notifications">
           <SettingItem icon={Bell} title="Push Notifications" subtitle="Receive notifications on your device">
             <Toggle checked={notifications.pushNotifications} onChange={() => handleNotificationChange('pushNotifications')} />
@@ -153,37 +144,19 @@ export default function SettingsPage() {
           </SettingItem>
         </Section>
 
-        {/* Appearance */}
         <Section title="Appearance">
           <SettingItem icon={darkMode ? Moon : Sun} title="Dark Mode" subtitle="Use dark theme throughout the app">
             <Toggle checked={darkMode} onChange={() => setDarkMode(!darkMode)} />
           </SettingItem>
         </Section>
 
-        {/* Support */}
         <Section title="Support">
-          <SettingItem
-            icon={HelpCircle}
-            title="Help Center"
-            subtitle="Get help and support"
-            onClick={() => navigate('/dashboard/settings/help-center')}
-          />
-          <SettingItem
-            icon={Mail}
-            title="Contact Support"
-            subtitle="Reach out to our support team"
-            onClick={() => navigate('/dashboard/settings/contact-support')}
-          />
+          <SettingItem icon={HelpCircle} title="Help Center" subtitle="Get help and support" onClick={() => navigate('/dashboard/settings/help-center')} />
+          <SettingItem icon={Mail} title="Contact Support" subtitle="Reach out to our support team" onClick={() => navigate('/dashboard/settings/contact-support')} />
         </Section>
 
-        {/* Account */}
         <Section title="Account">
-          <SettingItem
-            icon={LogOut}
-            title="Sign Out"
-            subtitle="Sign out of your account"
-            onClick={handleSignOut}
-          />
+          <SettingItem icon={LogOut} title="Sign Out" subtitle="Sign out of your account" onClick={handleSignOut} />
         </Section>
       </div>
     </div>
