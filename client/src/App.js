@@ -24,6 +24,7 @@ import Investments from './pages/Investments';
 import Profile from './pages/Profile';
 import SettingsPage from './pages/Settings';
 import Notification from './pages/notification.jsx';
+import Timeout from './pages/Timeout';
 
 
 
@@ -42,6 +43,7 @@ function App() {
         <Route path="/verifyOtp" element={<VerifyOtp />} />
 
         {/* Dashboard routes */}
+         <Route element={<Timeout timeout={2 * 60 * 1000} gracePeriod={30 * 1000} />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/analytics" element={<Analytics />} />
         <Route path="/dashboard/goals" element={<Goals />} />
@@ -55,6 +57,7 @@ function App() {
         <Route path="/dashboard/profile" element={<Profile />} />
         <Route path="/dashboard/settings" element={<SettingsPage />} />
         <Route path="/dashboard/notification" element={<Notification />} />
+        </Route>
       </Routes>
     </Router>
   );
