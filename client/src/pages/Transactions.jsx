@@ -67,43 +67,45 @@
 
 // export default Transactions;
 
-
 import React, { useEffect, useState } from 'react';
-import { Activity, Loader2 } from 'lucide-react';
+import { Activity } from 'lucide-react';
 import '../styles/Transactions.css';
 
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchTransactions = async () => {
-      const token = localStorage.getItem('jwt'); // ✅ You are using this after login
+      setLoading(true);
+      setError('');
 
+      // Retrieve JWT token
+      const token = localStorage.getItem('jwt');
       if (!token) {
-        setError('No token found. Please log in first.');
+        setError('Not authenticated. Please log in.');
         setLoading(false);
         return;
       }
 
       try {
-        const res = await fetch('http://localhost:3001/api/users/transactions?limit=50&offset=0', {
+        const response = await fetch('http://localhost:3001/api/users/transactions', {
+          method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
+            'Authorization': `Bearer ${token}`,
+          }
         });
 
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.error || 'Failed to fetch transactions');
-        }
+        const data = await response.json();
 
-        const data = await res.json();
-        setTransactions(data.transactions || []);
+        if (response.ok) {
+          setTransactions(data.transactions);
+        } else {
+          setError(data.error || 'Failed to fetch transactions');
+        }
       } catch (err) {
-        setError(err.message || 'Something went wrong');
+        setError('Server connection failed');
       } finally {
         setLoading(false);
       }
@@ -112,24 +114,12 @@ const Transactions = () => {
     fetchTransactions();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="transactions-page">
-        <Loader2 className="spinner" size={24} /> Loading transactions...
-      </div>
-    );
-  }
-
-  if (error) {
-    return <div className="transactions-page error"><p>{error}</p></div>;
-  }
-
   return (
     <div className="transactions-page">
       <h2><Activity size={28} /> Recent Transactions</h2>
-      {transactions.length === 0 ? (
-        <p>No transactions found.</p>
-      ) : (
+      {loading && <div className="loading">Loading transactions...</div>}
+      {error && <div className="error">{error}</div>}
+      {!loading && !error && (
         <table className="transactions-table">
           <thead>
             <tr>
@@ -140,20 +130,21 @@ const Transactions = () => {
             </tr>
           </thead>
           <tbody>
-            {transactions.map((txn) => (
-              <tr
-                key={txn.transaction_id}
-                className={txn.transaction_type?.toLowerCase() === 'credit' ? 'credit' : 'debit'}
-              >
-                <td>{new Date(txn.transaction_date).toLocaleDateString()}</td>
-                <td>{txn.description || txn.category || 'N/A'}</td>
+            {transactions.length === 0 ? (
+              <tr>
+                <td colSpan={4} style={{textAlign:'center', color:'gray'}}>No transactions found</td>
+              </tr>
+            ) : transactions.map(tx => (
+              <tr key={tx.transaction_id} className={tx.transaction_type === 'credit' ? 'credit' : 'debit'}>
+                <td>{tx.transaction_date ? tx.transaction_date.split('T')[0] : ''}</td>
+                <td>{tx.description || tx.category || tx.merchant_name || '-'}</td>
                 <td>
-                  {txn.amount < 0
-                    ? `-R${Math.abs(txn.amount).toFixed(2)}`
-                    : `R${txn.amount.toFixed(2)}`}
+                  {tx.amount < 0
+                    ? `-R${Math.abs(tx.amount).toFixed(2)}`
+                    : `R${tx.amount.toFixed(2)}`}
                 </td>
-                <td className={`status ${txn.status?.toLowerCase() || 'completed'}`}>
-                  {txn.status || 'Completed'}
+                <td className={`status ${tx.transaction_type}`}>
+                  {tx.status || tx.transaction_type.charAt(0).toUpperCase() + tx.transaction_type.slice(1)}
                 </td>
               </tr>
             ))}
