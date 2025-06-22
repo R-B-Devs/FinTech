@@ -24,6 +24,9 @@ import Investments from './pages/Investments';
 import Profile from './pages/Profile';
 import SettingsPage from './pages/Settings';
 import InAppCall from './pages/InAppCall'; // 👈 Make sure this exists!
+import AgentPage from "./pages/AgentPage.jsx";
+import AgentReceiver from "./pages/AgentReceiver.jsx";
+
 
 function App() {
   return (
@@ -38,6 +41,9 @@ function App() {
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/otp" element={<OtpPage />} />
         <Route path="/verifyOtp" element={<VerifyOtp />} />
+
+        <Route path="/agent" element={<AgentPage />} />
+        <Route path="/receiver" element={<AgentReceiver />} />
 
         {/* Dashboard routes */}
         <Route path="/dashboard" element={<Dashboard />} />

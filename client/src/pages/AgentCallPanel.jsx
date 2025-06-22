@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import AgentCallPanel from './AgentCallPanel';
 import {
   Phone,
   X,
@@ -7,12 +6,7 @@ import {
   MicOff,
   Video,
   VideoOff,
-  User,
-  Users,
-  MessageCircle,
-  Shield,
-  DollarSign,
-  CreditCard
+  User
 } from 'lucide-react';
 
 const AgentCallPanel = ({
@@ -22,13 +16,13 @@ const AgentCallPanel = ({
   endCall,
   callStatus,
   currentCaller,
-  departments
+  departments,
+  onStartGeneralInquiry
 }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
 
-  // Timer for call duration
   useEffect(() => {
     let interval;
     if (callStatus === 'active') {
@@ -49,6 +43,24 @@ const AgentCallPanel = ({
 
   return (
     <div className={`agent-call-panel ${callStatus !== 'idle' ? 'active' : ''}`}>
+      {callStatus === 'idle' && (
+        <div className="idle-options">
+          <button
+            className="btn accept"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginTop: '1rem'
+            }}
+            onClick={onStartGeneralInquiry}
+          >
+            <Phone className="icon" />
+            General Enquiries
+          </button>
+        </div>
+      )}
+
       {callStatus === 'ringing' && incomingCall && (
         <div className="incoming-call">
           <div className="call-header">
@@ -57,7 +69,7 @@ const AgentCallPanel = ({
               <X className="icon" />
             </button>
           </div>
-          
+
           <div className="caller-info">
             <div className="caller-avatar">
               <User className="icon-large" />
@@ -65,7 +77,7 @@ const AgentCallPanel = ({
             <h4>{currentCaller.name || 'Customer'}</h4>
             <p>Department: {departments[incomingCall.department] || incomingCall.department}</p>
           </div>
-          
+
           <div className="call-actions">
             <button className="btn reject" onClick={rejectCall}>
               Decline
@@ -85,7 +97,7 @@ const AgentCallPanel = ({
               <X className="icon" />
             </button>
           </div>
-          
+
           <div className="caller-info">
             <div className="caller-avatar">
               <User className="icon-large" />
@@ -94,30 +106,30 @@ const AgentCallPanel = ({
             <p>Department: {departments[currentCaller.department] || currentCaller.department}</p>
             <div className="call-timer">{formatTime(callDuration)}</div>
           </div>
-          
+
           <div className="call-controls">
-            <button 
+            <button
               className={`control-btn ${isMuted ? 'active' : ''}`}
               onClick={() => setIsMuted(!isMuted)}
             >
               {isMuted ? <MicOff className="icon" /> : <Mic className="icon" />}
               <span>{isMuted ? 'Unmute' : 'Mute'}</span>
             </button>
-            
-            <button 
+
+            <button
               className={`control-btn ${isVideoOn ? 'active' : ''}`}
               onClick={() => setIsVideoOn(!isVideoOn)}
             >
               {isVideoOn ? <VideoOff className="icon" /> : <Video className="icon" />}
               <span>{isVideoOn ? 'Stop Video' : 'Start Video'}</span>
             </button>
-            
+
             <button className="control-btn end-call" onClick={endCall}>
               <Phone className="icon" />
               <span>End Call</span>
             </button>
           </div>
-          
+
           <div className="call-notes">
             <textarea placeholder="Add call notes..." />
             <button className="btn save-notes">Save Notes</button>
@@ -133,13 +145,13 @@ const AgentCallPanel = ({
               <X className="icon" />
             </button>
           </div>
-          
+
           <div className="call-summary">
             <p>Duration: {formatTime(callDuration)}</p>
             <p>With: {currentCaller.name || 'Customer'}</p>
             <p>Department: {departments[currentCaller.department] || currentCaller.department}</p>
           </div>
-          
+
           <div className="call-feedback">
             <h4>Call Summary</h4>
             <textarea placeholder="Add call summary and feedback..." />
@@ -151,7 +163,6 @@ const AgentCallPanel = ({
   );
 };
 
-// Default props for the component
 AgentCallPanel.defaultProps = {
   departments: {
     'general-enquiries': 'General Enquiries',
