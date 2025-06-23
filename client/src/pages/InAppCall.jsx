@@ -63,14 +63,16 @@ const CustomerCallUI = ({
             </div>
             <h4>Customer Support Call</h4>
             <p>Connect with our support team for assistance with your banking needs.</p>
-           
+
             <button
               className="btn primary"
-              onClick={() => setCallFeature(prev => ({...prev, currentPage: 'microphone-permission'}))}
+              onClick={() =>
+                setCallFeature((prev) => ({ ...prev, currentPage: 'microphone-permission' }))
+              }
             >
               Continue to Call Service
             </button>
-           
+
             <div className="call-info">
               <p>Standard call rates apply. Available Mon-Fri 8am-8pm, Sat 9am-5pm.</p>
             </div>
@@ -84,20 +86,19 @@ const CustomerCallUI = ({
             </div>
             <h4>Microphone Access Required</h4>
             <p>To use our call service, we need access to your microphone.</p>
-           
-            <button
-              className="btn primary"
-              onClick={requestMicrophonePermission}
-            >
+
+            <button className="btn primary" onClick={requestMicrophonePermission}>
               Allow Microphone Access
             </button>
             <button
               className="btn secondary"
-              onClick={() => setCallFeature(prev => ({...prev, currentPage: 'main-menu'}))}
+              onClick={() =>
+                setCallFeature((prev) => ({ ...prev, currentPage: 'main-menu' }))
+              }
             >
               Continue with Call Service
             </button>
-           
+
             <div className="call-info">
               <p>We only access your microphone during active calls.</p>
             </div>
@@ -107,45 +108,33 @@ const CustomerCallUI = ({
         {!activeCall && callFeature.currentPage === 'main-menu' && (
           <div className="call-page menu-page">
             <h4>How Can We Help You Today?</h4>
-           
+
             <div className="call-departments">
-              <button
-                className="department-btn"
-                onClick={() => startCall('general-enquiries')}
-              >
+              <button className="department-btn" onClick={() => startCall('general-enquiries')}>
                 <div className="btn-icon">
                   <MessageCircle className="icon" />
                 </div>
                 <span>General Enquiries</span>
                 <ChevronRight className="arrow" />
               </button>
-             
-              <button
-                className="department-btn emergency"
-                onClick={() => startCall('fraud-department')}
-              >
+
+              <button className="department-btn emergency" onClick={() => startCall('fraud-department')}>
                 <div className="btn-icon">
                   <Shield className="icon" />
                 </div>
                 <span>Fraud or Card Emergency</span>
                 <ChevronRight className="arrow" />
               </button>
-             
-              <button
-                className="department-btn"
-                onClick={() => startCall('loan-repayment')}
-              >
+
+              <button className="department-btn" onClick={() => startCall('loan-repayment')}>
                 <div className="btn-icon">
                   <DollarSign className="icon" />
                 </div>
                 <span>Loan Repayment</span>
                 <ChevronRight className="arrow" />
               </button>
-             
-              <button
-                className="department-btn"
-                onClick={() => startCall('credit-application')}
-              >
+
+              <button className="department-btn" onClick={() => startCall('credit-application')}>
                 <div className="btn-icon">
                   <CreditCard className="icon" />
                 </div>
@@ -153,9 +142,11 @@ const CustomerCallUI = ({
                 <ChevronRight className="arrow" />
               </button>
             </div>
-           
+
             <div className="call-status">
-              <p>Current wait time: <span className="wait-time">2 minutes</span></p>
+              <p>
+                Current wait time: <span className="wait-time">2 minutes</span>
+              </p>
             </div>
           </div>
         )}
