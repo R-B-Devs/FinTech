@@ -167,7 +167,7 @@ app.post('/reset-password/:token', async (req, res) => {
       const salt = await bcrypt.genSalt(10);
       const passwordHash = await bcrypt.hash(password, salt);
       const { error } = await supabaseClient.from('users').update( { password_hash: passwordHash, salt: salt })
-      .eq('email', email);
+      .eq('id_number', req.body.id_number);
 
       if (!error) {
         res.json( { success: true, message: 'Password reset successful!' } );
