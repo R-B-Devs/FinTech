@@ -28,6 +28,12 @@ import AgentPage from "./pages/AgentPage.jsx";
 import AgentReceiver from "./pages/AgentReceiver.jsx";
 
 
+// NEW: Settings subpages
+import PersonalInfo from './pages/PersonalInfo';
+import LinkedAccounts from './pages/LinkedAccounts';
+import HelpCenter from './pages/HelpCenter';
+import ContactSupport from './pages/ContactSupport';
+
 function App() {
   return (
     <Router>
@@ -58,10 +64,17 @@ function App() {
         <Route path="/dashboard/cards" element={<Cards />} />
         <Route path="/dashboard/investments" element={<Investments />} />
         <Route path="/dashboard/profile" element={<Profile />} />
+
+        {/* Settings and its subpages */}
         <Route path="/dashboard/settings" element={<SettingsPage />} />
 
         {/* Call route for testing */}
         <Route path="/in-app-call" element={<InAppCall />} />
+
+        <Route path="/dashboard/settings/personal-info" element={<PersonalInfo />} />
+        <Route path="/dashboard/settings/linked-accounts" element={<LinkedAccounts />} />
+        <Route path="/dashboard/settings/help-center" element={<HelpCenter />} />
+        <Route path="/dashboard/settings/contact-support" element={<ContactSupport />} />
       </Routes>
     </Router>
   );
