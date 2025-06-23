@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Area, AreaChart } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, Calendar, AlertTriangle, Target, CreditCard, PiggyBank, Brain, Users, Bell, Settings, Filter, Download, RefreshCw } from 'lucide-react';
+import "../styles/MoneyTracker.css";
 
 const MoneyTracker = () => {
   const [activeTab, setActiveTab] = useState('overview');
@@ -27,15 +28,6 @@ const MoneyTracker = () => {
     { name: 'Other', value: 800, color: '#6B7280' }
   ];
 
-  const spendingPatternData = [
-    { day: 'Mon', amount: 250, transactions: 3, avgPerTransaction: 83 },
-    { day: 'Tue', amount: 210, transactions: 2, avgPerTransaction: 105 },
-    { day: 'Wed', amount: 340, transactions: 4, avgPerTransaction: 85 },
-    { day: 'Thu', amount: 305, transactions: 5, avgPerTransaction: 61 },
-    { day: 'Fri', amount: 495, transactions: 7, avgPerTransaction: 71 },
-    { day: 'Sat', amount: 690, transactions: 8, avgPerTransaction: 86 },
-    { day: 'Sun', amount: 420, transactions: 4, avgPerTransaction: 105 }
-  ];
 
   const financialHealthMetrics = [
     { metric: 'Debt-to-Income', value: 28, target: 30, status: 'good', description: 'Manageable debt levels' },
@@ -232,28 +224,6 @@ const MoneyTracker = () => {
             <h1 className="text-3xl font-bold mb-2" style={{ color: '#ffffff' }}>MoneyTracker</h1>
             <p style={{ color: '#cbd5e1' }}>AI-powered financial insights and cash flow monitoring</p>
           </div>
-          <div className="flex items-center space-x-4">
-            <button 
-              onClick={handleRefreshData}
-              className="p-2 rounded-lg transition-colors duration-200 hover:opacity-80"
-              style={{ backgroundColor: '#2a2a2a', color: '#ffffff' }}
-              disabled={loading}
-            >
-              <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-            </button>
-            <div className="relative">
-              <Bell className="w-6 h-6" style={{ color: '#cbd5e1' }} />
-              {notifications > 0 && (
-                <span 
-                  className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center"
-                  style={{ backgroundColor: '#8A1F2C' }}
-                >
-                  {notifications}
-                </span>
-              )}
-            </div>
-            <Settings className="w-6 h-6 cursor-pointer hover:opacity-80 transition-opacity" style={{ color: '#cbd5e1' }} />
-          </div>
         </div>
 
         {/* Time Range Selector */}
@@ -319,7 +289,6 @@ const MoneyTracker = () => {
         <div className="flex space-x-1 mb-6 p-1 shadow-sm rounded-lg" style={{ backgroundColor: '#1a1a1a' }}>
           {[
             { id: 'overview', label: 'Cash Flow', icon: TrendingUp },
-            { id: 'patterns', label: 'Spending Patterns', icon: Calendar },
             { id: 'health', label: 'Financial Health', icon: Target },
             { id: 'insights', label: 'AI Insights', icon: Brain }
           ].map((tab) => (
@@ -411,20 +380,6 @@ const MoneyTracker = () => {
 
         {activeTab === 'patterns' && (
           <div className="space-y-6">
-            {/* Weekly Spending Pattern */}
-            <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: '#1a1a1a' }}>
-              <h3 className="text-lg font-semibold mb-4" style={{ color: '#ffffff' }}>Weekly Spending Patterns</h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={spendingPatternData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-                  <XAxis dataKey="day" stroke="#cbd5e1" />
-                  <YAxis stroke="#cbd5e1" />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Bar dataKey="amount" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
             {/* Top Merchants */}
             <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: '#1a1a1a' }}>
               <h3 className="text-lg font-semibold mb-4" style={{ color: '#ffffff' }}>Top Merchants</h3>

@@ -603,7 +603,44 @@ app.get('/api/users/dashboard', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Failed to load dashboard data.' });
   }
 });
+app.put('/api/users/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+  const fields = req.body;
 
+  if (!/^[0-9a-fA-F-]{36}$/.test(user_id)) {
+    return res.status(400).json({ error: 'Invalid user ID format' });
+  }
+
+  try {
+    // Remove null or empty fields from update
+    const validFields = Object.fromEntries(
+      Object.entries(fields).filter(([_, value]) => value !== null && value !== '')
+    );
+
+    if (Object.keys(validFields).length === 0) {
+      return res.status(400).json({ error: 'No valid fields to update' });
+    }
+
+    validFields.updated_at = new Date().toISOString();
+
+    const { data, error } = await supabaseClient
+      .from('users')
+      .update(validFields)
+      .eq('user_id', user_id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Update user error:', error);
+      return res.status(500).json({ error: 'Failed to update user profile' });
+    }
+
+    res.json({ message: 'Profile updated successfully', user: data });
+  } catch (err) {
+    console.error('Unexpected error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 app.get('/api/users/:user_id', async (req, res) => {
   const { user_id } = req.params;
     console.log(user_id)
@@ -618,6 +655,7 @@ app.get('/api/users/:user_id', async (req, res) => {
     res.status(404).json({ error: result.message });
   }
 });
+
 app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to ABSA Financial Assistant API',

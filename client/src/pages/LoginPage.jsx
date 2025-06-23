@@ -211,7 +211,6 @@ const LoginPage = () => {
         // Store token and user info
         localStorage.setItem('jwt', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        //localStorage.setItem('user_id', JSON.stringify(data.user.userId));
         // Redirect to dashboard
         navigate('/dashboard');
       } else {
