@@ -11,6 +11,7 @@ import OtpPage from "./pages/OtpVerification.jsx";
 import VerifyOtp from "./pages/VerifyOtp.jsx";
 
 import Dashboard from './pages/Dashboard';
+import CallContainer from './pages/CallContainer';  // Adjust path
 import Analytics from './pages/Analytics';
 import Goals from './pages/Goals';
 import Offers from './pages/Offers';
@@ -22,6 +23,7 @@ import Cards from './pages/Cards';
 import Investments from './pages/Investments';
 import Profile from './pages/Profile';
 import SettingsPage from './pages/Settings';
+import InAppCall from './pages/InAppCall'; // 👈 Make sure this exists!
 
 // NEW: Settings subpages
 import PersonalInfo from './pages/PersonalInfo';
@@ -38,13 +40,14 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/demo" element={<DemoPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/otp" element={<OtpPage />} />
         <Route path="/verifyOtp" element={<VerifyOtp />} />
 
         {/* Dashboard routes */}
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/call" element={<CallContainer />} />
         <Route path="/dashboard/analytics" element={<Analytics />} />
         <Route path="/dashboard/goals" element={<Goals />} />
         <Route path="/dashboard/offers" element={<Offers />} />
@@ -58,6 +61,10 @@ function App() {
 
         {/* Settings and its subpages */}
         <Route path="/dashboard/settings" element={<SettingsPage />} />
+
+        {/* Call route for testing */}
+        <Route path="/in-app-call" element={<InAppCall />} />
+
         <Route path="/dashboard/settings/personal-info" element={<PersonalInfo />} />
         <Route path="/dashboard/settings/linked-accounts" element={<LinkedAccounts />} />
         <Route path="/dashboard/settings/help-center" element={<HelpCenter />} />

@@ -1,0 +1,660 @@
+/* Base Panel Styles */
+.call-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 350px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+}
+
+.call-panel.open {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Header Styles */
+.call-panel-header {
+  padding: 16px;
+  background: #2563eb;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.call-panel-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.call-close-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.call-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Content Area */
+.call-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.call-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 16px;
+}
+
+/* Icons */
+.call-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.icon-large {
+  width: 32px;
+  height: 32px;
+  color: #2563eb;
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Button Styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  width: 100%;
+  margin: 0.25rem 0;
+}
+
+.btn.primary {
+  background-color: #2563eb;
+  color: white;
+}
+
+.btn.primary:hover {
+  background-color: #1d4ed8;
+}
+
+.btn.secondary {
+  background-color: #f1f5f9;
+  color: #2563eb;
+  border: 1px solid #e2e8f0;
+}
+
+.btn.secondary:hover {
+  background-color: #e2e8f0;
+}
+
+/* Department Buttons */
+.department-btn {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  width: 100%;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  margin: 0.25rem 0;
+}
+
+.department-btn:hover {
+  background-color: #f1f5f9;
+}
+
+.department-btn.emergency {
+  border-left: 4px solid #dc2626;
+  background-color: #fef2f2;
+}
+
+.department-btn.emergency:hover {
+  background-color: #fee2e2;
+}
+
+/* Control Buttons */
+.control-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #64748b;
+  font-size: 0.75rem;
+  min-width: 4rem;
+}
+
+.control-btn:hover {
+  background-color: #f1f5f9;
+}
+
+.control-btn.active {
+  background-color: #e0e7ff;
+  color: #2563eb;
+}
+
+.control-btn.end-call {
+  background-color: #dc2626;
+  color: white;
+}
+
+.control-btn.end-call:hover {
+  background-color: #b91c1c;
+}
+
+/* Button Icons */
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: #e0e7ff;
+  margin-right: 0.75rem;
+}
+
+/* Agent Specific Styles */
+.caller-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.call-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.call-actions .btn {
+  flex: 1;
+}
+
+.btn.accept {
+  background: #16a34a;
+  color: white;
+}
+
+.btn.accept:hover {
+  background: #15803d;
+}
+
+.btn.reject {
+  background: #dc2626;
+  color: white;
+}
+
+.btn.reject:hover {
+  background: #b91c1c;
+}
+
+.call-timer {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 16px 0;
+  color: #2563eb;
+}
+
+.call-notes {
+  margin-top: 24px;
+}
+
+.call-notes textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  min-height: 100px;
+  resize: vertical;
+  margin-bottom: 12px;
+}
+
+.idle-state {
+  text-align: center;
+  padding: 24px 0;
+}
+
+.idle-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #e0e7ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+/* Info Text */
+.call-info {
+  font-size: 12px;
+  color: #64748b;
+  margin-top: 16px;
+}
+
+.call-status {
+  margin-top: 16px;
+  padding: 8px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.wait-time {
+  font-weight: 600;
+  color: #2563eb;
+}
+
+/* Active Call View */
+.active-call-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.call-status-message {
+  text-align: center;
+  padding: 8px;
+  background: #e0e7ff;
+  border-radius: 8px;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+.active-call-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.call-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+/* Base Styles */
+.call-panel {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 350px;
+  max-height: 600px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  overflow: hidden;
+  transform: translateY(100%);
+  opacity: 0;
+  transition: all 0.3s ease;
+}
+
+.call-panel.open {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.call-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: #4a6fa5;
+  color: white;
+}
+
+.call-panel-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.call-close-btn {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.call-panel-content {
+  padding: 16px;
+  overflow-y: auto;
+  max-height: 500px;
+}
+
+/* Common Elements */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 4px;
+}
+
+.btn.primary {
+  background: #4a6fa5;
+  color: white;
+}
+
+.btn.secondary {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+}
+
+.icon-large {
+  width: 48px;
+  height: 48px;
+}
+
+/* Welcome Page */
+.welcome-page {
+  text-align: center;
+}
+
+.call-icon {
+  margin: 16px 0;
+}
+
+.call-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.call-info {
+  font-size: 12px;
+  color: #666;
+  margin-top: 16px;
+}
+
+/* Menu Page */
+.menu-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.department-btn {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 12px;
+  margin: 6px 0;
+  background: #f8f8f8;
+  border: none;
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.department-btn:hover {
+  background: #e8e8e8;
+}
+
+.department-btn.emergency {
+  background: #fff0f0;
+  border-left: 4px solid #e53e3e;
+}
+
+.btn-icon {
+  margin-right: 12px;
+  color: #4a6fa5;
+}
+
+.arrow {
+  margin-left: auto;
+}
+
+.call-status {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #666;
+}
+
+.wait-time {
+  font-weight: bold;
+  color: #4a6fa5;
+}
+
+/* Active Call */
+.active-call-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.video-call-container {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  background: #333;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.remote-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.local-video {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 80px;
+  height: 60px;
+  border-radius: 4px;
+  border: 2px solid white;
+  object-fit: cover;
+}
+
+.voice-call-ui {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.caller-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.call-timer {
+  display: flex;
+  align-items: center;
+  margin: 12px 0;
+  color: #666;
+}
+
+.timer-icon {
+  margin-right: 8px;
+}
+
+.call-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.control-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px;
+  background: #f0f0f0;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  min-width: 70px;
+}
+
+.control-btn.active {
+  background: #e0e0e0;
+}
+
+.control-btn.end-call {
+  background: #e53e3e;
+  color: white;
+}
+
+/* Agent Specific Styles */
+.incoming-call-view {
+  text-align: center;
+}
+
+.call-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.btn.accept {
+  background: #38a169;
+  color: white;
+}
+
+.btn.reject {
+  background: #e53e3e;
+  color: white;
+}
+
+.ongoing-call-view {
+  display: flex;
+  flex-direction: column;
+}
+
+.call-notes {
+  margin-top: 20px;
+}
+
+.call-notes textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  resize: vertical;
+}
+
+.save-notes {
+  margin-top: 8px;
+  width: 100%;
+}
+
+.call-ended-view {
+  text-align: center;
+}
+
+.call-summary {
+  margin-bottom: 20px;
+}
+
+.feedback-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 12px;
+}
+
+.idle-state {
+  text-align: center;
+  padding: 20px 0;
+}
+
+/* Video Preview */
+.video-preview {
+  width: 100%;
+  height: 150px;
+  background: #333;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.video-preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-indicator {
+  color: #4a6fa5;
+  font-weight: bold;
+  margin: 8px 0;
+}
