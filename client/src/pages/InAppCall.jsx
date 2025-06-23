@@ -1,18 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
-  Phone,
-  X,
-  Mic,
-  MicOff,
-  MessageCircle,
-  Shield,
-  DollarSign,
-  CreditCard,
-  ChevronRight,
-  Video,
-  VideoOff,
-  User,
-  Clock
+  Phone, X, Mic, MicOff, MessageCircle, Shield, DollarSign, 
+  CreditCard, ChevronRight, Video, VideoOff, User, Clock
 } from 'lucide-react';
 
 // Customer UI Component
@@ -23,9 +12,25 @@ const CustomerCallUI = ({
   requestMicrophonePermission,
   startCall,
   endCall,
-  activeCall
+  activeCall,
+  localStream,
+  remoteStream
 }) => {
   const [callDuration, setCallDuration] = useState(0);
+  const [isVideoOn, setIsVideoOn] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
+  const localVideoRef = useRef(null);
+  const remoteVideoRef = useRef(null);
+
+  // Setup video streams
+  useEffect(() => {
+    if (localVideoRef.current && localStream) {
+      localVideoRef.current.srcObject = localStream;
+    }
+    if (remoteVideoRef.current && remoteStream) {
+      remoteVideoRef.current.srcObject = remoteStream;
+    }
+  }, [localStream, remoteStream]);
 
   // Timer for call duration
   useEffect(() => {
@@ -46,6 +51,33 @@ const CustomerCallUI = ({
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
+  const toggleVideo = async () => {
+    if (!isVideoOn) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        setCallFeature(prev => ({ ...prev, mediaStream: stream }));
+        setIsVideoOn(true);
+      } catch (err) {
+        console.error("Failed to enable video:", err);
+      }
+    } else {
+      if (callFeature.mediaStream) {
+        callFeature.mediaStream.getVideoTracks().forEach(track => track.stop());
+      }
+      setIsVideoOn(false);
+    }
+  };
+
+  const toggleMute = () => {
+    if (callFeature.mediaStream) {
+      const audioTracks = callFeature.mediaStream.getAudioTracks();
+      audioTracks.forEach(track => {
+        track.enabled = !track.enabled;
+      });
+      setIsMuted(!isMuted);
+    }
+  };
+
   return (
     <div className={`call-panel ${callFeature.isOpen ? 'open' : ''}`}>
       <div className="call-panel-header">
@@ -61,46 +93,42 @@ const CustomerCallUI = ({
             <div className="call-icon">
               <Phone className="icon-large" />
             </div>
-            <h4>Customer Support Call</h4>
-            <p>Connect with our support team for assistance with your banking needs.</p>
+            <h4>Customer Support</h4>
+            <p>Connect with our support team via voice or video call.</p>
 
-            <button
-              className="btn primary"
-              onClick={() =>
-                setCallFeature((prev) => ({ ...prev, currentPage: 'microphone-permission' }))
-              }
-            >
-              Continue to Call Service
-            </button>
+            <div className="call-options">
+              <button
+                className="btn primary"
+                onClick={() => {
+                  setCallFeature(prev => ({ ...prev, currentPage: 'main-menu' }));
+                  requestMicrophonePermission();
+                }}
+              >
+                <Phone className="btn-icon" /> Voice Call
+              </button>
+              <button
+                className="btn primary"
+                onClick={async () => {
+                  try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                    setCallFeature(prev => ({ 
+                      ...prev, 
+                      currentPage: 'main-menu',
+                      mediaStream: stream,
+                      microphoneAllowed: true
+                    }));
+                    setIsVideoOn(true);
+                  } catch (err) {
+                    console.error("Failed to access camera:", err);
+                  }
+                }}
+              >
+                <Video className="btn-icon" /> Video Call
+              </button>
+            </div>
 
             <div className="call-info">
               <p>Standard call rates apply. Available Mon-Fri 8am-8pm, Sat 9am-5pm.</p>
-            </div>
-          </div>
-        )}
-
-        {!activeCall && callFeature.currentPage === 'microphone-permission' && (
-          <div className="call-page permission-page">
-            <div className="call-icon">
-              <Mic className="icon-large" />
-            </div>
-            <h4>Microphone Access Required</h4>
-            <p>To use our call service, we need access to your microphone.</p>
-
-            <button className="btn primary" onClick={requestMicrophonePermission}>
-              Allow Microphone Access
-            </button>
-            <button
-              className="btn secondary"
-              onClick={() =>
-                setCallFeature((prev) => ({ ...prev, currentPage: 'main-menu' }))
-              }
-            >
-              Continue with Call Service
-            </button>
-
-            <div className="call-info">
-              <p>We only access your microphone during active calls.</p>
             </div>
           </div>
         )}
@@ -109,8 +137,14 @@ const CustomerCallUI = ({
           <div className="call-page menu-page">
             <h4>How Can We Help You Today?</h4>
 
+            {isVideoOn && (
+              <div className="video-preview">
+                <video ref={localVideoRef} autoPlay muted playsInline />
+              </div>
+            )}
+
             <div className="call-departments">
-              <button className="department-btn" onClick={() => startCall('general-enquiries')}>
+              <button className="department-btn" onClick={() => startCall('general-enquiries', isVideoOn)}>
                 <div className="btn-icon">
                   <MessageCircle className="icon" />
                 </div>
@@ -118,7 +152,7 @@ const CustomerCallUI = ({
                 <ChevronRight className="arrow" />
               </button>
 
-              <button className="department-btn emergency" onClick={() => startCall('fraud-department')}>
+              <button className="department-btn emergency" onClick={() => startCall('fraud-department', isVideoOn)}>
                 <div className="btn-icon">
                   <Shield className="icon" />
                 </div>
@@ -126,7 +160,7 @@ const CustomerCallUI = ({
                 <ChevronRight className="arrow" />
               </button>
 
-              <button className="department-btn" onClick={() => startCall('loan-repayment')}>
+              <button className="department-btn" onClick={() => startCall('loan-repayment', isVideoOn)}>
                 <div className="btn-icon">
                   <DollarSign className="icon" />
                 </div>
@@ -134,7 +168,7 @@ const CustomerCallUI = ({
                 <ChevronRight className="arrow" />
               </button>
 
-              <button className="department-btn" onClick={() => startCall('credit-application')}>
+              <button className="department-btn" onClick={() => startCall('credit-application', isVideoOn)}>
                 <div className="btn-icon">
                   <CreditCard className="icon" />
                 </div>
@@ -144,53 +178,46 @@ const CustomerCallUI = ({
             </div>
 
             <div className="call-status">
-              <p>
-                Current wait time: <span className="wait-time">2 minutes</span>
-              </p>
+              <p>Current wait time: <span className="wait-time">2 minutes</span></p>
             </div>
           </div>
         )}
         
         {activeCall && (
           <div className="active-call-view">
+            {activeCall.isVideo ? (
+              <div className="video-call-container">
+                <video ref={remoteVideoRef} autoPlay playsInline className="remote-video" />
+                <video ref={localVideoRef} autoPlay muted playsInline className="local-video" />
+              </div>
+            ) : (
+              <div className="voice-call-ui">
+                <div className="caller-avatar">
+                  <User className="icon-large" />
+                </div>
+                <p>Connected to {activeCall.department.replace('-', ' ')}</p>
+              </div>
+            )}
+
             <div className="call-status-message">
-              {activeCall.status === 'ringing' && (
-                <>
-                  <p>Connecting to agent...</p>
-                  <div className="connecting-animation">
-                    <div className="dot"></div>
-                    <div className="dot"></div>
-                    <div className="dot"></div>
-                  </div>
-                </>
-              )}
-              {activeCall.status === 'connected' && (
-                <>
-                  <p>Call in progress</p>
-                  <div className="call-timer">
-                    <Clock className="timer-icon" />
-                    <span>{formatTime(callDuration)}</span>
-                  </div>
-                </>
-              )}
+              <div className="call-timer">
+                <Clock className="timer-icon" />
+                <span>{formatTime(callDuration)}</span>
+              </div>
             </div>
             
             <div className="active-call-controls">
-              <div className="call-info">
-                <p>Department: <strong>{activeCall.department.replace('-', ' ')}</strong></p>
-                <p>Status: <span className={`status-${activeCall.status}`}>
-                  {activeCall.status === 'ringing' ? 'Connecting' : 'Connected'}
-                </span></p>
-              </div>
               <div className="call-buttons">
-                <button className="control-btn">
-                  <Mic className="icon" />
-                  <span>Mute</span>
+                <button className={`control-btn ${isMuted ? 'active' : ''}`} onClick={toggleMute}>
+                  {isMuted ? <MicOff className="icon" /> : <Mic className="icon" />}
+                  <span>{isMuted ? 'Unmute' : 'Mute'}</span>
                 </button>
-                <button className="control-btn">
-                  <Video className="icon" />
-                  <span>Video</span>
-                </button>
+                {activeCall.isVideo && (
+                  <button className={`control-btn ${!isVideoOn ? 'active' : ''}`} onClick={toggleVideo}>
+                    {isVideoOn ? <Video className="icon" /> : <VideoOff className="icon" />}
+                    <span>{isVideoOn ? 'Video On' : 'Video Off'}</span>
+                  </button>
+                )}
                 <button className="control-btn end-call" onClick={endCall}>
                   <Phone className="icon" />
                   <span>End Call</span>
@@ -210,21 +237,31 @@ const AgentCallUI = ({
   setActiveCall,
   toggleCallFeature,
   acceptCall,
-  endCall
+  endCall,
+  localStream,
+  remoteStream
 }) => {
   const [callStatus, setCallStatus] = useState('idle');
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
+  const localVideoRef = useRef(null);
+  const remoteVideoRef = useRef(null);
+
+  // Setup video streams
+  useEffect(() => {
+    if (localVideoRef.current && localStream) {
+      localVideoRef.current.srcObject = localStream;
+    }
+    if (remoteVideoRef.current && remoteStream) {
+      remoteVideoRef.current.srcObject = remoteStream;
+    }
+  }, [localStream, remoteStream]);
 
   // Handle incoming calls
   useEffect(() => {
     if (activeCall?.status === 'ringing') {
       setCallStatus('ringing');
-      // Auto-open the call panel when receiving a call
-      if (!activeCall.isOpen) {
-        toggleCallFeature();
-      }
     }
   }, [activeCall]);
 
@@ -245,6 +282,35 @@ const AgentCallUI = ({
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
+
+  const toggleVideo = async () => {
+    if (!isVideoOn) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        // In a real app, you would send this stream to the peer connection
+        setIsVideoOn(true);
+      } catch (err) {
+        console.error("Failed to enable video:", err);
+      }
+    } else {
+      setIsVideoOn(false);
+    }
+  };
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+    // In a real app, you would mute the audio tracks
+  };
+
+  const handleAcceptCall = () => {
+    acceptCall();
+    setCallStatus('active');
+  };
+
+  const handleEndCall = () => {
+    endCall();
+    setCallStatus('ended');
   };
 
   return (
@@ -268,12 +334,13 @@ const AgentCallUI = ({
             </div>
             <h4>Customer Call</h4>
             <p>Department: {activeCall?.department.replace('-', ' ') || 'General Enquiry'}</p>
+            {activeCall?.isVideo && <p className="video-indicator">Video Call Requested</p>}
             
             <div className="call-actions">
-              <button className="btn reject" onClick={endCall}>
+              <button className="btn reject" onClick={handleEndCall}>
                 Decline
               </button>
-              <button className="btn accept" onClick={acceptCall}>
+              <button className="btn accept" onClick={handleAcceptCall}>
                 Accept
               </button>
             </div>
@@ -282,36 +349,46 @@ const AgentCallUI = ({
 
         {callStatus === 'active' && (
           <div className="ongoing-call-view">
-            <div className="caller-info">
-              <div className="caller-avatar">
-                <User className="icon-large" />
+            {activeCall?.isVideo ? (
+              <div className="video-call-container">
+                <video ref={remoteVideoRef} autoPlay playsInline className="remote-video" />
+                <video ref={localVideoRef} autoPlay muted playsInline className="local-video" />
               </div>
-              <h4>Customer</h4>
-              <p>Department: {activeCall?.department.replace('-', ' ') || 'General Enquiry'}</p>
-              <div className="call-timer">
-                <Clock className="timer-icon" />
-                <span>{formatTime(callDuration)}</span>
+            ) : (
+              <div className="caller-info">
+                <div className="caller-avatar">
+                  <User className="icon-large" />
+                </div>
+                <h4>Customer</h4>
+                <p>Department: {activeCall?.department.replace('-', ' ') || 'General Enquiry'}</p>
               </div>
+            )}
+
+            <div className="call-timer">
+              <Clock className="timer-icon" />
+              <span>{formatTime(callDuration)}</span>
             </div>
 
             <div className="call-controls">
               <button 
                 className={`control-btn ${isMuted ? 'active' : ''}`}
-                onClick={() => setIsMuted(!isMuted)}
+                onClick={toggleMute}
               >
                 {isMuted ? <MicOff className="icon" /> : <Mic className="icon" />}
                 <span>{isMuted ? 'Unmute' : 'Mute'}</span>
               </button>
               
-              <button 
-                className={`control-btn ${isVideoOn ? 'active' : ''}`}
-                onClick={() => setIsVideoOn(!isVideoOn)}
-              >
-                {isVideoOn ? <VideoOff className="icon" /> : <Video className="icon" />}
-                <span>{isVideoOn ? 'Stop Video' : 'Start Video'}</span>
-              </button>
+              {activeCall?.isVideo && (
+                <button 
+                  className={`control-btn ${isVideoOn ? 'active' : ''}`}
+                  onClick={toggleVideo}
+                >
+                  {isVideoOn ? <Video className="icon" /> : <VideoOff className="icon" />}
+                  <span>{isVideoOn ? 'Video On' : 'Video Off'}</span>
+                </button>
+              )}
               
-              <button className="control-btn end-call" onClick={endCall}>
+              <button className="control-btn end-call" onClick={handleEndCall}>
                 <Phone className="icon" />
                 <span>End Call</span>
               </button>
@@ -368,12 +445,64 @@ const InAppCall = ({
   setCallFeature,
   activeCall,
   setActiveCall,
-  toggleCallFeature,
-  requestMicrophonePermission,
-  startCall,
-  endCall
+  toggleCallFeature
 }) => {
-  // Handle call acceptance (agent side)
+  const [localStream, setLocalStream] = useState(null);
+  const [remoteStream, setRemoteStream] = useState(null);
+
+  // Request microphone permission
+  const requestMicrophonePermission = async () => {
+    try {
+      setCallFeature(prev => ({
+        ...prev,
+        callStatus: 'connecting',
+        error: null
+      }));
+     
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setLocalStream(stream);
+     
+      setCallFeature(prev => ({
+        ...prev,
+        microphoneAllowed: true,
+        currentPage: 'main-menu',
+        callStatus: 'idle',
+        mediaStream: stream
+      }));
+    } catch (err) {
+      console.error("Microphone access denied:", err);
+      setCallFeature(prev => ({
+        ...prev,
+        microphoneAllowed: false,
+        callStatus: 'idle',
+        error: 'Microphone access is required for voice calls'
+      }));
+    }
+  };
+
+  // Start a call to a department
+  const startCall = (department, isVideo = false) => {
+    const callData = {
+      department,
+      callerId: 'user-' + Math.random().toString(36).substr(2, 9),
+      timestamp: new Date().toISOString(),
+      status: 'ringing',
+      isVideo
+    };
+    
+    setActiveCall(callData);
+    setCallFeature(prev => ({
+      ...prev,
+      activeDepartment: department,
+      callStatus: 'ringing',
+      isOpen: true
+    }));
+
+    // In a real app, you would initiate a WebRTC connection here
+    // and set up the remote stream when the call is accepted
+  };
+
+  // Accept incoming call (agent side)
   const acceptCall = () => {
     setCallFeature(prev => ({
       ...prev,
@@ -383,24 +512,70 @@ const InAppCall = ({
       ...prev,
       status: 'connected'
     }));
+
+    // In a real app, you would accept the WebRTC connection here
+    // and set up the remote stream
   };
 
-  // Enhanced props for both UIs
-  const commonProps = {
-    callFeature,
-    setCallFeature,
-    activeCall,
-    setActiveCall,
-    toggleCallFeature,
-    requestMicrophonePermission,
-    startCall,
-    endCall,
-    acceptCall
+  // End the current call
+  const endCall = () => {
+    if (callFeature.mediaStream) {
+      callFeature.mediaStream.getTracks().forEach(track => track.stop());
+    }
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+    }
+    if (remoteStream) {
+      remoteStream.getTracks().forEach(track => track.stop());
+    }
+   
+    setCallFeature(prev => ({
+      ...prev,
+      activeDepartment: null,
+      currentPage: 'main-menu',
+      callStatus: 'idle',
+      mediaStream: null
+    }));
+    setActiveCall(null);
+    setLocalStream(null);
+    setRemoteStream(null);
   };
 
-  return userRole === 'customer' 
-    ? <CustomerCallUI {...commonProps} /> 
-    : <AgentCallUI {...commonProps} />;
+  // Clean up streams on unmount
+  useEffect(() => {
+    return () => {
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+      }
+      if (remoteStream) {
+        remoteStream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [localStream, remoteStream]);
+
+  return userRole === 'customer' ? (
+    <CustomerCallUI
+      callFeature={callFeature}
+      toggleCallFeature={toggleCallFeature}
+      setCallFeature={setCallFeature}
+      requestMicrophonePermission={requestMicrophonePermission}
+      startCall={startCall}
+      endCall={endCall}
+      activeCall={activeCall}
+      localStream={localStream}
+      remoteStream={remoteStream}
+    />
+  ) : (
+    <AgentCallUI
+      activeCall={activeCall}
+      setActiveCall={setActiveCall}
+      toggleCallFeature={toggleCallFeature}
+      acceptCall={acceptCall}
+      endCall={endCall}
+      localStream={localStream}
+      remoteStream={remoteStream}
+    />
+  );
 };
 
 export default InAppCall;
