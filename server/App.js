@@ -506,25 +506,27 @@ app.get('/api/users/accounts', authenticateToken, async (req, res) => {
 app.get('/api/users/transactions', authenticateToken, async (req, res) => {
   const limit = parseInt(req.query.limit) || 50;
   const offset = parseInt(req.query.offset) || 0;
-  const userId = `7c17fc2f-e5cd-4f1c-ad4f-9cf0439be3c9`;
+  const userId = req.user.user_id; // Use dynamic ID from token
+
   console.log(`Fetching transactions for user ${userId} with limit ${limit} and offset ${offset}`);
-      res.json({ message: `Fetched transactions for user ${req.user.user_id}` });
+
   const result = await getUserTransactions(userId, limit, offset);
 
   if (result.success) {
-    res.json({
+    return res.json({
       message: 'Transactions retrieved successfully',
       transactions: result.transactions,
       pagination: {
         limit,
         offset,
-        count: result.transactions.length,
+        count: result.transactions?.length || 0,
       },
     });
   } else {
-    res.status(500).json({ error: result.message });
+    return res.status(500).json({ error: result.message });
   }
 });
+
 
 app.get('/api/users/dashboard', authenticateToken, async (req, res) => {
   const user_id = req.user.user_id;

@@ -301,10 +301,9 @@ const handleSubmit = async (e) => {
 
         <div className="registration-image-section">
           <img 
-            src={registerImage} 
-            alt="Registration illustration" 
-            className="register-image"
-          />
+            src={registerImage} alt="Registration illustration" className="register-image"/>
+            <h3 className="register-text">Already have an account?</h3>
+            
         </div>
       </div>
 
