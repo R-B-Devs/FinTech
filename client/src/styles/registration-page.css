@@ -360,3 +360,39 @@
     font-size: 0.85rem;
   }
 }
+
+
+/* Container */
+.register-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  height: 100vh;
+  padding: 20px;
+  background-color: #1e1a1a; /* Dark background to match your theme */
+}
+
+
+/* 🔘 Button */
+.register-button {
+  padding: 10px 28px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #a10000;
+  background-color: transparent;
+  border: 2px solid #a10000;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.register-button:hover {
+  background-color: #a10000;
+  color: #ffffff;
+}
+
+.registration-image-section{
+  flex-direction: column;
+}
