@@ -4,7 +4,6 @@ import "../styles/LoginPage.css";
 import loginImg from "../assets/login-image.jpg";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
-import { validateLogin } from '../cyberFrontend/validation';
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -12,39 +11,12 @@ const LoginPage = () => {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
   const [idError, setIdError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [passwordStrength, setPasswordStrength] = useState('');
 
   const validateId = (value) => {
     if (!/^\d{13}$/.test(value)) {
       setIdError('13 digits required');
     } else {
       setIdError('');
-    }
-  };
-
-  const validatePassword = (value) => {
-    const minLength = /.{8,}/;
-    const uppercase = /[A-Z]/;
-    const lowercase = /[a-z]/;
-    const number = /\d/;
-    const symbol = /[!@#*_]/;
-
-    const passedRules = [minLength, uppercase, lowercase, number, symbol].filter(rule => rule.test(value)).length;
-
-    if (passedRules < 5) {
-      setPasswordError('Password must be 8+ characters and include upper, lower, number & symbol');
-    } else {
-      setPasswordError('');
-    }
-
-    // Strength Color
-    if (passedRules <= 2) {
-      setPasswordStrength('weak');
-    } else if (passedRules === 3 || passedRules === 4) {
-      setPasswordStrength('medium');
-    } else {
-      setPasswordStrength('strong');
     }
   };
 
@@ -88,20 +60,10 @@ const LoginPage = () => {
                   placeholder="Enter your password"
                   className="input-field with-icon"
                   value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    validatePassword(e.target.value);
-                  }}
+                  onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
-              {passwordError && <span className="error-text">{passwordError}</span>}
-              {password && (
-                <div className={`strength-bar ${passwordStrength}`}>
-                  {passwordStrength === 'weak' && 'Weak'}
-                  {passwordStrength === 'medium' && 'Medium'}
-                  {passwordStrength === 'strong' && 'Strong'}
-                </div>
-              )}
+              {/* No password error or strength bar */}
             </div>
 
             {/* Forgot Password */}
@@ -110,7 +72,7 @@ const LoginPage = () => {
             </div>
 
             {/* Sign In Button */}
-            <button className="login-button" disabled={!!idError || !!passwordError}>
+            <button className="login-button" disabled={!!idError}>
               Login 
             </button>
           </div>
