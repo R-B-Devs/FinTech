@@ -39,9 +39,7 @@ const CustomerCallUI = ({
   useEffect(() => {
     let interval;
     if (callFeature.callStatus === 'active') {
-      interval = setInterval(() => {
-        setCallDuration(prev => prev + 1);
-      }, 1000);
+      interval = setInterval(() => setCallDuration(d => d + 1), 1000);
     } else {
       setCallDuration(0);
     }
@@ -185,7 +183,7 @@ const CustomerCallUI = ({
             </div>
           </div>
         )}
-        
+
         {activeCall && (
           <div className="active-call-view">
             {activeCall.isVideo ? (
@@ -208,7 +206,7 @@ const CustomerCallUI = ({
                 <span>{formatTime(callDuration)}</span>
               </div>
             </div>
-            
+
             <div className="active-call-controls">
               <div className="call-buttons">
                 <button className={`control-btn ${isMuted ? 'active' : ''}`} onClick={toggleMute}>
@@ -248,18 +246,6 @@ const AgentCallUI = ({
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
-  const localVideoRef = useRef(null);
-  const remoteVideoRef = useRef(null);
-
-  // Setup video streams
-  useEffect(() => {
-    if (localVideoRef.current && localStream) {
-      localVideoRef.current.srcObject = localStream;
-    }
-    if (remoteVideoRef.current && remoteStream) {
-      remoteVideoRef.current.srcObject = remoteStream;
-    }
-  }, [localStream, remoteStream]);
 
   // Handle incoming calls
   useEffect(() => {
@@ -268,13 +254,11 @@ const AgentCallUI = ({
     }
   }, [activeCall]);
 
-  // Timer for call duration
+  // Call timer
   useEffect(() => {
     let interval;
     if (callStatus === 'active') {
-      interval = setInterval(() => {
-        setCallDuration(prev => prev + 1);
-      }, 1000);
+      interval = setInterval(() => setCallDuration(d => d + 1), 1000);
     } else {
       setCallDuration(0);
     }
@@ -396,44 +380,15 @@ const AgentCallUI = ({
                 <span>End Call</span>
               </button>
             </div>
-
-            <div className="call-notes">
-              <textarea placeholder="Add call notes..." />
-              <button className="btn save-notes">Save Notes</button>
-            </div>
           </div>
         )}
 
         {callStatus === 'ended' && (
           <div className="call-ended-view">
-            <div className="call-summary">
-              <h4>Call Ended</h4>
-              <p>Duration: {formatTime(callDuration)}</p>
-              <p>Department: {activeCall?.department.replace('-', ' ') || 'General Enquiry'}</p>
-            </div>
-            
-            <div className="call-feedback">
-              <textarea placeholder="Add call summary and feedback..." />
-              <div className="feedback-actions">
-                <button className="btn secondary" onClick={() => {
-                  setCallStatus('idle');
-                  setActiveCall(null);
-                }}>
-                  Skip
-                </button>
-                <button className="btn primary">Submit Report</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {callStatus === 'idle' && (
-          <div className="idle-state">
-            <div className="idle-icon">
-              <Phone className="icon-large" />
-            </div>
-            <h4>Waiting for Calls</h4>
-            <p>You will be notified when a customer calls.</p>
+            <h4>Call ended.</h4>
+            <button className="btn primary" onClick={toggleCallFeature}>
+              Close
+            </button>
           </div>
         )}
       </div>
