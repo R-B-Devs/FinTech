@@ -1,0 +1,264 @@
+.goals-page {
+    padding: 2rem;
+    background-color: #1e1e1e;
+    min-height: 100vh;
+    color: #ccc; /* light text for dark bg */
+  }
+  
+  .goals-page h2 {
+    font-size: 2rem;
+    color: #a10d2f;
+    margin-bottom: 1rem;
+  }
+  
+  .goals-page p {
+    font-size: 1rem;
+    color: #888; /* lighter gray for readability */
+    margin-bottom: 2rem;
+  }
+  
+  .goals-section {
+    background: #2c2c2c; /* changed from white to black */
+    border-left: 5px solid #b3002a;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    color: #ddd; /* light text */
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 0 15px rgba(161, 13, 48, 0.116);
+    cursor: pointer;
+  }
+  
+  .goals-section:hover {
+  transform: translateY(-5px);
+  border-left-color: #ff002f; /* slightly brighter red on hover */
+}
+  
+  .goals-section h3 {
+    margin-top: 0;
+    font-size: 1.3rem;
+    color: #fff; /* white for headings */
+  }
+  
+  .goals-section p {
+    font-size: 1rem;
+    color: #bbb; /* medium-light text */
+    margin: 0.5rem 0;
+  }
+  
+.custom-progress-bar {
+  width: 50%;
+  height: 10px;
+  background-color: #5e5e5e;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.custom-progress {
+  height: 100%;
+  background-color: #a10d2f;
+  transition: width 0.4s ease;
+}
+
+.add-goal-btn {
+  background-color: #a10d2f;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 2rem;
+  transition: background-color 0.3s ease;
+}
+
+.add-goal-btn:hover {
+  background-color: #8e0c29;
+}
+
+.goal-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.goal-modal-content {
+  background-color: #111;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 15px rgba(161, 13, 47, 0.8);
+  color: #fff;
+}
+
+.goal-modal-content h3 {
+  margin-top: 0;
+  color: #a10d2f;
+}
+
+.goal-modal-content input {
+  width: 100%;
+  padding: 0.7rem;
+  margin: 0.5rem 0;
+  border-radius: 6px;
+  border: 1px solid #444;
+  background-color: #000;
+  color: #fff;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+}
+
+.modal-actions button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.modal-actions button[type="submit"] {
+  background-color: #a10d2f;
+  color: white;
+}
+
+.modal-actions button[type="button"] {
+  background-color: #333;
+  color: #ccc;
+}
+
+.goal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.goal-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-btn,
+.delete-btn {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #ccc;
+  transition: color 0.3s;
+}
+
+.edit-btn:hover {
+  color: #4caf50;
+}
+
+.delete-btn:hover {
+  color: #e53935;
+}
+
+.goals-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* Responsive fallback for mobile */
+@media (max-width: 768px) {
+  .goals-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.edit-btn,
+.delete-btn {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: #ccc;
+  transition: color 0.3s;
+}
+
+.edit-btn:hover {
+  color: #4caf50; /* green for edit */
+}
+
+.delete-btn:hover {
+  color: #e53935; /* red for delete */
+}
+
+.tooltip-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  opacity: 0;
+  width: max-content;
+  background-color: #222;
+  color: #fff;
+  text-align: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  transition: opacity 0.3s;
+  z-index: 10;
+}
+
+.tooltip-wrapper:hover .tooltip-text {
+  visibility: visible;
+  opacity: 1;
+}
+
+.confirm-delete-text {
+  margin-right: 0.5rem;
+  color: #e53935;
+  font-weight: bold;
+  align-self: center;
+}
+
+.confirm-btn,
+.cancel-btn {
+  margin-left: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.85rem;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: #fff;
+}
+
+.confirm-btn {
+  background-color: #e53935;
+}
+
+.confirm-btn:hover {
+  background-color: #b71c1c;
+}
+
+.cancel-btn {
+  background-color: #555;
+}
+
+.cancel-btn:hover {
+  background-color: #777;
+}
