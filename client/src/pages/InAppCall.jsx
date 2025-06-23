@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Phone, X, Mic, MicOff, MessageCircle, Shield, DollarSign,
+  Phone, X, Mic, MicOff, MessageCircle, Shield, DollarSign, 
   CreditCard, ChevronRight, Video, VideoOff, User, Clock
 } from 'lucide-react';
 
@@ -19,21 +19,20 @@ const CustomerCallUI = ({
   const [callDuration, setCallDuration] = useState(0);
   const [isVideoOn, setIsVideoOn] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
 
-  // Update video elements srcObject
+  // Setup video streams
   useEffect(() => {
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject = localStream || null;
+    if (localVideoRef.current && localStream) {
+      localVideoRef.current.srcObject = localStream;
     }
-    if (remoteVideoRef.current) {
-      remoteVideoRef.current.srcObject = remoteStream || null;
+    if (remoteVideoRef.current && remoteStream) {
+      remoteVideoRef.current.srcObject = remoteStream;
     }
   }, [localStream, remoteStream]);
 
-  // Call timer
+  // Timer for call duration
   useEffect(() => {
     let interval;
     if (callFeature.callStatus === 'active') {
@@ -50,25 +49,14 @@ const CustomerCallUI = ({
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
-  // Toggle mute audio track
-  const toggleMute = () => {
-    if (localStream) {
-      localStream.getAudioTracks().forEach(track => {
-        track.enabled = !track.enabled;
-      });
-      setIsMuted(prev => !prev);
-    }
-  };
-
-  // Toggle video - This triggers permission prompt for video if off
   const toggleVideo = async () => {
     if (!isVideoOn) {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        setCallFeature(prev => ({ ...prev, mediaStream: stream, microphoneAllowed: true }));
+        setCallFeature(prev => ({ ...prev, mediaStream: stream }));
         setIsVideoOn(true);
       } catch (err) {
-        console.error('Failed to enable video:', err);
+        console.error("Failed to enable video:", err);
       }
     } else {
       if (callFeature.mediaStream) {
@@ -78,10 +66,15 @@ const CustomerCallUI = ({
     }
   };
 
-  // When starting a video call, set isVideoOn true
-  useEffect(() => {
-    if (activeCall?.isVideo) setIsVideoOn(true);
-  }, [activeCall]);
+  const toggleMute = () => {
+    if (callFeature.mediaStream) {
+      const audioTracks = callFeature.mediaStream.getAudioTracks();
+      audioTracks.forEach(track => {
+        track.enabled = !track.enabled;
+      });
+      setIsMuted(!isMuted);
+    }
+  };
 
   return (
     <div className={`call-panel ${callFeature.isOpen ? 'open' : ''}`}>
@@ -116,12 +109,13 @@ const CustomerCallUI = ({
                 onClick={async () => {
                   try {
                     const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                    setCallFeature(prev => ({
-                      ...prev,
+                    setCallFeature(prev => ({ 
+                      ...prev, 
                       currentPage: 'main-menu',
                       mediaStream: stream,
-                      microphoneAllowed: true,
+                      microphoneAllowed: true
                     }));
+                    setIsVideoOn(true);
                   } catch (err) {
                     console.error("Failed to access camera:", err);
                   }
@@ -141,7 +135,6 @@ const CustomerCallUI = ({
           <div className="call-page menu-page">
             <h4>How Can We Help You Today?</h4>
 
-            {/* Video preview when video enabled */}
             {isVideoOn && (
               <div className="video-preview">
                 <video ref={localVideoRef} autoPlay muted playsInline />
@@ -244,30 +237,17 @@ const AgentCallUI = ({
   acceptCall,
   endCall,
   localStream,
-  remoteStream,
+  remoteStream
 }) => {
   const [callStatus, setCallStatus] = useState('idle');
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(false);
   const [callDuration, setCallDuration] = useState(0);
 
-  const localVideoRef = useRef(null);
-  const remoteVideoRef = useRef(null);
-
+  // Handle incoming calls
   useEffect(() => {
-    if (localVideoRef.current) {
-      localVideoRef.current.srcObject = localStream || null;
-    }
-    if (remoteVideoRef.current) {
-      remoteVideoRef.current.srcObject = remoteStream || null;
-    }
-  }, [localStream, remoteStream]);
-
-  // Sync callStatus with activeCall.status prop
-  useEffect(() => {
-    if (activeCall?.status) {
-      setCallStatus(activeCall.status);
-      if (activeCall.isVideo) setIsVideoOn(true);
+    if (activeCall?.status === 'ringing') {
+      setCallStatus('ringing');
     }
   }, [activeCall]);
 
@@ -288,28 +268,23 @@ const AgentCallUI = ({
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
-  const toggleMute = () => {
-    setIsMuted(prev => !prev);
-    if (localStream) {
-      localStream.getAudioTracks().forEach(track => {
-        track.enabled = !track.enabled;
-      });
-    }
-  };
-
   const toggleVideo = async () => {
     if (!isVideoOn) {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        // Ideally, signal this to the peer as well
+        // In a real app, you would send this stream to the peer connection
         setIsVideoOn(true);
       } catch (err) {
         console.error("Failed to enable video:", err);
       }
     } else {
       setIsVideoOn(false);
-      // Stop video tracks here if you want
     }
+  };
+
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
+    // In a real app, you would mute the audio tracks
   };
 
   const handleAcceptCall = () => {
@@ -344,7 +319,7 @@ const AgentCallUI = ({
             <h4>Customer Call</h4>
             <p>Department: {activeCall?.department.replace('-', ' ') || 'General Enquiry'}</p>
             {activeCall?.isVideo && <p className="video-indicator">Video Call Requested</p>}
-
+            
             <div className="call-actions">
               <button className="btn reject" onClick={handleEndCall}>
                 Decline
@@ -357,39 +332,46 @@ const AgentCallUI = ({
         )}
 
         {callStatus === 'active' && (
-          <div className="active-call-view">
+          <div className="ongoing-call-view">
             {activeCall?.isVideo ? (
               <div className="video-call-container">
                 <video ref={remoteVideoRef} autoPlay playsInline className="remote-video" />
                 <video ref={localVideoRef} autoPlay muted playsInline className="local-video" />
               </div>
             ) : (
-              <div className="voice-call-ui">
+              <div className="caller-info">
                 <div className="caller-avatar">
                   <User className="icon-large" />
                 </div>
-                <p>Connected to {activeCall.department.replace('-', ' ')}</p>
+                <h4>Customer</h4>
+                <p>Department: {activeCall?.department.replace('-', ' ') || 'General Enquiry'}</p>
               </div>
             )}
 
-            <div className="call-status-message">
+            <div className="call-timer">
               <Clock className="timer-icon" />
               <span>{formatTime(callDuration)}</span>
             </div>
 
-            <div className="active-call-controls">
-              <button className={`control-btn ${isMuted ? 'active' : ''}`} onClick={toggleMute}>
+            <div className="call-controls">
+              <button 
+                className={`control-btn ${isMuted ? 'active' : ''}`}
+                onClick={toggleMute}
+              >
                 {isMuted ? <MicOff className="icon" /> : <Mic className="icon" />}
                 <span>{isMuted ? 'Unmute' : 'Mute'}</span>
               </button>
-
-              {activeCall.isVideo && (
-                <button className={`control-btn ${!isVideoOn ? 'active' : ''}`} onClick={toggleVideo}>
+              
+              {activeCall?.isVideo && (
+                <button 
+                  className={`control-btn ${isVideoOn ? 'active' : ''}`}
+                  onClick={toggleVideo}
+                >
                   {isVideoOn ? <Video className="icon" /> : <VideoOff className="icon" />}
                   <span>{isVideoOn ? 'Video On' : 'Video Off'}</span>
                 </button>
               )}
-
+              
               <button className="control-btn end-call" onClick={handleEndCall}>
                 <Phone className="icon" />
                 <span>End Call</span>
@@ -411,15 +393,144 @@ const AgentCallUI = ({
   );
 };
 
-// Main export chooses UI based on role
-const InAppCall = (props) => {
-  const { userRole = 'customer' } = props;
+// Main Component
+const InAppCall = ({ 
+  userRole = 'customer', 
+  callFeature, 
+  setCallFeature,
+  activeCall,
+  setActiveCall,
+  toggleCallFeature
+}) => {
+  const [localStream, setLocalStream] = useState(null);
+  const [remoteStream, setRemoteStream] = useState(null);
 
-  if (userRole === 'agent') {
-    return <AgentCallUI {...props} />;
-  }
+  // Request microphone permission
+  const requestMicrophonePermission = async () => {
+    try {
+      setCallFeature(prev => ({
+        ...prev,
+        callStatus: 'connecting',
+        error: null
+      }));
+     
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      setLocalStream(stream);
+     
+      setCallFeature(prev => ({
+        ...prev,
+        microphoneAllowed: true,
+        currentPage: 'main-menu',
+        callStatus: 'idle',
+        mediaStream: stream
+      }));
+    } catch (err) {
+      console.error("Microphone access denied:", err);
+      setCallFeature(prev => ({
+        ...prev,
+        microphoneAllowed: false,
+        callStatus: 'idle',
+        error: 'Microphone access is required for voice calls'
+      }));
+    }
+  };
 
-  return <CustomerCallUI {...props} />;
+  // Start a call to a department
+  const startCall = (department, isVideo = false) => {
+    const callData = {
+      department,
+      callerId: 'user-' + Math.random().toString(36).substr(2, 9),
+      timestamp: new Date().toISOString(),
+      status: 'ringing',
+      isVideo
+    };
+    
+    setActiveCall(callData);
+    setCallFeature(prev => ({
+      ...prev,
+      activeDepartment: department,
+      callStatus: 'ringing',
+      isOpen: true
+    }));
+
+    // In a real app, you would initiate a WebRTC connection here
+    // and set up the remote stream when the call is accepted
+  };
+
+  // Accept incoming call (agent side)
+  const acceptCall = () => {
+    setCallFeature(prev => ({
+      ...prev,
+      callStatus: 'active'
+    }));
+    setActiveCall(prev => ({
+      ...prev,
+      status: 'connected'
+    }));
+
+    // In a real app, you would accept the WebRTC connection here
+    // and set up the remote stream
+  };
+
+  // End the current call
+  const endCall = () => {
+    if (callFeature.mediaStream) {
+      callFeature.mediaStream.getTracks().forEach(track => track.stop());
+    }
+    if (localStream) {
+      localStream.getTracks().forEach(track => track.stop());
+    }
+    if (remoteStream) {
+      remoteStream.getTracks().forEach(track => track.stop());
+    }
+   
+    setCallFeature(prev => ({
+      ...prev,
+      activeDepartment: null,
+      currentPage: 'main-menu',
+      callStatus: 'idle',
+      mediaStream: null
+    }));
+    setActiveCall(null);
+    setLocalStream(null);
+    setRemoteStream(null);
+  };
+
+  // Clean up streams on unmount
+  useEffect(() => {
+    return () => {
+      if (localStream) {
+        localStream.getTracks().forEach(track => track.stop());
+      }
+      if (remoteStream) {
+        remoteStream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [localStream, remoteStream]);
+
+  return userRole === 'customer' ? (
+    <CustomerCallUI
+      callFeature={callFeature}
+      toggleCallFeature={toggleCallFeature}
+      setCallFeature={setCallFeature}
+      requestMicrophonePermission={requestMicrophonePermission}
+      startCall={startCall}
+      endCall={endCall}
+      activeCall={activeCall}
+      localStream={localStream}
+      remoteStream={remoteStream}
+    />
+  ) : (
+    <AgentCallUI
+      activeCall={activeCall}
+      setActiveCall={setActiveCall}
+      toggleCallFeature={toggleCallFeature}
+      acceptCall={acceptCall}
+      endCall={endCall}
+      localStream={localStream}
+      remoteStream={remoteStream}
+    />
+  );
 };
 
 export default InAppCall;

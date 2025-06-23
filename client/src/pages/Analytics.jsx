@@ -3,7 +3,7 @@ import {
   LineChart, Line, PieChart, Pie, Cell, Tooltip, Legend, XAxis, YAxis, CartesianGrid,
   BarChart, Bar, AreaChart, Area, ResponsiveContainer
 } from 'recharts';
-import { TrendingUp, TrendingDown, DollarSign, Target, Calendar, Download, Filter, AlertTriangle } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, Target, Calendar, Download, AlertTriangle } from 'lucide-react';
 
 const COLORS = ['#a10d2f', '#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff', '#ff9f40'];
 
@@ -72,14 +72,6 @@ const Analytics = () => {
     { name: 'Week 4', income: 3000, expenses: 1500, net: 1500 },
   ];
 
-  // Goal tracking data
-  const goalData = [
-    { goal: 'Emergency Fund', target: 50000, current: 32000, percentage: 64 },
-    { goal: 'Vacation Fund', target: 15000, current: 8500, percentage: 57 },
-    { goal: 'Car Down Payment', target: 25000, current: 18000, percentage: 72 },
-    { goal: 'Investment Portfolio', target: 100000, current: 45000, percentage: 45 },
-  ];
-
   // AI insights and alerts
   const insights = [
     { type: 'warning', message: 'Entertainment spending is 20% over budget this month', priority: 'high' },
@@ -114,11 +106,13 @@ const Analytics = () => {
     return (
       <div className="kpi-card">
         <div className="kpi-header">
-          <Icon size={24} className="kpi-icon" />
-          <span className={`kpi-trend ${kpi.trend}`}>
+          <div className="kpi-icon-wrapper">
+            <Icon size={24} className="kpi-icon" />
+          </div>
+          <div className={`kpi-trend ${kpi.trend}`}>
             {kpi.trend === 'up' ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
             {kpi.change}
-          </span>
+          </div>
         </div>
         <h3 className="kpi-title">{kpi.title}</h3>
         <p className="kpi-value">{kpi.value}</p>
@@ -127,7 +121,7 @@ const Analytics = () => {
   };
 
   const InsightAlert = ({ insight }) => (
-    <div className={`insight-alert ${insight.type} ${insight.priority}`}>
+    <div className={`insight-alert ${insight.type}`}>
       <AlertTriangle size={16} />
       <span>{insight.message}</span>
     </div>
@@ -140,10 +134,10 @@ const Analytics = () => {
         <div className="header-content">
           <div>
             <h1>Financial Analytics</h1>
-            <p className="date-range">
+            <div className="date-range">
               <Calendar size={16} />
-              {dateRange.start} → {dateRange.end}
-            </p>
+              <span>{dateRange.start} → {dateRange.end}</span>
+            </div>
           </div>
           <div className="header-controls">
             <select 
@@ -168,7 +162,6 @@ const Analytics = () => {
           <TabButton id="overview" label="Overview" active={activeTab === 'overview'} onClick={setActiveTab} />
           <TabButton id="spending" label="Spending Analysis" active={activeTab === 'spending'} onClick={setActiveTab} />
           <TabButton id="trends" label="Trends" active={activeTab === 'trends'} onClick={setActiveTab} />
-          <TabButton id="goals" label="Goals" active={activeTab === 'goals'} onClick={setActiveTab} />
         </div>
       </div>
 
@@ -219,14 +212,21 @@ const Analytics = () => {
               <h3>Cash Flow Analysis</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={cashFlowData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-                  <XAxis dataKey="name" stroke="#ccc" />
-                  <YAxis stroke="#ccc" />
-                  <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="name" stroke="#9CA3AF" />
+                  <YAxis stroke="#9CA3AF" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1F2937', 
+                      border: '1px solid #374151',
+                      borderRadius: '12px',
+                      color: '#ffffff'
+                    }} 
+                  />
                   <Legend />
-                  <Area type="monotone" dataKey="income" stackId="1" stroke="#4caf50" fill="#4caf50" fillOpacity={0.3} />
-                  <Area type="monotone" dataKey="expenses" stackId="2" stroke="#f44336" fill="#f44336" fillOpacity={0.3} />
-                  <Line type="monotone" dataKey="net" stroke="#ffce56" strokeWidth={2} />
+                  <Area type="monotone" dataKey="income" stackId="1" stroke="#10B981" fill="#10B981" fillOpacity={0.3} />
+                  <Area type="monotone" dataKey="expenses" stackId="2" stroke="#EF4444" fill="#EF4444" fillOpacity={0.3} />
+                  <Line type="monotone" dataKey="net" stroke="#F59E0B" strokeWidth={3} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -259,50 +259,61 @@ const Analytics = () => {
       {activeTab === 'spending' && (
         <div className="tab-content">
           <div className="spending-analysis">
-            <div className="chart-card full-width">
+            <div className="chart-card spending-chart">
               <h3>Budget vs Actual Spending</h3>
               <ResponsiveContainer width="100%" height={400}>
                 <BarChart data={spendingData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-                  <XAxis dataKey="name" stroke="#ccc" />
-                  <YAxis stroke="#ccc" />
-                  <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                  <XAxis dataKey="name" stroke="#9CA3AF" />
+                  <YAxis stroke="#9CA3AF" />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: '#1F2937', 
+                      border: '1px solid #374151',
+                      borderRadius: '12px',
+                      color: '#ffffff'
+                    }} 
+                  />
                   <Legend />
-                  <Bar dataKey="budget" fill="#4a4a4a" name="Budget" />
-                  <Bar dataKey="value" fill="#a10d2f" name="Actual" />
+                  <Bar dataKey="budget" fill="#6B7280" name="Budget" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="value" fill="#DC2626" name="Actual" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
 
             <div className="category-breakdown">
               <h3>Category Analysis</h3>
-              {spendingData.map((category) => {
-                const overBudget = category.value > category.budget;
-                const percentage = (category.value / category.budget * 100).toFixed(1);
-                
-                return (
-                  <div key={category.name} className="category-item">
-                    <div className="category-header">
-                      <span className="category-name">{category.name}</span>
-                      <span className={`category-status ${overBudget ? 'over' : 'under'}`}>
-                        {percentage}% of budget
-                      </span>
+              <div className="category-list">
+                {spendingData.map((category) => {
+                  const overBudget = category.value > category.budget;
+                  const percentage = (category.value / category.budget * 100).toFixed(1);
+                  
+                  return (
+                    <div key={category.name} className="category-item">
+                      <div className="category-header">
+                        <span className="category-name">{category.name}</span>
+                        <span className={`category-status ${overBudget ? 'over' : 'under'}`}>
+                          {percentage}%
+                        </span>
+                      </div>
+                      <div className="category-amounts">
+                        <span>R {category.value.toLocaleString()} / R {category.budget.toLocaleString()}</span>
+                        {overBudget && (
+                          <span className="over-budget">
+                            +R {(category.value - category.budget).toLocaleString()}
+                          </span>
+                        )}
+                      </div>
+                      <div className="category-progress-bar">
+                        <div 
+                          className={`progress-fill ${overBudget ? 'over-budget' : ''}`}
+                          style={{ width: `${Math.min(percentage, 100)}%` }}
+                        />
+                      </div>
                     </div>
-                    <div className="category-amounts">
-                      <span>R {category.value.toLocaleString()} / R {category.budget.toLocaleString()}</span>
-                      {overBudget && (
-                        <span className="over-budget">+R {(category.value - category.budget).toLocaleString()}</span>
-                      )}
-                    </div>
-                    <div className="category-progress-bar">
-                      <div 
-                        className={`progress-fill ${overBudget ? 'over-budget' : ''}`}
-                        style={{ width: `${Math.min(percentage, 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
         </div>
@@ -314,58 +325,35 @@ const Analytics = () => {
             <h3>Monthly Financial Trends</h3>
             <ResponsiveContainer width="100%" height={400}>
               <LineChart data={monthlyTrendData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
-                <XAxis dataKey="month" stroke="#ccc" />
-                <YAxis stroke="#ccc" />
-                <Tooltip contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                <XAxis dataKey="month" stroke="#9CA3AF" />
+                <YAxis stroke="#9CA3AF" />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: '#1F2937', 
+                    border: '1px solid #374151',
+                    borderRadius: '12px',
+                    color: '#ffffff'
+                  }} 
+                />
                 <Legend />
-                <Line type="monotone" dataKey="income" stroke="#4caf50" strokeWidth={2} />
-                <Line type="monotone" dataKey="expenses" stroke="#f44336" strokeWidth={2} />
-                <Line type="monotone" dataKey="savings" stroke="#36a2eb" strokeWidth={2} />
-                <Line type="monotone" dataKey="investments" stroke="#ffce56" strokeWidth={2} />
+                <Line type="monotone" dataKey="income" stroke="#10B981" strokeWidth={3} dot={{ r: 6 }} />
+                <Line type="monotone" dataKey="expenses" stroke="#EF4444" strokeWidth={3} dot={{ r: 6 }} />
+                <Line type="monotone" dataKey="savings" stroke="#3B82F6" strokeWidth={3} dot={{ r: 6 }} />
+                <Line type="monotone" dataKey="investments" stroke="#F59E0B" strokeWidth={3} dot={{ r: 6 }} />
               </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
       )}
 
-      {activeTab === 'goals' && (
-        <div className="tab-content">
-          <div className="goals-grid">
-            {goalData.map((goal) => (
-              <div key={goal.goal} className="goal-card">
-                <div className="goal-header">
-                  <h4>{goal.goal}</h4>
-                  <span className="goal-percentage">{goal.percentage}%</span>
-                </div>
-                <div className="goal-progress">
-                  <div className="goal-progress-bar">
-                    <div 
-                      className="goal-progress-fill"
-                      style={{ width: `${goal.percentage}%` }}
-                    />
-                  </div>
-                  <div className="goal-amounts">
-                    <span>R {goal.current.toLocaleString()}</span>
-                    <span>R {goal.target.toLocaleString()}</span>
-                  </div>
-                </div>
-                <div className="goal-remaining">
-                  R {(goal.target - goal.current).toLocaleString()} remaining
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       <style jsx>{`
         .analytics-container {
-          padding: 2rem;
-          background: #0a0a0a;
-          color: #ffffff;
           min-height: 100vh;
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%);
+          color: #ffffff;
+          padding: 2rem;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
         }
 
         .analytics-header {
@@ -375,25 +363,29 @@ const Analytics = () => {
         .header-content {
           display: flex;
           justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1.5rem;
+          align-items: flex-start;
+          margin-bottom: 2rem;
+          flex-wrap: wrap;
+          gap: 1rem;
         }
 
         .header-content h1 {
           margin: 0;
-          font-size: 2rem;
+          font-size: 2.5rem;
           font-weight: 700;
-          background: linear-gradient(135deg, #a10d2f, #ff6384);
+          background: linear-gradient(135deg, #a10d2f, #ff6384, #ff4757);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
 
         .date-range {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          color: #ccc;
-          margin: 0.5rem 0 0 0;
+          color: #9CA3AF;
+          margin-top: 0.5rem;
+          font-size: 0.95rem;
         }
 
         .header-controls {
@@ -403,53 +395,74 @@ const Analytics = () => {
         }
 
         .period-selector {
-          background: #1a1a1a;
-          border: 1px solid #333;
-          color: white;
-          padding: 0.5rem 1rem;
-          border-radius: 8px;
+          background: rgba(31, 41, 55, 0.8);
+          backdrop-filter: blur(10px);
+          border: 1px solid #374151;
+          color: #ffffff;
+          padding: 0.75rem 1.25rem;
+          border-radius: 12px;
+          font-size: 0.9rem;
+          outline: none;
+          transition: all 0.3s ease;
+        }
+
+        .period-selector:focus {
+          border-color: #a10d2f;
+          box-shadow: 0 0 0 3px rgba(161, 13, 47, 0.1);
         }
 
         .export-btn {
           display: flex;
           align-items: center;
           gap: 0.5rem;
-          background: #a10d2f;
+          background: linear-gradient(135deg, #a10d2f, #dc2626);
           color: white;
           border: none;
-          padding: 0.5rem 1rem;
-          border-radius: 8px;
+          padding: 0.75rem 1.5rem;
+          border-radius: 12px;
           cursor: pointer;
-          transition: background 0.2s;
+          font-weight: 600;
+          font-size: 0.9rem;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(161, 13, 47, 0.2);
         }
 
         .export-btn:hover {
-          background: #8a0b26;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(161, 13, 47, 0.3);
         }
 
         .analytics-tabs {
           display: flex;
           gap: 0.5rem;
-          border-bottom: 1px solid #333;
+          border-bottom: 2px solid #374151;
+          overflow-x: auto;
+          padding-bottom: 0;
         }
 
         .tab-button {
           background: none;
           border: none;
-          color: #ccc;
+          color: #9CA3AF;
           padding: 1rem 1.5rem;
           cursor: pointer;
-          border-bottom: 2px solid transparent;
-          transition: all 0.2s;
+          border-bottom: 3px solid transparent;
+          transition: all 0.3s ease;
+          font-weight: 600;
+          font-size: 0.95rem;
+          white-space: nowrap;
+          position: relative;
         }
 
         .tab-button.active {
           color: #a10d2f;
           border-bottom-color: #a10d2f;
+          background: rgba(161, 13, 47, 0.05);
         }
 
         .tab-button:hover {
-          color: #fff;
+          color: #ffffff;
+          background: rgba(255, 255, 255, 0.05);
         }
 
         .kpi-grid {
@@ -460,16 +473,36 @@ const Analytics = () => {
         }
 
         .kpi-card {
-          background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-          border: 1px solid #333;
-          border-radius: 12px;
+          background: linear-gradient(135deg, rgba(31, 41, 55, 0.8), rgba(17, 24, 39, 0.9));
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(55, 65, 81, 0.5);
+          border-radius: 16px;
           padding: 1.5rem;
-          transition: transform 0.2s, box-shadow 0.2s;
+          transition: all 0.3s ease;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .kpi-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 2px;
+          background: linear-gradient(90deg, #a10d2f, #ff6384);
+          opacity: 0;
+          transition: opacity 0.3s ease;
         }
 
         .kpi-card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(161, 13, 47, 0.15);
+          transform: translateY(-4px);
+          box-shadow: 0 12px 30px rgba(161, 13, 47, 0.15);
+          border-color: rgba(161, 13, 47, 0.3);
+        }
+
+        .kpi-card:hover::before {
+          opacity: 1;
         }
 
         .kpi-header {
@@ -477,6 +510,15 @@ const Analytics = () => {
           justify-content: space-between;
           align-items: center;
           margin-bottom: 1rem;
+        }
+
+        .kpi-icon-wrapper {
+          padding: 0.75rem;
+          background: rgba(161, 13, 47, 0.2);
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
 
         .kpi-icon {
@@ -488,34 +530,40 @@ const Analytics = () => {
           align-items: center;
           gap: 0.25rem;
           font-size: 0.875rem;
-          font-weight: 600;
+          font-weight: 700;
+          padding: 0.25rem 0.75rem;
+          border-radius: 20px;
         }
 
         .kpi-trend.up {
-          color: #4caf50;
+          color: #10B981;
+          background: rgba(16, 185, 129, 0.1);
         }
 
         .kpi-trend.down {
-          color: #f44336;
+          color: #EF4444;
+          background: rgba(239, 68, 68, 0.1);
         }
 
         .kpi-title {
           font-size: 0.875rem;
-          color: #ccc;
+          color: #9CA3AF;
           margin: 0;
+          font-weight: 500;
         }
 
         .kpi-value {
-          font-size: 2rem;
-          font-weight: 700;
+          font-size: 2.25rem;
+          font-weight: 800;
           margin: 0.5rem 0 0 0;
-          color: #fff;
+          color: #ffffff;
         }
 
         .budget-summary-card {
-          background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-          border: 1px solid #333;
-          border-radius: 12px;
+          background: linear-gradient(135deg, rgba(31, 41, 55, 0.8), rgba(17, 24, 39, 0.9));
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(55, 65, 81, 0.5);
+          border-radius: 16px;
           padding: 1.5rem;
           margin-bottom: 2rem;
         }
@@ -529,51 +577,55 @@ const Analytics = () => {
 
         .budget-header h3 {
           margin: 0;
-          color: #fff;
+          color: #ffffff;
+          font-size: 1.25rem;
+          font-weight: 600;
         }
 
         .budget-status {
-          font-weight: 600;
-          padding: 0.25rem 0.75rem;
-          border-radius: 20px;
+          font-weight: 700;
+          padding: 0.5rem 1rem;
+          border-radius: 25px;
           font-size: 0.875rem;
         }
 
         .budget-status.good {
-          background: rgba(76, 175, 80, 0.2);
-          color: #4caf50;
+          background: rgba(16, 185, 129, 0.2);
+          color: #10B981;
         }
 
         .budget-status.caution {
-          background: rgba(255, 206, 86, 0.2);
-          color: #ffce56;
+          background: rgba(245, 158, 11, 0.2);
+          color: #F59E0B;
         }
 
         .budget-status.warning {
-          background: rgba(244, 67, 54, 0.2);
-          color: #f44336;
+          background: rgba(239, 68, 68, 0.2);
+          color: #EF4444;
         }
 
         .budget-bar {
           width: 100%;
-          height: 8px;
-          background: #333;
-          border-radius: 4px;
+          height: 12px;
+          background: #374151;
+          border-radius: 6px;
           overflow: hidden;
           margin-bottom: 1rem;
         }
 
         .budget-progress {
           height: 100%;
-          background: linear-gradient(90deg, #4caf50, #ffce56, #f44336);
-          transition: width 0.3s ease;
+          background: linear-gradient(90deg, #10B981, #F59E0B, #EF4444);
+          transition: width 0.5s ease;
+          border-radius: 6px;
         }
 
         .budget-amounts {
           display: flex;
           justify-content: space-between;
           font-size: 0.875rem;
-          color: #ccc;
+          color: #9CA3AF;
+          font-weight: 500;
         }
 
         .insights-section {
@@ -582,7 +634,9 @@ const Analytics = () => {
 
         .insights-section h3 {
           margin-bottom: 1rem;
-          color: #fff;
+          color: #ffffff;
+          font-size: 1.25rem;
+          font-weight: 600;
         }
 
         .insights-grid {
@@ -594,27 +648,33 @@ const Analytics = () => {
           display: flex;
           align-items: center;
           gap: 0.75rem;
-          padding: 1rem;
-          border-radius: 8px;
+          padding: 1rem 1.25rem;
+          border-radius: 12px;
           border-left: 4px solid;
+          font-size: 0.9rem;
+          transition: all 0.3s ease;
+        }
+
+        .insight-alert:hover {
+          transform: translateX(4px);
         }
 
         .insight-alert.warning {
-          background: rgba(244, 67, 54, 0.1);
-          border-left-color: #f44336;
-          color: #ffcdd2;
+          background: rgba(239, 68, 68, 0.1);
+          border-left-color: #EF4444;
+          color: #FCA5A5;
         }
 
         .insight-alert.success {
-          background: rgba(76, 175, 80, 0.1);
-          border-left-color: #4caf50;
-          color: #c8e6c9;
+          background: rgba(16, 185, 129, 0.1);
+          border-left-color: #10B981;
+          color: #A7F3D0;
         }
 
         .insight-alert.info {
-          background: rgba(54, 162, 235, 0.1);
-          border-left-color: #36a2eb;
-          color: #bbdefb;
+          background: rgba(59, 130, 246, 0.1);
+          border-left-color: #3B82F6;
+          color: #BFDBFE;
         }
 
         .tab-content {
@@ -629,15 +689,24 @@ const Analytics = () => {
         }
 
         .chart-card {
-          background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-          border: 1px solid #333;
-          border-radius: 12px;
+          background: linear-gradient(135deg, rgba(31, 41, 55, 0.8), rgba(17, 24, 39, 0.9));
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(55, 65, 81, 0.5);
+          border-radius: 16px;
           padding: 1.5rem;
+          transition: all 0.3s ease;
+        }
+
+        .chart-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         .chart-card h3 {
           margin: 0 0 1rem 0;
-          color: #fff;
+          color: #ffffff;
+          font-size: 1.1rem;
+          font-weight: 600;
         }
 
         .chart-card.full-width {
@@ -650,45 +719,60 @@ const Analytics = () => {
           gap: 2rem;
         }
 
+        .spending-chart {
+          grid-column: 1;
+        }
+
         .category-breakdown {
-          background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-          border: 1px solid #333;
-          border-radius: 12px;
+          background: linear-gradient(135deg, rgba(31, 41, 55, 0.8), rgba(17, 24, 39, 0.9));
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(55, 65, 81, 0.5);
+          border-radius: 16px;
           padding: 1.5rem;
         }
 
         .category-breakdown h3 {
           margin: 0 0 1.5rem 0;
-          color: #fff;
+          color: #ffffff;
+          font-size: 1.1rem;
+          font-weight: 600;
+        }
+
+        .category-list {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
         }
 
         .category-item {
-          margin-bottom: 1.5rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
         }
 
         .category-header {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 0.5rem;
         }
 
         .category-name {
           font-weight: 600;
-          color: #fff;
+          color: #ffffff;
+          font-size: 0.95rem;
         }
 
         .category-status {
           font-size: 0.875rem;
-          font-weight: 600;
+          font-weight: 700;
         }
 
         .category-status.over {
-          color: #f44336;
+          color: #EF4444;
         }
 
         .category-status.under {
-          color: #4caf50;
+          color: #10B981;
         }
 
         .category-amounts {
@@ -696,91 +780,37 @@ const Analytics = () => {
           justify-content: space-between;
           align-items: center;
           font-size: 0.875rem;
-          color: #ccc;
-          margin-bottom: 0.5rem;
+          color: #9CA3AF;
         }
 
         .over-budget {
-          color: #f44336;
-          font-weight: 600;
+          color: #EF4444;
+          font-weight: 700;
         }
 
         .category-progress-bar {
           width: 100%;
-          height: 6px;
-          background: #333;
-          border-radius: 3px;
+          height: 8px;
+          background: #374151;
+          border-radius: 4px;
           overflow: hidden;
         }
 
         .progress-fill {
           height: 100%;
-          background: #4caf50;
-          transition: width 0.3s ease;
+          background: #10B981;
+          transition: width 0.5s ease;
+          border-radius: 4px;
         }
 
         .progress-fill.over-budget {
-          background: #f44336;
+          background: #EF4444;
         }
 
-        .goals-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 1.5rem;
-        }
-
-        .goal-card {
-          background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
-          border: 1px solid #333;
-          border-radius: 12px;
-          padding: 1.5rem;
-        }
-
-        .goal-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 1rem;
-        }
-
-        .goal-header h4 {
-          margin: 0;
-          color: #fff;
-        }
-
-        .goal-percentage {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: #a10d2f;
-        }
-
-        .goal-progress-bar {
-          width: 100%;
-          height: 8px;
-          background: #333;
-          border-radius: 4px;
-          overflow: hidden;
-          margin-bottom: 0.5rem;
-        }
-
-        .goal-progress-fill {
-          height: 100%;
-          background: linear-gradient(90deg, #a10d2f, #ff6384);
-          transition: width 0.3s ease;
-        }
-
-        .goal-amounts {
-          display: flex;
-          justify-content: space-between;
-          font-size: 0.875rem;
-          color: #ccc;
-          margin-bottom: 0.5rem;
-        }
-
-        .goal-remaining {
-          font-size: 0.875rem;
-          color: #a10d2f;
-          font-weight: 600;
+        @media (max-width: 1024px) {
+          .spending-analysis {
+            grid-template-columns: 1fr;
+          }
         }
 
         @media (max-width: 768px) {
@@ -791,20 +821,27 @@ const Analytics = () => {
           .header-content {
             flex-direction: column;
             align-items: flex-start;
-            gap: 1rem;
+          }
+
+          .header-content h1 {
+            font-size: 2rem;
           }
 
           .charts-grid {
             grid-template-columns: 1fr;
           }
 
-          .spending-analysis {
+          .kpi-grid {
             grid-template-columns: 1fr;
           }
 
           .analytics-tabs {
-            overflow-x: auto;
-            white-space: nowrap;
+            margin-bottom: 1rem;
+          }
+
+          .tab-button {
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
           }
         }
       `}</style>

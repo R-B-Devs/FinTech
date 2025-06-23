@@ -412,11 +412,16 @@ const Dashboard = () => {
                   <Brain className="status-icon" />
                   <span>AI Active</span>
                 </div>
+                  <div className="status-badge status-video" onClick={toggleCallFeature}>
+                  <Video className="status-icon" />
+                  <span>Video Call</span>            
+                 </div>
                 {userRole === 'customer' && (
                   <div className="status-badge status-phone" onClick={toggleCallFeature}>
                     <Phone className="status-icon" />
                     <span>Phone Call</span>
                   </div>
+              
                 )}
               </div>
             </div>
