@@ -6,7 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import DemoPage from "./pages/DemoPage";
 import ForgotPassword from "./pages/ForgotPassword.jsx";
 import ResetPassword from "./pages/ResetPassword";
-import RegistrationPage from "./pages/registration-page.jsx"; 
+// import RegistrationPage from "./pages/registration-page.jsx"; 
 import OtpPage from "./pages/OtpVerification.jsx";
 import VerifyOtp from "./pages/VerifyOtp.jsx";
 
@@ -35,7 +35,7 @@ function App() {
         <Route path="/demo" element={<DemoPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
-        <Route path="/register" element={<RegistrationPage />} />
+        {/* <Route path="/register" element={<RegistrationPage />} /> */}
         <Route path="/otp" element={<OtpPage />} />
         <Route path="/verifyOtp" element={<VerifyOtp />} />
 
