@@ -428,20 +428,6 @@ app.get('/api/users/all', async (req, res) => {
   }
 });
 
-app.get('/api/users/:user_id', async (req, res) => {
-  const { user_id } = req.params;
-
-  if (!/^[0-9a-fA-F-]{36}$/.test(user_id)) {
-    return res.status(400).json({ error: 'Invalid user ID format' });
-  }
-
-  const result = await getUserById(user_id);
-  if (result.success) {
-    res.json({ message: 'User retrieved successfully', user: result.user });
-  } else {
-    res.status(404).json({ error: result.message });
-  }
-});
 
 app.get('/api/health', async (req, res) => {
   try {
@@ -558,6 +544,80 @@ app.get('/api/users/transactions', authenticateToken, async (req, res) => {
   }
 });
 
+app.get('/api/users/dashboard', authenticateToken, async (req, res) => {
+  const user_id = req.user.user_id;
+  try {
+    // Fetch accounts and their balances
+    const { data: accounts, error: accountsError } = await supabase
+      .from('accounts')
+      .select('*')
+      .eq('user_id', user_id)
+      .eq('status', 'ACTIVE');
+    if (accountsError) throw accountsError;
+
+    // Calculate total balance
+    const totalBalance = accounts.reduce((sum, acc) => sum + Number(acc.balance), 0);
+
+    // Investments (if you have an account_type for investments, change this filter if needed)
+    const investments = accounts
+      .filter(acc => acc.account_type && acc.account_type.toLowerCase() === 'investment')
+      .reduce((sum, acc) => sum + Number(acc.balance), 0);
+
+    // Recent transactions (latest 5, from user's accounts)
+    const accountIds = accounts.map(acc => acc.account_id);
+    let recentTransactions = [];
+    if (accountIds.length > 0) {
+      const { data: transactions, error: txError } = await supabase
+        .from('transactions')
+        .select('*')
+        .in('account_id', accountIds)
+        .order('transaction_date', { ascending: false })
+        .limit(5);
+
+      if (txError) throw txError;
+      recentTransactions = transactions;
+    }
+
+    // Latest credit score
+    let creditScore = null;
+    const { data: csData, error: csError } = await supabase
+      .from('credit_scores')
+      .select('*')
+      .eq('user_id', user_id)
+      .order('score_date', { ascending: false })
+      .limit(1);
+    if (csError) throw csError;
+    creditScore = csData && csData.length > 0 ? csData[0].score : null;
+
+    // Respond with summary
+    res.json({
+      totalBalance,
+      investments,
+      creditScore,
+      savingsGoal: 75, // Use a placeholder or add logic if you track goals
+      recentTransactions,
+      accounts
+    });
+  } catch (err) {
+    console.error('Dashboard summary fetch error:', err);
+    res.status(500).json({ error: 'Failed to load dashboard data.' });
+  }
+});
+
+app.get('/api/users/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+    console.log(user_id)
+  if (!/^[0-9a-fA-F-]{36}$/.test(user_id)) {
+    return res.status(400).json({ error: 'Invalid user ID format' });
+  }
+
+  const result = await getUserById(user_id);
+  if (result.success) {
+    res.json({ message: 'User retrieved successfully', user: result.user });
+  } else {
+    res.status(404).json({ error: result.message });
+  }
+});
 app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to ABSA Financial Assistant API',
