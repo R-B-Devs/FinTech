@@ -303,7 +303,9 @@ const handleSubmit = async (e) => {
           <img 
             src={registerImage} alt="Registration illustration" className="register-image"/>
             <h3 className="register-text">Already have an account?</h3>
-            
+            <button className="register-button" onClick={() => navigate('/login')}>
+              Sign In
+           </button>
         </div>
       </div>
 
