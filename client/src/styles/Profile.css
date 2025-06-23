@@ -1,0 +1,85 @@
+.profile-page {
+    padding: 2rem;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #1f1f1f;
+    min-height: 100vh;
+    color: #f2f2f2;
+  }
+  
+  .profile-page h2 {
+    color: #ffffff;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    text-align: center;
+  }
+  
+  .profile-card {
+    background-color: #2c2c2c;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+    max-width: 800px;
+    margin: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+  }
+  
+  .profile-avatar {
+    flex: 1 1 150px;
+    text-align: center;
+  }
+  
+  .profile-avatar img {
+    width: 120px;
+    height: 120px;
+    border-radius: 100%;
+    object-fit: cover;
+    border: 3px solid #a10d2f;
+    background-color: #fff;
+  }
+  
+  .profile-details {
+    flex: 2 1 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    font-size: 0.95rem;
+    color: #ccc;
+    margin-bottom: 0.3rem;
+  }
+  
+  .form-group input,
+  .form-group select {
+    padding: 0.6rem;
+    border-radius: 6px;
+    border: 1px solid #444;
+    font-size: 1rem;
+    background-color: #3a3a3a;
+    color: #fff;
+  }
+  
+  .save-btn {
+    margin-top: 1rem;
+    background-color: #a10d2f;
+    color: #fff;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .save-btn:hover {
+    background-color: #8a0a28;
+  }
+  
