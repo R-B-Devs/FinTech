@@ -184,7 +184,6 @@ app.post('/reset-password/:token', async (req, res) => {
   // Clean up token after use
   delete resetTokens[email];
 
-  res.json({ success: true, message: 'Password reset successful!' });
 });
 
 
