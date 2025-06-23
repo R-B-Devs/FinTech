@@ -4,6 +4,9 @@ import {
   CreditCard, ChevronRight, Video, VideoOff, User, Clock
 } from 'lucide-react';
 
+import "../styles/InAppCall.css"; 
+// import "../styles/dashboard.css"; // Adjust path as needed
+
 // Customer UI Component
 const CustomerCallUI = ({
   callFeature,
