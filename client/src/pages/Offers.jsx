@@ -21,12 +21,12 @@ const Offers = () => {
   const [savedOffers, setSavedOffers] = useState([]);
   const [userCreditScore] = useState(750); // Mock user credit score
 
-  // Comprehensive South African financial offers
+  // Comprehensive financial offers
   const allOffers = [
     {
       id: 1,
       icon: <CreditCard size={28} />,
-      title: 'FNB Premier Credit Card',
+      title: 'Premium Credit Card',
       description: 'Premium rewards card with airport lounge access and comprehensive travel insurance.',
       category: 'credit-cards',
       badge: 'Pre-approved',
@@ -37,12 +37,11 @@ const Offers = () => {
       expiryDate: '2025-07-15',
       approvalChance: 95,
       benefits: ['Airport lounge access', 'Travel insurance', 'Concierge service'],
-      provider: 'FNB'
     },
     {
       id: 2,
       icon: <Home size={28} />,
-      title: 'Standard Bank Home Loan',
+      title: 'Home Loan',
       description: 'Competitive home loan rates with flexible repayment options.',
       category: 'home-loans',
       badge: 'Best Rate',
@@ -53,12 +52,11 @@ const Offers = () => {
       expiryDate: '2025-12-31',
       approvalChance: 88,
       benefits: ['No transfer fees', 'Flexible repayment', 'Free bond origination'],
-      provider: 'Standard Bank'
     },
     {
       id: 3,
       icon: <Car size={28} />,
-      title: 'Nedbank Vehicle Finance',
+      title: 'Vehicle Finance',
       description: 'Finance your dream car with competitive rates and flexible terms.',
       category: 'vehicle-finance',
       badge: 'Special Rate',
@@ -69,12 +67,11 @@ const Offers = () => {
       expiryDate: '2025-08-30',
       approvalChance: 92,
       benefits: ['Up to 84 months terms', 'Balloon payment options', 'Insurance included'],
-      provider: 'Nedbank'
     },
     {
       id: 4,
       icon: <TrendingUp size={28} />,
-      title: 'Investec Investment Account',
+      title: 'Investment Account',
       description: 'High-yield investment account with no minimum balance requirements.',
       category: 'investments',
       badge: 'New',
@@ -85,12 +82,11 @@ const Offers = () => {
       expiryDate: '2025-09-15',
       approvalChance: 98,
       benefits: ['No minimum balance', 'Daily compounding', 'Online access'],
-      provider: 'Investec'
     },
     {
       id: 5,
       icon: <Banknote size={28} />,
-      title: 'Absa Personal Loan',
+      title: 'Personal Loan',
       description: 'Quick personal loan approval with funds available within 48 hours.',
       category: 'personal-loans',
       badge: 'Fast Approval',
@@ -101,12 +97,11 @@ const Offers = () => {
       expiryDate: '2025-07-31',
       approvalChance: 85,
       benefits: ['48-hour approval', 'No collateral needed', 'Flexible terms'],
-      provider: 'Absa'
     },
     {
       id: 6,
       icon: <Shield size={28} />,
-      title: 'Discovery Life Insurance',
+      title: 'Life Insurance',
       description: 'Comprehensive life cover with Vitality rewards and health benefits.',
       category: 'insurance',
       badge: 'Exclusive',
@@ -117,12 +112,11 @@ const Offers = () => {
       expiryDate: '2025-11-30',
       approvalChance: 90,
       benefits: ['Vitality rewards', 'Health screening', 'Premium discounts'],
-      provider: 'Discovery'
     },
     {
       id: 7,
       icon: <Gift size={28} />,
-      title: 'Capitec Cashback Credit Card',
+      title: 'Cashback Credit Card',
       description: 'Earn up to 5% cashback on all purchases with no spending caps.',
       category: 'credit-cards',
       badge: 'Popular',
@@ -133,12 +127,11 @@ const Offers = () => {
       expiryDate: '2025-08-15',
       approvalChance: 78,
       benefits: ['Up to 5% cashback', 'No spending caps', 'Monthly rewards'],
-      provider: 'Capitec'
     },
     {
       id: 8,
       icon: <TrendingUp size={28} />,
-      title: 'African Bank Fixed Deposit',
+      title: 'Fixed Deposit',
       description: 'Secure your savings with guaranteed returns and flexible terms.',
       category: 'investments',
       badge: 'Guaranteed',
@@ -149,7 +142,6 @@ const Offers = () => {
       expiryDate: '2025-12-31',
       approvalChance: 100,
       benefits: ['Guaranteed returns', 'Flexible terms', 'SARB protected'],
-      provider: 'African Bank'
     }
   ];
 
