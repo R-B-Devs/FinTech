@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import "../styles/VerifyOtp.css";
 
 const VerifyOtp = () => {
@@ -59,6 +60,10 @@ const VerifyOtp = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <Link to="/" className="nav-link">
+                  <span className="material-symbols-outlined">arrow_back</span>
+                  <span>Back</span>
+        </Link>
       <div className="bg-white shadow-xl rounded-lg p-8 max-w-md w-full">
         <h2 className="text-2xl font-bold text-center text-indigo-600 mb-4">Enter OTP</h2>
         <p className="text-center mb-4">

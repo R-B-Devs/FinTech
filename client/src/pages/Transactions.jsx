@@ -69,6 +69,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Activity } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import '../styles/Transactions.css';
 
 const Transactions = () => {
@@ -116,6 +117,10 @@ const Transactions = () => {
 
   return (
     <div className="transactions-page">
+      <Link to="/Dashboard" className="nav-link">
+                  <span className="material-symbols-outlined">arrow_back</span>
+                  <span>Back</span>
+        </Link>
       <h2><Activity size={28} /> Recent Transactions</h2>
       {loading && <div className="loading">Loading transactions...</div>}
       {error && <div className="error">{error}</div>}

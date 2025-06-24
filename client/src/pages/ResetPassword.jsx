@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { Link } from 'react-router-dom';
 import "../styles/ResetPassword.css";
 import ResetImage from "../assets/Reset.png"; 
+import { useParams } from 'react-router-dom';
+
 
 const ResetPassword = () => {
   const [userId, setUserId] = useState("");
@@ -58,6 +61,10 @@ const ResetPassword = () => {
 
   return (
     <div className="reset-wrapper">
+      <Link to="/" className="nav-link">
+                  <span className="material-symbols-outlined">arrow_back</span>
+                  <span>Back</span>
+        </Link>
       <div className="reset-container">
         <div className="image-section">
           <img src={ResetImage} alt="Reset Illustration" />

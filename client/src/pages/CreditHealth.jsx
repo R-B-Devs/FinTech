@@ -6,7 +6,7 @@ import '../styles/CreditHealth.css';
 const CreditHealth = () => {
   return (
     <div className="credit-health-page">
-      <Link to="/" className="nav-link">
+      <Link to="/Dashboard" className="nav-link">
         <span className="material-symbols-outlined">arrow_back</span>
         <span>Back</span>
       </Link>
@@ -25,22 +25,22 @@ const CreditHealth = () => {
 
       <div className="credit-metrics">
         <div className="metric-card">
-          <TrendingUp className="metric-icon" />
+          <TrendingUp className="icon" />
           <h4>Credit Utilization</h4>
           <p>27% used of your total limit</p>
         </div>
         <div className="metric-card">
-          <ShieldCheck className="metric-icon" />
+          <ShieldCheck className="icon" />
           <h4>Payment History</h4>
           <p>100% on-time payments</p>
         </div>
         <div className="metric-card">
-          <Info className="metric-icon" />
+          <Info className="icon" />
           <h4>Credit Tips</h4>
           <ul>
-            <li>💡 Keep utilization under 30%</li>
-            <li>💡 Always pay on time</li>
-            <li>💡 Avoid too many new credit applications</li>
+            <li><i class="fa-regular fa-lightbulb"></i> Keep utilization under 30%</li>
+            <li><i class="fa-regular fa-lightbulb"></i> Always pay on time</li>
+            <li><i class="fa-regular fa-lightbulb"></i> Avoid too many new credit applications</li>
           </ul>
         </div>
       </div>

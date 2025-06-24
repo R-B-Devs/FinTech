@@ -35,12 +35,23 @@
   cursor: pointer;
 }
 
+/* Buttons */
 .stay-button {
+  background-color: #276b29;
+  color: white;
+}
+
+.stay-button:hover {
   background-color: #4caf50;
   color: white;
 }
 
 .logout-button {
+  background-color: #fd3729;
+  color: white;
+}
+
+.logout-button:hover {
   background-color: #f44336;
   color: white;
 }

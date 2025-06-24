@@ -3,6 +3,7 @@ import axios from 'axios';
 import "../styles/OtpVerification.css";
 import { useNavigate, useLocation } from 'react-router-dom';
 
+
 const SendOtpForm = () => {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
@@ -117,6 +118,7 @@ const handleVerify = async () => {
   return (
     <>
       <div className="otp-form-container" style={{ padding: '2rem' }}>
+        
         <h2>Send OTP</h2>
         <form onSubmit={sendOtp}>
           <input
@@ -125,7 +127,9 @@ const handleVerify = async () => {
             value={email}
             required
             onChange={(e) => setEmail(e.target.value)}
-            style={{ padding: '0.5rem', width: '250px' }}
+            className="otp-input-field"
+
+            
           />
           <br /><br />
           <button type="submit" disabled={loading} style={{ padding: '0.5rem 1rem' }}>
