@@ -798,7 +798,7 @@ const Dashboard = () => {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0a0a0a' }}>
         <div className="text-center">
           <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: '#8A1F2C' }} />
-          <p style={{ color: '#cbd5e1' }}>Loading dashboard data...</p>
+          <p style={{ color: '#cbd5e1' }}>Just a moment — we’re refreshing things...</p>
         </div>
       </div>
     );
