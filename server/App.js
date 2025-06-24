@@ -1,5 +1,4 @@
 require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
@@ -31,12 +30,14 @@ async function testSupabaseConnection() {
 const app = express();
 const PORT = process.env.PORT || 3001;
 const resetTokens = {};
-
+//cors
 app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+//openai 
+const aiRoutes = require('./api/ai');
+app.use('/api/ai', aiRoutes);
 const JWT_SECRET = process.env.JWT_SECRET;
 
 
@@ -410,10 +411,50 @@ async function authenticateToken(req, res, next) {
     res.status(403).json({ error: 'Invalid or expired token' });
   }
 }
-
+module.exports.authenticateToken = authenticateToken;
 // ==========================
 // ROUTES
 // ==========================
+app.get('/api/users/profile-full', authenticateToken, async (req, res) => {
+  const user_id = req.user.user_id;
+
+  try {
+    const [
+      { data: accounts },
+      { data: transactions },
+      { data: income },
+      { data: credit_scores },
+      { data: loan_suggestions },
+      { data: ai_conversations },
+      { data: call_logs },
+      { data: suspicious_activities }
+    ] = await Promise.all([
+      supabaseClient.from('accounts').select('*').eq('user_id', user_id),
+      supabaseClient.from('transactions').select('*').in('account_id', (await supabaseClient.from('accounts').select('account_id').eq('user_id', user_id)).data.map(a => a.account_id)),
+      supabaseClient.from('income').select('*').eq('user_id', user_id),
+      supabaseClient.from('credit_scores').select('*').eq('user_id', user_id).order('score_date', { ascending: false }).limit(1),
+      supabaseClient.from('loan_suggestions').select('*').eq('user_id', user_id),
+      supabaseClient.from('ai_conversations').select('*').eq('user_id', user_id),
+      supabaseClient.from('call_logs').select('*').eq('user_id', user_id),
+      supabaseClient.from('suspicious_activities').select('*').eq('user_id', user_id),
+    ]);
+
+    res.json({
+      user: req.user,
+      accounts,
+      transactions,
+      income,
+      credit_scores: credit_scores[0] || null,
+      loan_suggestions,
+      ai_conversations,
+      call_logs,
+      suspicious_activities
+    });
+  } catch (err) {
+    console.error('Error loading full profile:', err);
+    res.status(500).json({ error: 'Failed to load full profile' });
+  }
+});
 
 app.get('/api/users/all', async (req, res) => {
   const result = await getAllUsers();
@@ -428,20 +469,6 @@ app.get('/api/users/all', async (req, res) => {
   }
 });
 
-app.get('/api/users/:user_id', async (req, res) => {
-  const { user_id } = req.params;
-
-  if (!/^[0-9a-fA-F-]{36}$/.test(user_id)) {
-    return res.status(400).json({ error: 'Invalid user ID format' });
-  }
-
-  const result = await getUserById(user_id);
-  if (result.success) {
-    res.json({ message: 'User retrieved successfully', user: result.user });
-  } else {
-    res.status(404).json({ error: result.message });
-  }
-});
 
 app.get('/api/health', async (req, res) => {
   try {
@@ -555,6 +582,118 @@ app.get('/api/users/transactions', authenticateToken, async (req, res) => {
     });
   } else {
     res.status(500).json({ error: result.message });
+  }
+});
+
+app.get('/api/users/dashboard', authenticateToken, async (req, res) => {
+  const user_id = req.user.user_id;
+  try {
+    // Fetch accounts and their balances
+    const { data: accounts, error: accountsError } = await supabase
+      .from('accounts')
+      .select('*')
+      .eq('user_id', user_id)
+      .eq('status', 'ACTIVE');
+    if (accountsError) throw accountsError;
+
+    // Calculate total balance
+    const totalBalance = accounts.reduce((sum, acc) => sum + Number(acc.balance), 0);
+
+    // Investments (if you have an account_type for investments, change this filter if needed)
+    const investments = accounts
+      .filter(acc => acc.account_type && acc.account_type.toLowerCase() === 'investment')
+      .reduce((sum, acc) => sum + Number(acc.balance), 0);
+
+    // Recent transactions (latest 5, from user's accounts)
+    const accountIds = accounts.map(acc => acc.account_id);
+    let recentTransactions = [];
+    if (accountIds.length > 0) {
+      const { data: transactions, error: txError } = await supabase
+        .from('transactions')
+        .select('*')
+        .in('account_id', accountIds)
+        .order('transaction_date', { ascending: false })
+        .limit(5);
+
+      if (txError) throw txError;
+      recentTransactions = transactions;
+    }
+
+    // Latest credit score
+    let creditScore = null;
+    const { data: csData, error: csError } = await supabase
+      .from('credit_scores')
+      .select('*')
+      .eq('user_id', user_id)
+      .order('score_date', { ascending: false })
+      .limit(1);
+    if (csError) throw csError;
+    creditScore = csData && csData.length > 0 ? csData[0].score : null;
+
+    // Respond with summary
+    res.json({
+      totalBalance,
+      investments,
+      creditScore,
+      savingsGoal: 75, // Use a placeholder or add logic if you track goals
+      recentTransactions,
+      accounts
+    });
+  } catch (err) {
+    console.error('Dashboard summary fetch error:', err);
+    res.status(500).json({ error: 'Failed to load dashboard data.' });
+  }
+});
+app.put('/api/users/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+  const fields = req.body;
+
+  if (!/^[0-9a-fA-F-]{36}$/.test(user_id)) {
+    return res.status(400).json({ error: 'Invalid user ID format' });
+  }
+
+  try {
+    // Remove null or empty fields from update
+    const validFields = Object.fromEntries(
+      Object.entries(fields).filter(([_, value]) => value !== null && value !== '')
+    );
+
+    if (Object.keys(validFields).length === 0) {
+      return res.status(400).json({ error: 'No valid fields to update' });
+    }
+
+    validFields.updated_at = new Date().toISOString();
+
+    const { data, error } = await supabaseClient
+      .from('users')
+      .update(validFields)
+      .eq('user_id', user_id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Update user error:', error);
+      return res.status(500).json({ error: 'Failed to update user profile' });
+    }
+
+    res.json({ message: 'Profile updated successfully', user: data });
+  } catch (err) {
+    console.error('Unexpected error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+app.get('/api/users/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+    console.log(user_id)
+  if (!/^[0-9a-fA-F-]{36}$/.test(user_id)) {
+    return res.status(400).json({ error: 'Invalid user ID format' });
+  }
+
+  const result = await getUserById(user_id);
+  if (result.success) {
+    res.json({ message: 'User retrieved successfully', user: result.user });
+  } else {
+    res.status(404).json({ error: result.message });
   }
 });
 

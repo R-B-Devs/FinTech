@@ -1,411 +1,489 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { TrendingUp, TrendingDown, Brain, Target, AlertTriangle, Lightbulb, Calendar, DollarSign, PieChart, Zap } from 'lucide-react';
-import '../styles/MoneyTracker.css';
+import React, { useState, useEffect, useRef } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Area, AreaChart } from 'recharts';
+import { TrendingUp, TrendingDown, DollarSign, Calendar, AlertTriangle, Target, CreditCard, PiggyBank, Brain, Users, Bell, Settings, Filter, Download, RefreshCw } from 'lucide-react';
+import "../styles/MoneyTracker.css";
 
-const AIFinancialTracker = () => {
-  const [transactions, setTransactions] = useState([]);
-  const [goals, setGoals] = useState([]);
-  const [aiInsights, setAiInsights] = useState([]);
-  const [newTransaction, setNewTransaction] = useState({ amount: '', description: '', category: '', date: new Date().toISOString().split('T')[0] });
-  const [newGoal, setNewGoal] = useState({ name: '', target: '', deadline: '', category: 'savings' });
-  const [balance, setBalance] = useState(5000);
-  const [selectedTab, setSelectedTab] = useState('dashboard');
+const MoneyTracker = () => {
+  const [activeTab, setActiveTab] = useState('overview');
+  const [timeRange, setTimeRange] = useState('6months');
+  const [loading, setLoading] = useState(false);
+  const [notifications, setNotifications] = useState(3);
 
-  // Advanced AI Logic: Pattern Recognition and Behavioral Analysis
-  const aiAnalytics = useMemo(() => {
-    if (transactions.length === 0) return { patterns: [], predictions: [], recommendations: [] };
+  // Enhanced mock data with more detailed information
+  const cashFlowData = [
+    { month: 'Jan', income: 28500, expenses: 22800, netFlow: 5700, savings: 5700 },
+    { month: 'Feb', income: 28500, expenses: 24200, netFlow: 4300, savings: 4300 },
+    { month: 'Mar', income: 28500, expenses: 21900, netFlow: 6600, savings: 6600 },
+    { month: 'Apr', income: 28500, expenses: 23400, netFlow: 5100, savings: 5100 },
+    { month: 'May', income: 28500, expenses: 24700, netFlow: 3800, savings: 3800 },
+    { month: 'Jun', income: 28500, expenses: 22800, netFlow: 5700, savings: 5700 }
+  ];
 
-    // Spending pattern analysis
-    const categorySpending = transactions.reduce((acc, t) => {
-      if (t.amount < 0) {
-        acc[t.category] = (acc[t.category] || 0) + Math.abs(t.amount);
-      }
-      return acc;
-    }, {});
+  const categoryData = [
+    { name: 'Groceries', value: 4200, color: '#10B981' },
+    { name: 'Transport', value: 1800, color: '#3B82F6' },
+    { name: 'Entertainment', value: 1200, color: '#F59E0B' },
+    { name: 'Shopping', value: 2100, color: '#8B5CF6' },
+    { name: 'Bills', value: 3400, color: '#EF4444' },
+    { name: 'Other', value: 800, color: '#6B7280' }
+  ];
 
-    // Temporal pattern recognition
-    const weeklySpending = transactions.reduce((acc, t) => {
-      const date = new Date(t.date);
-      const week = getWeekNumber(date);
-      acc[week] = (acc[week] || 0) + (t.amount < 0 ? Math.abs(t.amount) : 0);
-      return acc;
-    }, {});
 
-    // Behavioral anomaly detection
-    const avgDailySpending = Object.values(weeklySpending).reduce((a, b) => a + b, 0) / (Object.keys(weeklySpending).length * 7);
-    const recentSpending = transactions.slice(-7).reduce((sum, t) => sum + (t.amount < 0 ? Math.abs(t.amount) : 0), 0);
-    const spendingAnomaly = recentSpending > avgDailySpending * 7 * 1.5 ? 'high' : recentSpending < avgDailySpending * 7 * 0.5 ? 'low' : 'normal';
+  const financialHealthMetrics = [
+    { metric: 'Debt-to-Income', value: 28, target: 30, status: 'good', description: 'Manageable debt levels' },
+    { metric: 'Emergency Fund', value: 4.2, target: 6, status: 'warning', description: 'Build up emergency savings' },
+    { metric: 'Savings Rate', value: 18, target: 20, status: 'good', description: 'Strong saving habits' },
+    { metric: 'Credit Utilization', value: 15, target: 30, status: 'excellent', description: 'Excellent credit usage' }
+  ];
 
-    // Cash flow prediction
-    const monthlyIncome = transactions.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
-    const monthlyExpenses = transactions.filter(t => t.amount < 0).reduce((sum, t) => sum + Math.abs(t.amount), 0);
-    const projectedBalance = balance + (monthlyIncome - monthlyExpenses);
+  const topMerchants = [
+    { name: 'Takealot', amount: 1890, transactions: 12, category: 'Shopping', trend: '+5%' },
+    { name: 'Mugg & Bean', amount: 865, transactions: 24, category: 'Food', trend: '-12%' },
+    { name: 'Shell', amount: 1605, transactions: 8, category: 'Transport', trend: '+8%' },
+    { name: 'Pick n Pay', amount: 2470, transactions: 6, category: 'Groceries', trend: '+3%' },
+    { name: 'Netflix', amount: 169, transactions: 1, category: 'Entertainment', trend: '0%' }
+  ];
 
-    // Smart recommendations based on spending patterns and goals
-    const recommendations = generateSmartRecommendations(categorySpending, goals, spendingAnomaly, projectedBalance);
+  const upcomingBills = [
+    { name: 'Rent', amount: 6500, date: '2025-06-25', status: 'upcoming', daysLeft: 6 },
+    { name: 'Car Insurance', amount: 495, date: '2025-06-28', status: 'upcoming', daysLeft: 9 },
+    { name: 'Cell Phone', amount: 360, date: '2025-07-02', status: 'scheduled', daysLeft: 13 },
+    { name: 'Fibre Internet', amount: 439, date: '2025-07-05', status: 'scheduled', daysLeft: 16 }
+  ];
 
-    return {
-      patterns: categorySpending,
-      predictions: { projectedBalance, spendingAnomaly },
-      recommendations,
-      weeklyTrends: weeklySpending
-    };
-  }, [transactions, balance, goals]);
-
-  // Context-aware transaction categorization
-  const smartCategorize = (description, amount, date) => {
-    const desc = description.toLowerCase();
-    const transactionDate = new Date(date);
-    const month = transactionDate.getMonth();
-    const dayOfWeek = transactionDate.getDay();
-    
-    // Seasonal and contextual logic
-    if (month === 11 && (desc.includes('gift') || desc.includes('decoration') || amount > 100)) return 'holiday';
-    if (dayOfWeek === 0 || dayOfWeek === 6) {
-      if (desc.includes('restaurant') || desc.includes('coffee') || desc.includes('bar')) return 'entertainment';
+  const aiInsights = [
+    {
+      type: 'prediction',
+      title: 'Spending Forecast',
+      message: 'Based on your patterns, you\'ll likely spend R23,600 next month - R830 more than usual due to vacation season.',
+      confidence: 89,
+      action: 'Set budget alert'
+    },
+    {
+      type: 'opportunity',
+      title: 'Savings Opportunity',
+      message: 'You could save R250/month by switching to a different coffee subscription plan.',
+      confidence: 76,
+      action: 'Compare plans'
+    },
+    {
+      type: 'alert',
+      title: 'Unusual Activity',
+      message: 'Your dining out expenses are 34% higher than last month. Consider meal planning.',
+      confidence: 92,
+      action: 'View details'
     }
-    
-    // Pattern-based categorization
-    if (desc.includes('grocery') || desc.includes('food') || desc.includes('supermarket')) return 'groceries';
-    if (desc.includes('gas') || desc.includes('fuel') || desc.includes('station')) return 'transportation';
-    if (desc.includes('netflix') || desc.includes('spotify') || desc.includes('subscription')) return 'subscriptions';
-    if (desc.includes('salary') || desc.includes('paycheck') || amount > 1000) return 'income';
-    if (desc.includes('rent') || desc.includes('mortgage') || desc.includes('utilities')) return 'housing';
-    if (desc.includes('coffee') || desc.includes('lunch') || desc.includes('dinner')) return 'dining';
-    
-    return 'other';
+  ];
+
+  const handleRefreshData = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1500);
   };
 
-  // Generate contextual recommendations
-  const generateSmartRecommendations = (spending, goals, anomaly, projectedBalance) => {
-    const recs = [];
-    
-    // Goal-based recommendations
-    goals.forEach(goal => {
-      const daysUntilDeadline = Math.ceil((new Date(goal.deadline) - new Date()) / (1000 * 60 * 60 * 24));
-      const dailySavingsNeeded = (goal.target - (goal.saved || 0)) / Math.max(daysUntilDeadline, 1);
-      
-      if (dailySavingsNeeded > 0) {
-        recs.push({
-          type: 'goal',
-          priority: 'high',
-          message: `To reach "${goal.name}", save $${dailySavingsNeeded.toFixed(2)} daily. Consider reducing ${getHighestSpendingCategory(spending)} by 15%.`,
-          action: 'optimize'
-        });
-      }
-    });
-
-    // Spending pattern recommendations
-    if (anomaly === 'high') {
-      const highestCategory = getHighestSpendingCategory(spending);
-      recs.push({
-        type: 'warning',
-        priority: 'high',
-        message: `Unusual spending spike detected! Your ${highestCategory} spending is 50% higher than usual. Consider meal planning this week.`,
-        action: 'reduce'
-      });
-    }
-
-    // Predictive cash flow recommendations
-    if (projectedBalance < 1000) {
-      recs.push({
-        type: 'alert',
-        priority: 'critical',
-        message: `Cash flow alert: Projected balance will be $${projectedBalance.toFixed(2)}. Consider increasing income or reducing discretionary spending.`,
-        action: 'urgent'
-      });
-    }
-
-    // Optimization opportunities
-    if (spending.subscriptions > 100) {
-      recs.push({
-        type: 'optimization',
-        priority: 'medium',
-        message: `Subscription audit recommended: $${spending.subscriptions.toFixed(2)}/month. Cancel unused services to save $30-50/month.`,
-        action: 'audit'
-      });
-    }
-
-    return recs;
-  };
-
-  const getHighestSpendingCategory = (spending) => {
-    return Object.entries(spending).reduce((a, b) => spending[a] > spending[b[0]] ? a : b[0], Object.keys(spending)[0]);
-  };
-
-  const getWeekNumber = (date) => {
-    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-    const dayNum = d.getUTCDay() || 7;
-    d.setUTCDate(d.getUTCDate() + 4 - dayNum);
-    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-    return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
-  };
-
-  const addTransaction = () => {
-    if (!newTransaction.amount || !newTransaction.description) return;
-    
-    const amount = parseFloat(newTransaction.amount);
-    const smartCategory = smartCategorize(newTransaction.description, amount, newTransaction.date);
-    
-    const transaction = {
-      id: Date.now(),
-      ...newTransaction,
-      amount: amount,
-      category: newTransaction.category || smartCategory,
-      aiSuggested: !newTransaction.category
-    };
-    
-    setTransactions([transaction, ...transactions]);
-    setBalance(prev => prev + amount);
-    setNewTransaction({ amount: '', description: '', category: '', date: new Date().toISOString().split('T')[0] });
-  };
-
-  const addGoal = () => {
-    if (!newGoal.name || !newGoal.target) return;
-    
-    const goal = {
-      id: Date.now(),
-      ...newGoal,
-      target: parseFloat(newGoal.target),
-      saved: 0,
-      progress: 0
-    };
-    
-    setGoals([...goals, goal]);
-    setNewGoal({ name: '', target: '', deadline: '', category: 'savings' });
-  };
-
-  // Real-time AI insights generation
-  useEffect(() => {
-    const insights = [
-      {
-        id: 1,
-        type: 'pattern',
-        title: 'Spending Pattern Detected',
-        message: 'You spend 40% more on weekends. Consider setting weekend budgets.',
-        confidence: 0.85
-      },
-      {
-        id: 2,
-        type: 'prediction',
-        title: 'Cash Flow Forecast',
-        message: `Based on current trends, you'll have $${aiAnalytics.predictions?.projectedBalance?.toFixed(2) || '0'} by month-end.`,
-        confidence: 0.92
-      },
-      {
-        id: 3,
-        type: 'opportunity',
-        title: 'Optimization Opportunity',
-        message: 'Switching to a credit card with 2% cashback could save you $40/month.',
-        confidence: 0.78
-      }
-    ];
-    setAiInsights(insights);
-  }, [transactions, aiAnalytics]);
-
-  const renderDashboard = () => (
-    <div className="dashboard">
-      <div className="balance-card">
-        <h2>Current Balance</h2>
-        <p className="balance">${balance.toFixed(2)}</p>
-        <div className="balance-trend">
-          {balance > 0 ? <TrendingUp className="positive" /> : <TrendingDown className="negative" />}
-          <span>Projected: ${aiAnalytics.predictions?.projectedBalance?.toFixed(2) || '0'}</span>
+  const StatusCard = ({ title, value, change, icon: Icon, trend, onClick }) => (
+    <div 
+      className={`bg-white rounded-xl p-6 shadow-sm border border-gray-100 transition-all duration-200 hover:shadow-md hover:scale-105 ${onClick ? 'cursor-pointer' : ''}`}
+      onClick={onClick}
+      style={{
+        backgroundColor: '#1a1a1a',
+        borderColor: '#2a2a2a',
+        color: '#ffffff'
+      }}
+    >
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium" style={{ color: '#cbd5e1' }}>{title}</p>
+          <p className="text-2xl font-bold mt-1" style={{ color: '#ffffff' }}>{value}</p>
+        </div>
+        <div className={`flex items-center space-x-1 ${trend === 'up' ? 'text-green-400' : trend === 'down' ? 'text-red-400' : 'text-gray-400'}`}>
+          <Icon className="w-8 h-8" />
         </div>
       </div>
-
-      <div className="ai-insights">
-        <h3><Brain /> AI Insights</h3>
-        {aiInsights.map(insight => (
-          <div key={insight.id} className={`insight-card ${insight.type}`}>
-            <div className="insight-header">
-              <span className="insight-title">{insight.title}</span>
-              <span className="confidence">{Math.round(insight.confidence * 100)}%</span>
-            </div>
-            <p>{insight.message}</p>
-          </div>
-        ))}
-      </div>
-
-      <div className="recommendations">
-        <h3><Lightbulb /> Smart Recommendations</h3>
-        {aiAnalytics.recommendations.map((rec, index) => (
-          <div key={index} className={`recommendation ${rec.priority}`}>
-            <div className="rec-icon">
-              {rec.type === 'warning' && <AlertTriangle />}
-              {rec.type === 'goal' && <Target />}
-              {rec.type === 'optimization' && <Zap />}
-              {rec.type === 'alert' && <AlertTriangle />}
-            </div>
-            <p>{rec.message}</p>
-          </div>
-        ))}
-      </div>
+      {change && (
+        <div className={`flex items-center mt-2 ${trend === 'up' ? 'text-green-400' : 'text-red-400'}`}>
+          {trend === 'up' ? <TrendingUp className="w-4 h-4 mr-1" /> : <TrendingDown className="w-4 h-4 mr-1" />}
+          <span className="text-sm font-medium">{change}</span>
+        </div>
+      )}
     </div>
   );
 
-  const renderTransactions = () => (
-    <div className="transactions">
-      <div className="add-transaction">
-        <h3>Add Transaction</h3>
-        <div className="transaction-form">
-          <input
-            type="number"
-            placeholder="Amount (+ for income, - for expense)"
-            value={newTransaction.amount}
-            onChange={(e) => setNewTransaction({...newTransaction, amount: e.target.value})}
-          />
-          <input
-            type="text"
-            placeholder="Description"
-            value={newTransaction.description}
-            onChange={(e) => setNewTransaction({...newTransaction, description: e.target.value})}
-          />
-          <select
-            value={newTransaction.category}
-            onChange={(e) => setNewTransaction({...newTransaction, category: e.target.value})}
+  const MetricCard = ({ metric, value, target, status, description }) => {
+    const percentage = (value / target) * 100;
+    const getStatusColor = () => {
+      switch(status) {
+        case 'excellent': return '#10B981';
+        case 'good': return '#3B82F6';
+        case 'warning': return '#F59E0B';
+        case 'danger': return '#EF4444';
+        default: return '#6B7280';
+      }
+    };
+
+    return (
+      <div className="bg-white rounded-lg p-4 border border-gray-100 hover:shadow-md transition-all duration-200" 
+           style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
+        <div className="flex justify-between items-center mb-2">
+          <h4 className="text-sm font-medium" style={{ color: '#e2e8f0' }}>{metric}</h4>
+          <span 
+            className="px-2 py-1 text-xs rounded-full text-white"
+            style={{ backgroundColor: getStatusColor() }}
           >
-            <option value="">AI Auto-categorize</option>
-            <option value="groceries">Groceries</option>
-            <option value="dining">Dining</option>
-            <option value="transportation">Transportation</option>
-            <option value="entertainment">Entertainment</option>
-            <option value="housing">Housing</option>
-            <option value="income">Income</option>
-            <option value="other">Other</option>
-          </select>
-          <input
-            type="date"
-            value={newTransaction.date}
-            onChange={(e) => setNewTransaction({...newTransaction, date: e.target.value})}
-          />
-          <button onClick={addTransaction}>Add Transaction</button>
+            {status}
+          </span>
         </div>
+        <div className="flex items-center space-x-2">
+          <span className="text-lg font-bold" style={{ color: '#ffffff' }}>
+            {metric.includes('Fund') ? `${value} months` : `${value}%`}
+          </span>
+          <span className="text-sm" style={{ color: '#94a3b8' }}>
+            / {metric.includes('Fund') ? `${target} months` : `${target}%`}
+          </span>
+        </div>
+        <div className="mt-2 bg-gray-200 rounded-full h-2" style={{ backgroundColor: '#3a3a3a' }}>
+          <div 
+            className="h-2 rounded-full transition-all duration-500"
+            style={{ 
+              width: `${Math.min(percentage, 100)}%`,
+              backgroundColor: getStatusColor()
+            }}
+          />
+        </div>
+        <p className="text-xs mt-2" style={{ color: '#94a3b8' }}>{description}</p>
       </div>
+    );
+  };
 
-      <div className="transaction-list">
-        <h3>Recent Transactions</h3>
-        {transactions.slice(0, 10).map(transaction => (
-          <div key={transaction.id} className="transaction-item">
-            <div className="transaction-info">
-              <span className="description">{transaction.description}</span>
-              <span className={`category ${transaction.aiSuggested ? 'ai-suggested' : ''}`}>
-                {transaction.category} {transaction.aiSuggested && <Brain size={12} />}
-              </span>
+  const InsightCard = ({ insight, index }) => (
+    <div 
+      className="bg-white rounded-xl p-6 shadow-sm border-l-4 hover:shadow-md transition-all duration-200"
+      style={{ 
+        backgroundColor: '#1a1a1a', 
+        borderLeftColor: insight.type === 'prediction' ? '#3B82F6' : insight.type === 'opportunity' ? '#10B981' : '#F59E0B'
+      }}
+    >
+      <div className="flex items-start space-x-3">
+        <div className="flex-shrink-0">
+          {insight.type === 'prediction' && <Brain className="w-6 h-6" style={{ color: '#3B82F6' }} />}
+          {insight.type === 'opportunity' && <Target className="w-6 h-6" style={{ color: '#10B981' }} />}
+          {insight.type === 'alert' && <AlertTriangle className="w-6 h-6" style={{ color: '#F59E0B' }} />}
+        </div>
+        <div className="flex-1">
+          <h4 className="text-lg font-semibold mb-2" style={{ color: '#ffffff' }}>{insight.title}</h4>
+          <p className="mb-3" style={{ color: '#e2e8f0' }}>{insight.message}</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <span className="text-sm" style={{ color: '#94a3b8' }}>Confidence:</span>
+              <div className="w-24 rounded-full h-2" style={{ backgroundColor: '#3a3a3a' }}>
+                <div 
+                  className="h-2 rounded-full transition-all duration-500" 
+                  style={{ 
+                    width: `${insight.confidence}%`,
+                    backgroundColor: '#3B82F6'
+                  }}
+                />
+              </div>
+              <span className="text-sm font-medium" style={{ color: '#ffffff' }}>{insight.confidence}%</span>
             </div>
-            <div className="transaction-details">
-              <span className={`amount ${transaction.amount > 0 ? 'positive' : 'negative'}`}>
-                ${Math.abs(transaction.amount).toFixed(2)}
-              </span>
-              <span className="date">{transaction.date}</span>
-            </div>
+            <button 
+              className="px-3 py-1 text-xs rounded-full transition-colors duration-200 hover:opacity-80"
+              style={{ backgroundColor: '#8A1F2C', color: '#ffffff' }}
+            >
+              {insight.action}
+            </button>
           </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderGoals = () => (
-    <div className="goals">
-      <div className="add-goal">
-        <h3>Add Financial Goal</h3>
-        <div className="goal-form">
-          <input
-            type="text"
-            placeholder="Goal name"
-            value={newGoal.name}
-            onChange={(e) => setNewGoal({...newGoal, name: e.target.value})}
-          />
-          <input
-            type="number"
-            placeholder="Target amount"
-            value={newGoal.target}
-            onChange={(e) => setNewGoal({...newGoal, target: e.target.value})}
-          />
-          <input
-            type="date"
-            value={newGoal.deadline}
-            onChange={(e) => setNewGoal({...newGoal, deadline: e.target.value})}
-          />
-          <select
-            value={newGoal.category}
-            onChange={(e) => setNewGoal({...newGoal, category: e.target.value})}
-          >
-            <option value="savings">Savings</option>
-            <option value="vacation">Vacation</option>
-            <option value="emergency">Emergency Fund</option>
-            <option value="investment">Investment</option>
-            <option value="purchase">Major Purchase</option>
-          </select>
-          <button onClick={addGoal}>Add Goal</button>
         </div>
       </div>
-
-      <div className="goals-list">
-        <h3>Your Goals</h3>
-        {goals.map(goal => {
-          const daysLeft = Math.ceil((new Date(goal.deadline) - new Date()) / (1000 * 60 * 60 * 24));
-          const dailySavingsNeeded = (goal.target - goal.saved) / Math.max(daysLeft, 1);
-          
-          return (
-            <div key={goal.id} className="goal-card">
-              <div className="goal-header">
-                <h4>{goal.name}</h4>
-                <span className="goal-category">{goal.category}</span>
-              </div>
-              <div className="goal-progress">
-                <div className="progress-bar">
-                  <div 
-                    className="progress-fill" 
-                    style={{width: `${(goal.saved / goal.target) * 100}%`}}
-                  ></div>
-                </div>
-                <span>${goal.saved.toFixed(2)} / ${goal.target.toFixed(2)}</span>
-              </div>
-              <div className="goal-insights">
-                <p>Days remaining: {daysLeft}</p>
-                <p>Daily savings needed: ${dailySavingsNeeded.toFixed(2)}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
     </div>
   );
+
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="bg-white p-3 rounded-lg shadow-lg border" style={{ backgroundColor: '#1a1a1a', borderColor: '#2a2a2a' }}>
+          <p className="font-medium" style={{ color: '#ffffff' }}>{label}</p>
+          {payload.map((entry, index) => (
+            <p key={index} style={{ color: entry.color }}>
+              {entry.name}: R{entry.value}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
-    <div className="ai-financial-tracker">
-      <header className="header">
-        <h1><Brain /> AI Financial Tracker</h1>
-        <div className="nav-tabs">
-          <button 
-            className={selectedTab === 'dashboard' ? 'active' : ''}
-            onClick={() => setSelectedTab('dashboard')}
-          >
-            <PieChart size={16} /> Dashboard
-          </button>
-          <button 
-            className={selectedTab === 'transactions' ? 'active' : ''}
-            onClick={() => setSelectedTab('transactions')}
-          >
-            <DollarSign size={16} /> Transactions
-          </button>
-          <button 
-            className={selectedTab === 'goals' ? 'active' : ''}
-            onClick={() => setSelectedTab('goals')}
-          >
-            <Target size={16} /> Goals
-          </button>
+    <div className="min-h-screen p-6" style={{ backgroundColor: '#0a0a0a' }}>
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold mb-2" style={{ color: '#ffffff' }}>MoneyTracker</h1>
+            <p style={{ color: '#cbd5e1' }}>AI-powered financial insights and cash flow monitoring</p>
+          </div>
         </div>
-      </header>
 
-      <main className="main-content">
-        {selectedTab === 'dashboard' && renderDashboard()}
-        {selectedTab === 'transactions' && renderTransactions()}
-        {selectedTab === 'goals' && renderGoals()}
-      </main>
+        {/* Time Range Selector */}
+        <div className="mb-6 flex justify-between items-center">
+          <div className="flex space-x-2">
+            {['3months', '6months', '1year'].map((range) => (
+              <button
+                key={range}
+                onClick={() => setTimeRange(range)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  timeRange === range 
+                    ? 'text-white' 
+                    : 'hover:opacity-80'
+                }`}
+                style={{
+                  backgroundColor: timeRange === range ? '#8A1F2C' : '#2a2a2a',
+                  color: timeRange === range ? '#ffffff' : '#cbd5e1'
+                }}
+              >
+                {range === '3months' ? '3 Months' : range === '6months' ? '6 Months' : '1 Year'}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center space-x-2">
+            <Filter className="w-5 h-5" style={{ color: '#cbd5e1' }} />
+            <Download className="w-5 h-5 cursor-pointer hover:opacity-80 transition-opacity" style={{ color: '#cbd5e1' }} />
+          </div>
+        </div>
+
+        {/* Overview Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <StatusCard
+            title="Net Cash Flow"
+            value="R5,700"
+            change="+R830 vs last month"
+            icon={DollarSign}
+            trend="up"
+          />
+          <StatusCard
+            title="Avg Daily Spending"
+            value="R790"
+            change="-R45 vs last month"
+            icon={TrendingDown}
+            trend="down"
+          />
+          <StatusCard
+            title="Financial Health"
+            value="8.4/10"
+            change="+0.3 improvement"
+            icon={Target}
+            trend="up"
+          />
+          <StatusCard
+            title="Savings Rate"
+            value="18%"
+            change="Steady"
+            icon={PiggyBank}
+            trend="neutral"
+          />
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="flex space-x-1 mb-6 p-1 shadow-sm rounded-lg" style={{ backgroundColor: '#1a1a1a' }}>
+          {[
+            { id: 'overview', label: 'Cash Flow', icon: TrendingUp },
+            { id: 'health', label: 'Financial Health', icon: Target },
+            { id: 'insights', label: 'AI Insights', icon: Brain }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                activeTab === tab.id
+                  ? 'text-white'
+                  : 'hover:opacity-80'
+              }`}
+              style={{
+                backgroundColor: activeTab === tab.id ? '#8A1F2C' : 'transparent',
+                color: activeTab === tab.id ? '#ffffff' : '#cbd5e1'
+              }}
+            >
+              <tab.icon className="w-4 h-4" />
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </div>
+
+        {/* Tab Content */}
+        {activeTab === 'overview' && (
+          <div className="space-y-6">
+            {/* Cash Flow Chart */}
+            <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: '#1a1a1a' }}>
+              <h3 className="text-lg font-semibold mb-4" style={{ color: '#ffffff' }}>Cash Flow Trends</h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <AreaChart data={cashFlowData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#2a2a2a" />
+                  <XAxis dataKey="month" stroke="#cbd5e1" />
+                  <YAxis stroke="#cbd5e1" />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Area type="monotone" dataKey="income" stackId="1" stroke="#10B981" fill="#10B981" fillOpacity={0.3} />
+                  <Area type="monotone" dataKey="expenses" stackId="2" stroke="#EF4444" fill="#EF4444" fillOpacity={0.3} />
+                  <Line type="monotone" dataKey="netFlow" stroke="#3B82F6" strokeWidth={3} />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {/* Spending by Category */}
+              <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: '#1a1a1a' }}>
+                <h3 className="text-lg font-semibold mb-4" style={{ color: '#ffffff' }}>Spending by Category</h3>
+                <ResponsiveContainer width="100%" height={250}>
+                  <PieChart>
+                    <Pie
+                      data={categoryData}
+                      cx="50%"
+                      cy="50%"
+                      outerRadius={80}
+                      dataKey="value"
+                      label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    >
+                      {categoryData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => [`R${value}`, '']} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Upcoming Bills */}
+              <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: '#1a1a1a' }}>
+                <h3 className="text-lg font-semibold mb-4" style={{ color: '#ffffff' }}>Upcoming Bills</h3>
+                <div className="space-y-3">
+                  {upcomingBills.map((bill, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: '#2a2a2a' }}>
+                      <div className="flex items-center space-x-3">
+                        <div 
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: bill.status === 'upcoming' ? '#F59E0B' : '#10B981' }}
+                        />
+                        <div>
+                          <p className="font-medium" style={{ color: '#ffffff' }}>{bill.name}</p>
+                          <p className="text-sm" style={{ color: '#94a3b8' }}>{bill.daysLeft} days left</p>
+                        </div>
+                      </div>
+                      <span className="font-semibold" style={{ color: '#ffffff' }}>R{bill.amount}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'patterns' && (
+          <div className="space-y-6">
+            {/* Top Merchants */}
+            <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: '#1a1a1a' }}>
+              <h3 className="text-lg font-semibold mb-4" style={{ color: '#ffffff' }}>Top Merchants</h3>
+              <div className="space-y-4">
+                {topMerchants.map((merchant, index) => (
+                  <div key={index} className="flex items-center justify-between hover:opacity-80 transition-opacity">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#2a2a2a' }}>
+                        <span className="text-sm font-semibold" style={{ color: '#e2e8f0' }}>
+                          {merchant.name.charAt(0)}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-medium" style={{ color: '#ffffff' }}>{merchant.name}</p>
+                        <p className="text-sm" style={{ color: '#94a3b8' }}>
+                          {merchant.transactions} transactions • {merchant.category}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="font-semibold" style={{ color: '#ffffff' }}>R{merchant.amount}</span>
+                      <p className={`text-sm ${merchant.trend.includes('+') ? 'text-green-400' : merchant.trend.includes('-') ? 'text-red-400' : 'text-gray-400'}`}>
+                        {merchant.trend}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'health' && (
+          <div className="space-y-6">
+            {/* Financial Health Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {financialHealthMetrics.map((item, index) => (
+                <MetricCard key={index} {...item} />
+              ))}
+            </div>
+
+            {/* Health Score Breakdown */}
+            <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: '#1a1a1a' }}>
+              <h3 className="text-lg font-semibold mb-4" style={{ color: '#ffffff' }}>Financial Health Score: 8.4/10</h3>
+              <div className="space-y-4">
+                {[
+                  { name: 'Debt Management', score: 8.5, color: '#10B981' },
+                  { name: 'Emergency Preparedness', score: 7.0, color: '#F59E0B' },
+                  { name: 'Investment Growth', score: 9.0, color: '#3B82F6' }
+                ].map((item, index) => (
+                  <div key={index} className="flex justify-between items-center">
+                    <span style={{ color: '#e2e8f0' }}>{item.name}</span>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-32 rounded-full h-2" style={{ backgroundColor: '#3a3a3a' }}>
+                        <div 
+                          className="h-2 rounded-full transition-all duration-500"
+                          style={{ width: `${(item.score / 10) * 100}%`, backgroundColor: item.color }}
+                        />
+                      </div>
+                      <span className="text-sm font-medium" style={{ color: '#ffffff' }}>{item.score}/10</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'insights' && (
+          <div className="space-y-6">
+            {/* AI Insights */}
+            <div className="grid gap-6">
+              {aiInsights.map((insight, index) => (
+                <InsightCard key={index} insight={insight} index={index} />
+              ))}
+            </div>
+
+            {/* Predictive Analytics */}
+            <div className="rounded-xl p-6 shadow-sm" style={{ backgroundColor: '#1a1a1a' }}>
+              <h3 className="text-lg font-semibold mb-4" style={{ color: '#ffffff' }}>Spending Forecast</h3>
+              <div className="rounded-lg p-4 mb-4" style={{ background: 'linear-gradient(to right, #1a2332, #1e2238)' }}>
+                <p className="text-sm mb-2" style={{ color: '#94a3b8' }}>Next Month Prediction</p>
+                <p className="text-2xl font-bold" style={{ color: '#ffffff' }}>R23,600</p>
+                <p className="text-sm" style={{ color: '#94a3b8' }}>+R830 increase expected due to seasonal trends</p>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {[
+                  { category: 'Groceries', amount: 3780, change: '-5%', color: 'text-green-400' },
+                  { category: 'Entertainment', amount: 1890, change: '+25%', color: 'text-red-400' },
+                  { category: 'Transport', amount: 1610, change: 'Steady', color: 'text-gray-400' }
+                ].map((item, index) => (
+                  <div key={index} className="text-center p-3 rounded-lg" style={{ backgroundColor: '#2a2a2a' }}>
+                    <p className="text-sm" style={{ color: '#94a3b8' }}>{item.category}</p>
+                    <p className="text-lg font-semibold" style={{ color: '#ffffff' }}>R{item.amount}</p>
+                    <p className={`text-xs ${item.color}`}>{item.change}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default AIFinancialTracker;
+export default MoneyTracker;
