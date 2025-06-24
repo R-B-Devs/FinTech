@@ -1,4 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useState, useRef } from 'react';
+import {
+  Phone, X, Mic, MicOff, Video, VideoOff, User, Clock,
+  MessageCircle, Shield, DollarSign, CreditCard, ChevronRight
+} from 'lucide-react';
 import socket from '../utilis/WebRTCService';
 import InAppCall from "./InAppCall";
 
@@ -42,9 +46,9 @@ const CallContainer = () => {
       return;
     }
 
-    peerConnection.current = new RTCPeerConnection({
-      iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-    });
+      peerConnection.current = new RTCPeerConnection({
+        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+      });
 
     // Add local tracks to peer connection
     localStream.current.getTracks().forEach(track => {
@@ -112,6 +116,7 @@ const CallContainer = () => {
       activeDepartment: null,
       currentPage: 'main-menu',
     }));
+    setActiveCall(null);
   };
 
   // Handle incoming answer
@@ -123,6 +128,7 @@ const CallContainer = () => {
       }
     });
 
+    socket.on('ice-candidate', async ({ candidate }) => {
     socket.on('ice-candidate', async ({ candidate }) => {
       try {
         await peerConnection.current?.addIceCandidate(new RTCIceCandidate(candidate));
@@ -138,7 +144,7 @@ const CallContainer = () => {
   }, []);
 
   return (
-    <InAppCall
+    <CustomerCallUI
       callFeature={callFeature}
       setCallFeature={setCallFeature}
       startCall={startCall}
@@ -148,4 +154,4 @@ const CallContainer = () => {
   );
 };
 
-export default CallContainer;
+export default InAppCall;
