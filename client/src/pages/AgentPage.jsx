@@ -113,26 +113,41 @@ const AgentPage = () => {
     };
   }, []);
 
-  return (
-    <div>
-      <h2>Agent Page</h2>
-      <p>Status: {callStatus}</p>
+ return (
+  <div>
+    <h2>Agent Page</h2>
+    <p>Status: {callStatus}</p>
 
-      {callStatus !== 'idle' && (
-        <button onClick={endCall}>End Call</button>
-      )}
-
+    <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
       <div>
         <h3>Your Video</h3>
-        <video ref={localVideoRef} autoPlay muted playsInline style={{ width: '300px' }} />
+        <video ref={localVideoRef} autoPlay muted playsInline style={{ width: '300px', border: '1px solid #ccc' }} />
       </div>
 
       <div>
         <h3>Remote Video</h3>
-        <video ref={remoteVideoRef} autoPlay playsInline style={{ width: '300px' }} />
+        <video ref={remoteVideoRef} autoPlay playsInline style={{ width: '300px', border: '1px solid #ccc' }} />
       </div>
     </div>
-  );
+
+    {callStatus !== 'idle' && (
+      <button
+        onClick={endCall}
+        style={{
+          padding: '10px 20px',
+          backgroundColor: '#ff4d4f',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+        }}
+      >
+        End Call
+      </button>
+    )}
+  </div>
+);
+
 };
 
 export default AgentPage;
