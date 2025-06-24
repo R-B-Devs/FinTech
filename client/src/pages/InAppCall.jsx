@@ -41,13 +41,8 @@ const CustomerCallUI = ({
       setCallDuration(0);
     }
     return () => clearInterval(interval);
-<<<<<<< HEAD
   }, [callFeature.callStatus]);
  
-=======
-  }, [callStatus]);
-
->>>>>>> 16d02d8913d5803c0d6d5e2a8af4e6fdef853b60
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
