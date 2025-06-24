@@ -1,4 +1,4 @@
-import React, { use State } from 'react';
+import React, { useState } from 'react';
 import '../styles/BotVerification.css';
 
 const handleChange = (e) => {
@@ -19,7 +19,19 @@ return (
             />
             <span>I am not a robot</span>
         </label>
+
+        <button
+        className="continue-btn"
+        disabled={!isHuman}
+        onClick={() => alert("You passed the bot verification!")}
+        > 
+        Continue
+        
+        </button>
+
     </div>
+
+   
 );
 
 export default BotVerification;
