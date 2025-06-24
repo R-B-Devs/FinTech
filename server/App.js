@@ -286,6 +286,15 @@ async function loginUser(id_number, password) {
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password_hash);
+  if (!isPasswordValid &  (user.failed_login_attempts || 0) >= 5) {
+    await supabase
+      .from('users')
+      .update({ account_locked_until: new Date(Date.now() + 15 * 60 * 1000) }) // Lock for 15 minutes
+      .eq('id_number', id_number);
+
+    return { success: false, code: 3, message: 'Account locked!!' };
+  }
+
   if (!isPasswordValid) {
     await supabase
       .from('users')
