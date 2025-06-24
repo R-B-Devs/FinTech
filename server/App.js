@@ -15,9 +15,6 @@ const supabaseKey = process.env.SUPABASE_ANON_KEY;
 const supabaseClient = createClient(supabaseUrl, supabaseKey);
 const authenticateToken = require('./middleware/auth');
 
-
-
-
 async function testSupabaseConnection() {
   const { data, error } = await supabase
     .from('users')
@@ -34,6 +31,7 @@ async function testSupabaseConnection() {
 const app = express();
 const PORT = process.env.PORT || 3001;
 const resetTokens = {};
+
 //cors
 app.use(bodyParser.json());
 app.use(cors());
@@ -41,7 +39,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //debug middleware
-// Add this debugging middleware
 app.use((req, res, next) => {
   console.log(`📝 ${req.method} ${req.path} - Body:`, req.body);
   next();
@@ -51,8 +48,6 @@ app.use((req, res, next) => {
 const aiRoutes = require('./api/ai');
 app.use('/api/ai', aiRoutes);
 const JWT_SECRET = process.env.JWT_SECRET;
-
-
 
 function generateOTP() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -86,7 +81,7 @@ app.post('/send-otp', async (req, res) => {
       <p>Your OTP code is:</p>
       <h2 style="text-align:center; background-color:#8A1F2C; color:#fff; padding:10px; border-radius:5px;">${otp}</h2>
       <p>This code will expire in <strong>5 minutes</strong>.</p>
-      <p>If you didn’t request this, just ignore it.</p>
+      <p>If you didn't request this, just ignore it.</p>
       <p>Stay awesome,<br/>— The LynqAI Team </p>
     </div>
       `,
@@ -111,12 +106,9 @@ app.post('/verify-otp', (req, res) => {
     return res.json({ success: false, message: 'Incorrect OTP.' });
   }
 
-  // Optional: delete OTP from store after success
   delete otpStore[email];
-
   res.json({ success: true, message: 'OTP verified successfully!' });
 });
-
 
 // ======================================================================
 //                            Password Reset
@@ -127,15 +119,14 @@ app.post('/send-reset-link', async (req, res) => {
 
   let { data: user, error } = await supabaseClient.from('users').select('*').eq('email', email).single();
 
-  if ( !error ) {
-
+  if (!error) {
     const token = crypto.randomBytes(32).toString('hex');
-    resetTokens[email] = { token, expires: Date.now() + 15 * 60 * 1000 }; // 15 min lifetime
+    resetTokens[email] = { token, expires: Date.now() + 15 * 60 * 1000 };
 
     const resetLink = `http://localhost:3000/reset-password/${token}`;
 
     try {
-        await transporter.sendMail({
+      await transporter.sendMail({
         from: '"LynqAI" <absacobol@gmail.com>',
         to: email,
         subject: ' Reset Your Password',
@@ -144,28 +135,21 @@ app.post('/send-reset-link', async (req, res) => {
             <h2 style="color:#8A1F2C;">Reset Your LynqAI Password</h2>
             <p>Click the link below to reset your password. This link is valid for 15 minutes.</p>
             <a href="${resetLink}" style="display:inline-block;background:#8A1F2C;color:#fff;padding:10px 15px;border-radius:5px;text-decoration:none;">Reset Password</a>
-            <p>If you didn’t request this, ignore it.</p>
+            <p>If you didn't request this, ignore it.</p>
           </div>
         `,
       });
-      res.status(200).json( { success: true, message: 'Reset link sent successfully' });
+      res.status(200).json({ success: true, message: 'Reset link sent successfully' });
     } catch (error) {
       console.error('Error sending reset link:', error.message);
       res.status(500).json({ success: false, message: 'Failed to send reset link' });
-      
     }
-  }
-  else {
-    console.error(`// ================
-//              Password Reset link error
-//              That email may not exist
-//              ${error.message}
-// =======================`)
-      res.status(404).json( { success: false, message: 'That account does not exist. Please try again.' });
+  } else {
+    console.error(`Password Reset link error - That email may not exist: ${error.message}`);
+    res.status(404).json({ success: false, message: 'That account does not exist. Please try again.' });
   }
 });
 
-//reset password token
 app.post('/reset-password/:token', async (req, res) => {
   const { token } = req.params;
   const { password } = req.body;
@@ -177,31 +161,21 @@ app.post('/reset-password/:token', async (req, res) => {
   if (!email) {
     return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
   } else {
-      const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash(password, salt);
-      const { error } = await supabaseClient.from('users').update( { password_hash: passwordHash, salt: salt })
+    const salt = await bcrypt.genSalt(10);
+    const passwordHash = await bcrypt.hash(password, salt);
+    const { error } = await supabaseClient.from('users').update({ password_hash: passwordHash, salt: salt })
       .eq('id_number', req.body.id_number);
 
-      if (!error) {
-        res.json( { success: true, message: 'Password reset successful!' } );
-      } else {
-        res.status(406).json( { success: false, message: 'Unable to reset password. Please try again.' } );
-        console.error(`// ================
-//              Password Reset error
-//              ${error.message}
-// =======================`);
-      }
+    if (!error) {
+      res.json({ success: true, message: 'Password reset successful!' });
+    } else {
+      res.status(406).json({ success: false, message: 'Unable to reset password. Please try again.' });
+      console.error(`Password Reset error: ${error.message}`);
+    }
   }
 
-
-  // Clean up token after use
   delete resetTokens[email];
-
 });
-
-
-
-
 
 // ==========================
 // AUTH LOGIC AND FUNCTIONS
@@ -411,37 +385,10 @@ async function getAllUsers() {
   };
 }
 
-
-// ==========================
-// AUTH MIDDLEWARE
-// ==========================
-// async function authenticateToken(req, res, next) {
-//   const authHeader = req.headers['authorization'];
-//   const token = authHeader && authHeader.split(' ')[1];
-
-//   if (!token) {
-//     return res.status(401).json({ error: 'Access token required' });
-//   }
-
-//   try {
-//     const decoded = jwt.verify(token, JWT_SECRET);
-//     const userResult = await getUserById(decoded.user_id);
-//     if (!userResult.success) {
-//       return res.status(401).json({ error: 'Invalid token - user not found' });
-//     }
-//     req.user = userResult.user;
-//     next();
-//   } catch (error) {
-//     console.error('Token verification error:', error);
-//     res.status(403).json({ error: 'Invalid or expired token' });
-//   }
-// }
-// module.exports.authenticateToken = authenticateToken;
-
-
 // ==========================
 // ROUTES
 // ==========================
+
 app.get('/api/users/profile-full', authenticateToken, async (req, res) => {
   const user_id = req.user.user_id;
 
@@ -495,7 +442,6 @@ app.get('/api/users/all', async (req, res) => {
     res.status(500).json({ error: result.message });
   }
 });
-
 
 app.get('/api/health', async (req, res) => {
   try {
@@ -615,7 +561,6 @@ app.get('/api/users/transactions', authenticateToken, async (req, res) => {
 app.get('/api/users/dashboard', authenticateToken, async (req, res) => {
   const user_id = req.user.user_id;
   try {
-    // Fetch accounts and their balances
     const { data: accounts, error: accountsError } = await supabase
       .from('accounts')
       .select('*')
@@ -623,15 +568,12 @@ app.get('/api/users/dashboard', authenticateToken, async (req, res) => {
       .eq('status', 'ACTIVE');
     if (accountsError) throw accountsError;
 
-    // Calculate total balance
     const totalBalance = accounts.reduce((sum, acc) => sum + Number(acc.balance), 0);
 
-    // Investments (if you have an account_type for investments, change this filter if needed)
     const investments = accounts
       .filter(acc => acc.account_type && acc.account_type.toLowerCase() === 'investment')
       .reduce((sum, acc) => sum + Number(acc.balance), 0);
 
-    // Recent transactions (latest 5, from user's accounts)
     const accountIds = accounts.map(acc => acc.account_id);
     let recentTransactions = [];
     if (accountIds.length > 0) {
@@ -646,7 +588,6 @@ app.get('/api/users/dashboard', authenticateToken, async (req, res) => {
       recentTransactions = transactions;
     }
 
-    // Latest credit score
     let creditScore = null;
     const { data: csData, error: csError } = await supabase
       .from('credit_scores')
@@ -657,12 +598,11 @@ app.get('/api/users/dashboard', authenticateToken, async (req, res) => {
     if (csError) throw csError;
     creditScore = csData && csData.length > 0 ? csData[0].score : null;
 
-    // Respond with summary
     res.json({
       totalBalance,
       investments,
       creditScore,
-      savingsGoal: 75, // Use a placeholder or add logic if you track goals
+      savingsGoal: 75,
       recentTransactions,
       accounts
     });
@@ -671,6 +611,7 @@ app.get('/api/users/dashboard', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Failed to load dashboard data.' });
   }
 });
+
 app.put('/api/users/:user_id', async (req, res) => {
   const { user_id } = req.params;
   const fields = req.body;
@@ -680,7 +621,6 @@ app.put('/api/users/:user_id', async (req, res) => {
   }
 
   try {
-    // Remove null or empty fields from update
     const validFields = Object.fromEntries(
       Object.entries(fields).filter(([_, value]) => value !== null && value !== '')
     );
@@ -709,9 +649,11 @@ app.put('/api/users/:user_id', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 app.get('/api/users/:user_id', async (req, res) => {
   const { user_id } = req.params;
-    console.log(user_id)
+  console.log(user_id);
+
   if (!/^[0-9a-fA-F-]{36}$/.test(user_id)) {
     return res.status(400).json({ error: 'Invalid user ID format' });
   }
@@ -739,10 +681,18 @@ app.get('/', (req, res) => {
         accounts: 'GET /api/users/accounts',
         transactions: 'GET /api/users/transactions',
       },
+      analytics: {
+        cashFlow: 'GET /api/analytics/cash-flow',
+        categories: 'GET /api/analytics/spending-categories',
+        health: 'GET /api/analytics/financial-health',
+        merchants: 'GET /api/analytics/top-merchants',
+        bills: 'GET /api/analytics/upcoming-bills',
+        insights: 'GET /api/analytics/ai-insights',
+        overview: 'GET /api/analytics/overview'
+      }
     },
   });
 });
-
 
 // Helper function to get date range based on timeRange parameter
 function getDateRange(timeRange) {
@@ -780,6 +730,58 @@ function generateMonthsArray(timeRange) {
   return months;
 }
 
+// Helper function to calculate previous period for trend comparison
+function getPreviousPeriodStats(timeRange, transactions) {
+  const { startDate: currentStart } = getDateRange(timeRange);
+  const currentStartDate = new Date(currentStart);
+  
+  let previousStartDate, previousEndDate;
+  
+  switch (timeRange) {
+    case '3months':
+      previousStartDate = new Date(currentStartDate.getFullYear(), currentStartDate.getMonth() - 3, currentStartDate.getDate());
+      previousEndDate = new Date(currentStartDate);
+      break;
+    case '6months':
+      previousStartDate = new Date(currentStartDate.getFullYear(), currentStartDate.getMonth() - 6, currentStartDate.getDate());
+      previousEndDate = new Date(currentStartDate);
+      break;
+    case '1year':
+      previousStartDate = new Date(currentStartDate.getFullYear() - 1, currentStartDate.getMonth(), currentStartDate.getDate());
+      previousEndDate = new Date(currentStartDate);
+      break;
+    default:
+      previousStartDate = new Date(currentStartDate.getFullYear(), currentStartDate.getMonth() - 6, currentStartDate.getDate());
+      previousEndDate = new Date(currentStartDate);
+  }
+
+  const previousTransactions = transactions.filter(tx => {
+    const txDate = new Date(tx.transaction_date);
+    return txDate >= previousStartDate && txDate < previousEndDate;
+  });
+
+  const previousIncome = previousTransactions
+    .filter(tx => tx.transaction_type === 'CREDIT')
+    .reduce((sum, tx) => sum + Math.abs(parseFloat(tx.amount)), 0);
+
+  const previousExpenses = previousTransactions
+    .filter(tx => tx.transaction_type === 'DEBIT')
+    .reduce((sum, tx) => sum + Math.abs(parseFloat(tx.amount)), 0);
+
+  return {
+    income: previousIncome,
+    expenses: previousExpenses,
+    netFlow: previousIncome - previousExpenses
+  };
+}
+
+// Helper function to calculate percentage change
+function calculatePercentageChange(current, previous) {
+  if (previous === 0) return current > 0 ? '+100%' : '0%';
+  const change = ((current - previous) / previous) * 100;
+  return `${change >= 0 ? '+' : ''}${change.toFixed(1)}%`;
+}
+
 // Cash Flow Analytics
 app.get('/api/analytics/cash-flow', authenticateToken, async (req, res) => {
   const { timeRange = '6months' } = req.query;
@@ -787,7 +789,6 @@ app.get('/api/analytics/cash-flow', authenticateToken, async (req, res) => {
   const { startDate, endDate } = getDateRange(timeRange);
 
   try {
-    // Get user's account IDs
     const { data: accounts, error: accountError } = await supabaseClient
       .from('accounts')
       .select('account_id')
@@ -801,7 +802,6 @@ app.get('/api/analytics/cash-flow', authenticateToken, async (req, res) => {
 
     const accountIds = accounts.map(acc => acc.account_id);
 
-    // Get transactions within date range
     const { data: transactions, error: txError } = await supabaseClient
       .from('transactions')
       .select('*')
@@ -812,16 +812,13 @@ app.get('/api/analytics/cash-flow', authenticateToken, async (req, res) => {
 
     if (txError) throw txError;
 
-    // Process transactions by month
     const monthsArray = generateMonthsArray(timeRange);
     const cashFlowByMonth = {};
 
-    // Initialize months
     monthsArray.forEach(month => {
       cashFlowByMonth[month] = { income: 0, expenses: 0, netFlow: 0 };
     });
 
-    // Process transactions
     transactions.forEach(tx => {
       const txDate = new Date(tx.transaction_date);
       const monthKey = txDate.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
@@ -829,7 +826,7 @@ app.get('/api/analytics/cash-flow', authenticateToken, async (req, res) => {
       if (cashFlowByMonth[monthKey]) {
         const amount = Math.abs(parseFloat(tx.amount));
         
-        if (tx.transaction_type === 'CREDIT' || amount < 0) {
+        if (tx.transaction_type === 'CREDIT') {
           cashFlowByMonth[monthKey].income += amount;
         } else {
           cashFlowByMonth[monthKey].expenses += amount;
@@ -837,7 +834,6 @@ app.get('/api/analytics/cash-flow', authenticateToken, async (req, res) => {
       }
     });
 
-    // Calculate net flow and format data
     const cashFlowData = monthsArray.map(month => ({
       month,
       income: Math.round(cashFlowByMonth[month].income),
@@ -872,7 +868,6 @@ app.get('/api/analytics/spending-categories', authenticateToken, async (req, res
 
     const accountIds = accounts.map(acc => acc.account_id);
 
-    // Get spending transactions by category
     const { data: transactions, error: txError } = await supabaseClient
       .from('transactions')
       .select('category, amount')
@@ -883,7 +878,6 @@ app.get('/api/analytics/spending-categories', authenticateToken, async (req, res
 
     if (txError) throw txError;
 
-    // Group by category
     const categoryTotals = {};
     const categoryColors = {
       'GROCERIES': '#10B981',
@@ -902,7 +896,6 @@ app.get('/api/analytics/spending-categories', authenticateToken, async (req, res
       categoryTotals[category] = (categoryTotals[category] || 0) + amount;
     });
 
-    // Format for pie chart
     const categoryData = Object.entries(categoryTotals)
       .map(([name, value]) => ({
         name,
@@ -910,7 +903,7 @@ app.get('/api/analytics/spending-categories', authenticateToken, async (req, res
         color: categoryColors[name] || categoryColors.OTHER
       }))
       .sort((a, b) => b.value - a.value)
-      .slice(0, 8); // Top 8 categories
+      .slice(0, 8);
 
     res.json({ categories: categoryData });
   } catch (error) {
@@ -924,7 +917,6 @@ app.get('/api/analytics/financial-health', authenticateToken, async (req, res) =
   const user_id = req.user.user_id;
 
   try {
-    // Get user's accounts and recent transactions
     const { data: accounts, error: accountError } = await supabaseClient
       .from('accounts')
       .select('*')
@@ -936,7 +928,6 @@ app.get('/api/analytics/financial-health', authenticateToken, async (req, res) =
     const totalBalance = accounts.reduce((sum, acc) => sum + parseFloat(acc.balance), 0);
     const accountIds = accounts.map(acc => acc.account_id);
 
-    // Get last 3 months of transactions for calculations
     const threeMonthsAgo = new Date();
     threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
 
@@ -948,7 +939,6 @@ app.get('/api/analytics/financial-health', authenticateToken, async (req, res) =
 
     if (txError) throw txError;
 
-    // Calculate monthly income and expenses
     const monthlyIncome = recentTransactions
       .filter(tx => tx.transaction_type === 'CREDIT')
       .reduce((sum, tx) => sum + Math.abs(parseFloat(tx.amount)), 0) / 3;
@@ -957,11 +947,11 @@ app.get('/api/analytics/financial-health', authenticateToken, async (req, res) =
       .filter(tx => tx.transaction_type === 'DEBIT')
       .reduce((sum, tx) => sum + Math.abs(parseFloat(tx.amount)), 0) / 3;
 
-    // Calculate metrics
-    const emergencyFund = totalBalance / monthlyExpenses; // Months of expenses covered
-    const debtToIncomeRatio = 0; // You might want to add debt tracking
-    const savingsRate = ((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100;
-    const creditUtilization = 15; // Placeholder - you'd get this from credit card data
+    
+    const emergencyFund = monthlyExpenses > 0 ? totalBalance / monthlyExpenses : 0;
+    const debtToIncomeRatio = 0; // Placeholder - add debt tracking later
+    const savingsRate = monthlyIncome > 0 ? ((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100 : 0;
+    const creditUtilization = 15; // Placeholder - get from credit card data
 
     const getStatus = (value, targets) => {
       if (value >= targets.excellent) return 'excellent';
@@ -1039,7 +1029,6 @@ app.get('/api/analytics/top-merchants', authenticateToken, async (req, res) => {
 
     if (txError) throw txError;
 
-    // Group by merchant
     const merchantTotals = {};
     transactions.forEach(tx => {
       const merchant = tx.merchant_name;
@@ -1047,7 +1036,6 @@ app.get('/api/analytics/top-merchants', authenticateToken, async (req, res) => {
       merchantTotals[merchant] = (merchantTotals[merchant] || 0) + amount;
     });
 
-    // Format and sort
     const topMerchants = Object.entries(merchantTotals)
       .map(([name, totalSpent]) => ({
         name,
@@ -1064,47 +1052,128 @@ app.get('/api/analytics/top-merchants', authenticateToken, async (req, res) => {
   }
 });
 
-// Upcoming Bills (Mock data - you'd implement based on your bill tracking system)
+// Enhanced Upcoming Bills with real data analysis
 app.get('/api/analytics/upcoming-bills', authenticateToken, async (req, res) => {
-  try {
-    // This is mock data - you'd implement based on your recurring transaction logic
-    const mockBills = [
-      {
-        name: 'Electricity Bill',
-        amount: 450,
-        dueDate: '2025-07-15',
-        daysLeft: 21,
-        status: 'upcoming'
-      },
-      {
-        name: 'Internet',
-        amount: 899,
-        dueDate: '2025-07-10',
-        daysLeft: 16,
-        status: 'upcoming'
-      },
-      {
-        name: 'Insurance Premium',
-        amount: 1200,
-        dueDate: '2025-07-05',
-        daysLeft: 11,
-        status: 'urgent'
-      }
-    ];
+  const user_id = req.user.user_id;
 
-    res.json({ bills: mockBills });
+  try {
+    const { data: accounts, error: accountError } = await supabaseClient
+      .from('accounts')
+      .select('account_id')
+      .eq('user_id', user_id)
+      .eq('status', 'ACTIVE');
+
+    if (accountError) throw accountError;
+
+    if (!accounts || accounts.length === 0) {
+      return res.json({ bills: [] });
+    }
+
+    const accountIds = accounts.map(acc => acc.account_id);
+
+    // Look for recurring transactions (same merchant, similar amounts)
+    const { data: transactions, error: txError } = await supabaseClient
+      .from('transactions')
+      .select('merchant_name, amount, transaction_date, description')
+      .in('account_id', accountIds)
+      .eq('transaction_type', 'DEBIT')
+      .gte('transaction_date', new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString()) // Last 3 months
+      .not('merchant_name', 'is', null)
+      .order('transaction_date', { ascending: false });
+
+    if (txError) throw txError;
+
+    // Analyze for recurring patterns
+    const merchantPatterns = {};
+    transactions.forEach(tx => {
+      const merchant = tx.merchant_name;
+      if (!merchantPatterns[merchant]) {
+        merchantPatterns[merchant] = [];
+      }
+      merchantPatterns[merchant].push({
+        amount: Math.abs(parseFloat(tx.amount)),
+        date: new Date(tx.transaction_date),
+        description: tx.description
+      });
+    });
+
+    const predictedBills = [];
+    
+    Object.entries(merchantPatterns).forEach(([merchant, txs]) => {
+      if (txs.length >= 2) { // At least 2 transactions to identify pattern
+        const avgAmount = txs.reduce((sum, tx) => sum + tx.amount, 0) / txs.length;
+        const sortedDates = txs.map(tx => tx.date).sort();
+        
+        // Calculate average days between transactions
+        let totalDays = 0;
+        for (let i = 1; i < sortedDates.length; i++) {
+          totalDays += (sortedDates[i] - sortedDates[i-1]) / (1000 * 60 * 60 * 24);
+        }
+        const avgDaysBetween = totalDays / (sortedDates.length - 1);
+        
+        // Predict next bill date
+        const lastDate = sortedDates[sortedDates.length - 1];
+        const nextDueDate = new Date(lastDate.getTime() + avgDaysBetween * 24 * 60 * 60 * 1000);
+        const daysLeft = Math.ceil((nextDueDate - new Date()) / (1000 * 60 * 60 * 24));
+        
+        // Only include if it's a likely recurring bill (monthly or similar pattern)
+        if (avgDaysBetween >= 25 && avgDaysBetween <= 35 && daysLeft > 0 && daysLeft <= 45) {
+          predictedBills.push({
+            name: merchant,
+            amount: Math.round(avgAmount),
+            dueDate: nextDueDate.toISOString().split('T')[0],
+            daysLeft: daysLeft,
+            status: daysLeft <= 7 ? 'urgent' : daysLeft <= 14 ? 'upcoming' : 'future'
+          });
+        }
+      }
+    });
+
+    // Sort by days left and limit to top 10
+    const sortedBills = predictedBills
+      .sort((a, b) => a.daysLeft - b.daysLeft)
+      .slice(0, 10);
+
+    // If no recurring bills found, return some mock data for demo
+    if (sortedBills.length === 0) {
+      const mockBills = [
+        {
+          name: 'Electricity Bill',
+          amount: 450,
+          dueDate: '2025-01-15',
+          daysLeft: 21,
+          status: 'upcoming'
+        },
+        {
+          name: 'Internet',
+          amount: 899,
+          dueDate: '2025-01-10',
+          daysLeft: 16,
+          status: 'upcoming'
+        },
+        {
+          name: 'Insurance Premium',
+          amount: 1200,
+          dueDate: '2025-01-05',
+          daysLeft: 11,
+          status: 'urgent'
+        }
+      ];
+      return res.json({ bills: mockBills });
+    }
+
+    res.json({ bills: sortedBills });
   } catch (error) {
     console.error('Upcoming bills error:', error);
     res.status(500).json({ error: 'Failed to fetch bills data' });
   }
 });
 
-// AI Insights (Mock data - you'd implement with actual AI/ML logic)
+// Enhanced AI Insights with real data analysis
 app.get('/api/analytics/ai-insights', authenticateToken, async (req, res) => {
   const user_id = req.user.user_id;
 
   try {
-    // Get some basic user data for insights
     const { data: accounts, error: accountError } = await supabaseClient
       .from('accounts')
       .select('*')
@@ -1114,40 +1183,147 @@ app.get('/api/analytics/ai-insights', authenticateToken, async (req, res) => {
     if (accountError) throw accountError;
 
     const totalBalance = accounts.reduce((sum, acc) => sum + parseFloat(acc.balance), 0);
+    const accountIds = accounts.map(acc => acc.account_id);
 
-    // Generate insights based on data (this would be more sophisticated with real AI)
-    const insights = [
-      {
-        type: 'opportunity',
-        title: 'Savings Opportunity Detected',
-        message: `You're spending 15% more on dining than last month. Consider meal planning to save approximately R350 monthly.`,
-        confidence: 85,
-        action: 'View Tips'
-      },
-      {
+    // Get last 60 days of transactions for analysis
+    const sixtyDaysAgo = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    const { data: recentTransactions, error: txError } = await supabaseClient
+      .from('transactions')
+      .select('*')
+      .in('account_id', accountIds)
+      .gte('transaction_date', sixtyDaysAgo.toISOString())
+      .order('transaction_date', { ascending: false });
+
+    if (txError) throw txError;
+
+    const insights = [];
+
+    // Analyze spending patterns
+    const lastMonthTxs = recentTransactions.filter(tx => 
+      new Date(tx.transaction_date) >= thirtyDaysAgo && tx.transaction_type === 'DEBIT'
+    );
+    const previousMonthTxs = recentTransactions.filter(tx => 
+      new Date(tx.transaction_date) < thirtyDaysAgo && tx.transaction_type === 'DEBIT'
+    );
+
+    // Category spending analysis
+    const categoriesThisMonth = {};
+    const categoriesLastMonth = {};
+
+    lastMonthTxs.forEach(tx => {
+      const category = tx.category || 'OTHER';
+      categoriesThisMonth[category] = (categoriesThisMonth[category] || 0) + Math.abs(parseFloat(tx.amount));
+    });
+
+    previousMonthTxs.forEach(tx => {
+      const category = tx.category || 'OTHER';
+      categoriesLastMonth[category] = (categoriesLastMonth[category] || 0) + Math.abs(parseFloat(tx.amount));
+    });
+
+    // Find categories with significant increases
+    Object.keys(categoriesThisMonth).forEach(category => {
+      const thisMonth = categoriesThisMonth[category];
+      const lastMonth = categoriesLastMonth[category] || 0;
+      
+      if (lastMonth > 0) {
+        const increase = ((thisMonth - lastMonth) / lastMonth) * 100;
+        if (increase > 20) {
+          insights.push({
+            type: 'alert',
+            title: `Increased ${category.toLowerCase()} Spending`,
+            message: `Your ${category.toLowerCase()} spending increased by ${increase.toFixed(0)}% this month. Consider reviewing these expenses.`,
+            confidence: 85,
+            action: 'Review Transactions'
+          });
+        }
+      }
+    });
+
+    // Cash flow prediction
+    const totalIncome = recentTransactions
+      .filter(tx => tx.transaction_type === 'CREDIT')
+      .reduce((sum, tx) => sum + Math.abs(parseFloat(tx.amount)), 0);
+    
+    const totalExpenses = recentTransactions
+      .filter(tx => tx.transaction_type === 'DEBIT')
+      .reduce((sum, tx) => sum + Math.abs(parseFloat(tx.amount)), 0);
+
+    const monthlyIncome = totalIncome / 2; // Last 2 months
+    const monthlyExpenses = totalExpenses / 2;
+    const projectedBalance = totalBalance + monthlyIncome - monthlyExpenses;
+
+    if (projectedBalance > totalBalance) {
+      insights.push({
         type: 'prediction',
-        title: 'Cash Flow Prediction',
-        message: `Based on your spending patterns, you'll likely have R${Math.round(totalBalance * 0.85)} available by month-end.`,
+        title: 'Positive Cash Flow Projection',
+        message: `Based on your spending patterns, you're likely to have R${projectedBalance.toFixed(0)} by month-end.`,
         confidence: 78,
         action: 'View Details'
-      },
-      {
-        type: 'alert',
-        title: 'Unusual Spending Pattern',
-        message: 'Your entertainment spending increased by 40% this week. This might impact your monthly budget.',
-        confidence: 92,
-        action: 'Review Transactions'
-      }
-    ];
+      });
+    }
 
-    res.json({ insights });
+    // Savings opportunity
+    if (monthlyIncome > monthlyExpenses) {
+      const savingsRate = ((monthlyIncome - monthlyExpenses) / monthlyIncome) * 100;
+      if (savingsRate < 20) {
+        insights.push({
+          type: 'opportunity',
+          title: 'Savings Opportunity',
+          message: `Your current savings rate is ${savingsRate.toFixed(1)}%. Consider increasing it to 20% for better financial health.`,
+          confidence: 90,
+          action: 'View Tips'
+        });
+      }
+    }
+
+    // Large transaction alert
+    const avgTransaction = totalExpenses / recentTransactions.filter(tx => tx.transaction_type === 'DEBIT').length;
+    const largeTxs = lastMonthTxs.filter(tx => Math.abs(parseFloat(tx.amount)) > avgTransaction * 3);
+    
+    if (largeTxs.length > 0) {
+      const largestTx = largeTxs.reduce((max, tx) => 
+        Math.abs(parseFloat(tx.amount)) > Math.abs(parseFloat(max.amount)) ? tx : max
+      );
+      
+      insights.push({
+        type: 'alert',
+        title: 'Large Transaction Detected',
+        message: `You had a large transaction of R${Math.abs(parseFloat(largestTx.amount)).toFixed(0)} at ${largestTx.merchant_name || 'Unknown merchant'}.`,
+        confidence: 95,
+        action: 'Review Transaction'
+      });
+    }
+
+    // Default insights if no patterns found
+    if (insights.length === 0) {
+      insights.push(
+        {
+          type: 'opportunity',
+          title: 'Track Your Spending',
+          message: 'Start categorizing your transactions to get better insights into your spending patterns.',
+          confidence: 80,
+          action: 'Get Started'
+        },
+        {
+          type: 'prediction',
+          title: 'Build Your Emergency Fund',
+          message: 'Consider setting aside 3-6 months of expenses for financial security.',
+          confidence: 85,
+          action: 'Learn More'
+        }
+      );
+    }
+
+    res.json({ insights: insights.slice(0, 5) }); // Limit to 5 insights
   } catch (error) {
     console.error('AI insights error:', error);
     res.status(500).json({ error: 'Failed to fetch AI insights' });
   }
 });
 
-// Overview Statistics
+// Enhanced Overview Statistics with trend calculations
 app.get('/api/analytics/overview', authenticateToken, async (req, res) => {
   const { timeRange = '6months' } = req.query;
   const user_id = req.user.user_id;
@@ -1162,27 +1338,63 @@ app.get('/api/analytics/overview', authenticateToken, async (req, res) => {
 
     if (accountError) throw accountError;
     if (!accounts || accounts.length === 0) {
-      return res.json({ stats: {} });
+      return res.json({ 
+        stats: {
+          netCashFlow: 0,
+          netCashFlowChange: '0%',
+          netCashFlowTrend: 'neutral',
+          avgDailySpending: 0,
+          avgDailySpendingChange: '0%',
+          avgDailySpendingTrend: 'neutral',
+          financialHealth: 0,
+          financialHealthChange: '0%',
+          financialHealthTrend: 'neutral',
+          savingsRate: 0,
+          savingsRateChange: '0%',
+          savingsRateTrend: 'neutral'
+        }
+      });
     }
 
     const accountIds = accounts.map(acc => acc.account_id);
 
-    // Get transactions for the period
-    const { data: transactions, error: txError } = await supabaseClient
+    // Get all transactions for comparison (current + previous period)
+    const extendedStartDate = new Date(startDate);
+    switch (timeRange) {
+      case '3months':
+        extendedStartDate.setMonth(extendedStartDate.getMonth() - 3);
+        break;
+      case '6months':
+        extendedStartDate.setMonth(extendedStartDate.getMonth() - 6);
+        break;
+      case '1year':
+        extendedStartDate.setFullYear(extendedStartDate.getFullYear() - 1);
+        break;
+    }
+
+    const { data: allTransactions, error: txError } = await supabaseClient
       .from('transactions')
       .select('*')
       .in('account_id', accountIds)
-      .gte('transaction_date', startDate)
+      .gte('transaction_date', extendedStartDate.toISOString())
       .lte('transaction_date', endDate);
 
     if (txError) throw txError;
 
-    // Calculate metrics
-    const totalIncome = transactions
+    // Split transactions into current and previous periods
+    const currentTransactions = allTransactions.filter(tx => 
+      new Date(tx.transaction_date) >= new Date(startDate)
+    );
+    const previousTransactions = allTransactions.filter(tx => 
+      new Date(tx.transaction_date) < new Date(startDate)
+    );
+
+    // Calculate current period metrics
+    const totalIncome = currentTransactions
       .filter(tx => tx.transaction_type === 'CREDIT')
       .reduce((sum, tx) => sum + Math.abs(parseFloat(tx.amount)), 0);
 
-    const totalExpenses = transactions
+    const totalExpenses = currentTransactions
       .filter(tx => tx.transaction_type === 'DEBIT')
       .reduce((sum, tx) => sum + Math.abs(parseFloat(tx.amount)), 0);
 
@@ -1193,7 +1405,7 @@ app.get('/api/analytics/overview', authenticateToken, async (req, res) => {
 
     const savingsRate = totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0;
     
-    // Simple financial health score (0-10)
+    // Calculate financial health score
     const totalBalance = accounts.reduce((sum, acc) => sum + parseFloat(acc.balance), 0);
     const monthlyExpenses = totalExpenses / (daysInPeriod / 30);
     const emergencyFundMonths = monthlyExpenses > 0 ? totalBalance / monthlyExpenses : 0;
@@ -1211,23 +1423,54 @@ app.get('/api/analytics/overview', authenticateToken, async (req, res) => {
     else if (netCashFlow >= -1000) financialHealth += 1;
     
     financialHealth += 2; // Base score
+    financialHealth = Math.min(Math.round(financialHealth), 10);
+
+    // Calculate previous period metrics for comparison
+    const prevTotalIncome = previousTransactions
+      .filter(tx => tx.transaction_type === 'CREDIT')
+      .reduce((sum, tx) => sum + Math.abs(parseFloat(tx.amount)), 0);
+
+    const prevTotalExpenses = previousTransactions
+      .filter(tx => tx.transaction_type === 'DEBIT')
+      .reduce((sum, tx) => sum + Math.abs(parseFloat(tx.amount)), 0);
+
+    const prevNetCashFlow = prevTotalIncome - prevTotalExpenses;
+    const prevAvgDailySpending = prevTotalExpenses / daysInPeriod;
+    const prevSavingsRate = prevTotalIncome > 0 ? ((prevTotalIncome - prevTotalExpenses) / prevTotalIncome) * 100 : 0;
+
+    // Calculate previous financial health
+    let prevFinancialHealth = 2; // Base score
+    if (prevSavingsRate >= 20) prevFinancialHealth += 3;
+    else if (prevSavingsRate >= 15) prevFinancialHealth += 2;
+    else if (prevSavingsRate >= 10) prevFinancialHealth += 1;
+    
+    if (prevNetCashFlow > 0) prevFinancialHealth += 2;
+    else if (prevNetCashFlow >= -1000) prevFinancialHealth += 1;
+    
+    prevFinancialHealth = Math.min(Math.round(prevFinancialHealth), 10);
+
+    // Calculate percentage changes and trends
+    const netCashFlowChange = calculatePercentageChange(netCashFlow, prevNetCashFlow);
+    const avgDailySpendingChange = calculatePercentageChange(avgDailySpending, prevAvgDailySpending);
+    const financialHealthChange = calculatePercentageChange(financialHealth, prevFinancialHealth);
+    const savingsRateChange = calculatePercentageChange(savingsRate, prevSavingsRate);
 
     const stats = {
       netCashFlow: Math.round(netCashFlow),
-      netCashFlowChange: '+5.2%', // Mock - you'd calculate this from previous period
-      netCashFlowTrend: netCashFlow > 0 ? 'up' : 'down',
+      netCashFlowChange,
+      netCashFlowTrend: netCashFlow >= prevNetCashFlow ? 'up' : 'down',
       
       avgDailySpending: Math.round(avgDailySpending),
-      avgDailySpendingChange: '-2.1%', // Mock
-      avgDailySpendingTrend: 'down',
+      avgDailySpendingChange,
+      avgDailySpendingTrend: avgDailySpending <= prevAvgDailySpending ? 'down' : 'up', // Lower is better
       
-      financialHealth: Math.min(Math.round(financialHealth), 10),
-      financialHealthChange: '+0.5', // Mock
-      financialHealthTrend: 'up',
+      financialHealth,
+      financialHealthChange,
+      financialHealthTrend: financialHealth >= prevFinancialHealth ? 'up' : 'down',
       
       savingsRate: Math.round(savingsRate),
-      savingsRateChange: '+3.2%', // Mock
-      savingsRateTrend: savingsRate > 15 ? 'up' : 'down'
+      savingsRateChange,
+      savingsRateTrend: savingsRate >= prevSavingsRate ? 'up' : 'down'
     };
 
     res.json({ stats });
@@ -1237,6 +1480,148 @@ app.get('/api/analytics/overview', authenticateToken, async (req, res) => {
   }
 });
 
+// Additional endpoint for goals tracking (to support the Analytics component)
+app.get('/api/analytics/goals', authenticateToken, async (req, res) => {
+  const user_id = req.user.user_id;
+
+  try {
+    // Check if you have a goals table, otherwise use mock data
+    const { data: goals, error: goalsError } = await supabaseClient
+      .from('goals')
+      .select('*')
+      .eq('user_id', user_id)
+      .eq('status', 'ACTIVE');
+
+    if (goalsError && goalsError.code !== 'PGRST116') { // PGRST116 = table doesn't exist
+      console.error('Goals fetch error:', goalsError);
+    }
+
+    let goalData = [];
+
+    if (goals && goals.length > 0) {
+      // Use real goals data
+      goalData = goals.map(goal => ({
+        goal: goal.goal_name,
+        target: goal.target_amount,
+        current: goal.current_amount,
+        percentage: Math.round((goal.current_amount / goal.target_amount) * 100)
+      }));
+    } else {
+      // Use mock data based on user's account balance
+      const { data: accounts, error: accountError } = await supabaseClient
+        .from('accounts')
+        .select('*')
+        .eq('user_id', user_id)
+        .eq('status', 'ACTIVE');
+
+      if (accountError) throw accountError;
+
+      const totalBalance = accounts.reduce((sum, acc) => sum + parseFloat(acc.balance), 0);
+      
+      // Generate realistic mock goals based on user's balance
+      goalData = [
+        { 
+          goal: 'Emergency Fund', 
+          target: Math.max(50000, totalBalance * 0.6), 
+          current: Math.min(totalBalance * 0.4, 32000), 
+          percentage: Math.min(Math.round((totalBalance * 0.4) / Math.max(50000, totalBalance * 0.6) * 100), 100)
+        },
+        { 
+          goal: 'Vacation Fund', 
+          target: 15000, 
+          current: Math.min(totalBalance * 0.1, 8500), 
+          percentage: Math.min(Math.round((totalBalance * 0.1) / 15000 * 100), 100)
+        },
+        { 
+          goal: 'Car Down Payment', 
+          target: 25000, 
+          current: Math.min(totalBalance * 0.2, 18000), 
+          percentage: Math.min(Math.round((totalBalance * 0.2) / 25000 * 100), 100)
+        },
+        { 
+          goal: 'Investment Portfolio', 
+          target: 100000, 
+          current: Math.min(totalBalance * 0.3, 45000), 
+          percentage: Math.min(Math.round((totalBalance * 0.3) / 100000 * 100), 100)
+        },
+      ];
+    }
+
+    res.json({ goals: goalData });
+  } catch (error) {
+    console.error('Goals analytics error:', error);
+    res.status(500).json({ error: 'Failed to fetch goals data' });
+  }
+});
+
+// Enhanced endpoint for budget tracking
+app.get('/api/analytics/budget', authenticateToken, async (req, res) => {
+  const { timeRange = '1month' } = req.query;
+  const user_id = req.user.user_id;
+
+  try {
+    // Calculate current month spending by category
+    const currentMonth = new Date();
+    const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+    const endOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+
+    const { data: accounts, error: accountError } = await supabaseClient
+      .from('accounts')
+      .select('account_id')
+      .eq('user_id', user_id)
+      .eq('status', 'ACTIVE');
+
+    if (accountError) throw accountError;
+    if (!accounts || accounts.length === 0) {
+      return res.json({ budget: [] });
+    }
+
+    const accountIds = accounts.map(acc => acc.account_id);
+
+    const { data: transactions, error: txError } = await supabaseClient
+      .from('transactions')
+      .select('category, amount')
+      .in('account_id', accountIds)
+      .gte('transaction_date', startOfMonth.toISOString())
+      .lte('transaction_date', endOfMonth.toISOString())
+      .eq('transaction_type', 'DEBIT');
+
+    if (txError) throw txError;
+
+    // Default budget limits (you could store these in a budgets table)
+    const defaultBudgets = {
+      'GROCERIES': 3000,
+      'TRANSPORT': 2000,
+      'ENTERTAINMENT': 1500,
+      'UTILITIES': 2500,
+      'DINING': 1000,
+      'SHOPPING': 2000,
+      'HEALTHCARE': 1000,
+      'OTHER': 1500
+    };
+
+    // Calculate actual spending by category
+    const actualSpending = {};
+    transactions.forEach(tx => {
+      const category = tx.category || 'OTHER';
+      actualSpending[category] = (actualSpending[category] || 0) + Math.abs(parseFloat(tx.amount));
+    });
+
+    // Combine with budgets
+    const budgetData = Object.keys(defaultBudgets).map(category => ({
+      category,
+      budget: defaultBudgets[category],
+      spent: Math.round(actualSpending[category] || 0),
+      remaining: Math.round(defaultBudgets[category] - (actualSpending[category] || 0)),
+      percentage: Math.round(((actualSpending[category] || 0) / defaultBudgets[category]) * 100)
+    }));
+
+    res.json({ budget: budgetData });
+  } catch (error) {
+    console.error('Budget analytics error:', error);
+    res.status(500).json({ error: 'Failed to fetch budget data' });
+  }
+});
 
 //error handling middleware
 app.use((err, req, res, next) => {
@@ -1252,6 +1637,16 @@ app.use('*', (req, res) => {
   await testSupabaseConnection();
   app.listen(PORT, () => {
     console.log(`Server running at: http://localhost:${PORT}`);
+    console.log(`📊 Analytics endpoints available:`);
+    console.log(`   - GET /api/analytics/cash-flow`);
+    console.log(`   - GET /api/analytics/spending-categories`);
+    console.log(`   - GET /api/analytics/financial-health`);
+    console.log(`   - GET /api/analytics/top-merchants`);
+    console.log(`   - GET /api/analytics/upcoming-bills`);
+    console.log(`   - GET /api/analytics/ai-insights`);
+    console.log(`   - GET /api/analytics/overview`);
+    console.log(`   - GET /api/analytics/goals`);
+    console.log(`   - GET /api/analytics/budget`);
   });
 })();
 
