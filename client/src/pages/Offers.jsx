@@ -12,140 +12,23 @@ import {
   Filter,
   Heart,
   ArrowRight,
-  Info
+  Info,
+  RefreshCw,
+  AlertTriangle,
+  CheckCircle
 } from 'lucide-react';
 
 const Offers = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [sortBy, setSortBy] = useState('relevance');
   const [savedOffers, setSavedOffers] = useState([]);
-  const [userCreditScore] = useState(750); // Mock user credit score
-
-  // Comprehensive financial offers
-  const allOffers = [
-    {
-      id: 1,
-      icon: <CreditCard size={28} />,
-      title: 'Premium Credit Card',
-      description: 'Premium rewards card with airport lounge access and comprehensive travel insurance.',
-      category: 'credit-cards',
-      badge: 'Pre-approved',
-      badgeColor: 'green',
-      interestRate: '19.75%',
-      annualFee: 'R0 first year',
-      requirements: 'Min income: R30,000/month',
-      expiryDate: '2025-07-15',
-      approvalChance: 95,
-      benefits: ['Airport lounge access', 'Travel insurance', 'Concierge service'],
-    },
-    {
-      id: 2,
-      icon: <Home size={28} />,
-      title: 'Home Loan',
-      description: 'Competitive home loan rates with flexible repayment options.',
-      category: 'home-loans',
-      badge: 'Best Rate',
-      badgeColor: 'blue',
-      interestRate: '11.5%',
-      annualFee: 'No fees',
-      requirements: 'Min income: R25,000/month',
-      expiryDate: '2025-12-31',
-      approvalChance: 88,
-      benefits: ['No transfer fees', 'Flexible repayment', 'Free bond origination'],
-    },
-    {
-      id: 3,
-      icon: <Car size={28} />,
-      title: 'Vehicle Finance',
-      description: 'Finance your dream car with competitive rates and flexible terms.',
-      category: 'vehicle-finance',
-      badge: 'Special Rate',
-      badgeColor: 'purple',
-      interestRate: '12.25%',
-      annualFee: 'R99/month',
-      requirements: 'Min income: R15,000/month',
-      expiryDate: '2025-08-30',
-      approvalChance: 92,
-      benefits: ['Up to 84 months terms', 'Balloon payment options', 'Insurance included'],
-    },
-    {
-      id: 4,
-      icon: <TrendingUp size={28} />,
-      title: 'Investment Account',
-      description: 'High-yield investment account with no minimum balance requirements.',
-      category: 'investments',
-      badge: 'New',
-      badgeColor: 'orange',
-      interestRate: '8.5% p.a.',
-      annualFee: 'R0',
-      requirements: 'Min deposit: R1,000',
-      expiryDate: '2025-09-15',
-      approvalChance: 98,
-      benefits: ['No minimum balance', 'Daily compounding', 'Online access'],
-    },
-    {
-      id: 5,
-      icon: <Banknote size={28} />,
-      title: 'Personal Loan',
-      description: 'Quick personal loan approval with funds available within 48 hours.',
-      category: 'personal-loans',
-      badge: 'Fast Approval',
-      badgeColor: 'red',
-      interestRate: '15.5%',
-      annualFee: 'No fees',
-      requirements: 'Min income: R8,000/month',
-      expiryDate: '2025-07-31',
-      approvalChance: 85,
-      benefits: ['48-hour approval', 'No collateral needed', 'Flexible terms'],
-    },
-    {
-      id: 6,
-      icon: <Shield size={28} />,
-      title: 'Life Insurance',
-      description: 'Comprehensive life cover with Vitality rewards and health benefits.',
-      category: 'insurance',
-      badge: 'Exclusive',
-      badgeColor: 'teal',
-      interestRate: 'From R180/month',
-      annualFee: 'R0',
-      requirements: 'Age 18-65',
-      expiryDate: '2025-11-30',
-      approvalChance: 90,
-      benefits: ['Vitality rewards', 'Health screening', 'Premium discounts'],
-    },
-    {
-      id: 7,
-      icon: <Gift size={28} />,
-      title: 'Cashback Credit Card',
-      description: 'Earn up to 5% cashback on all purchases with no spending caps.',
-      category: 'credit-cards',
-      badge: 'Popular',
-      badgeColor: 'yellow',
-      interestRate: '18.25%',
-      annualFee: 'R99/year',
-      requirements: 'Min income: R12,000/month',
-      expiryDate: '2025-08-15',
-      approvalChance: 78,
-      benefits: ['Up to 5% cashback', 'No spending caps', 'Monthly rewards'],
-    },
-    {
-      id: 8,
-      icon: <TrendingUp size={28} />,
-      title: 'Fixed Deposit',
-      description: 'Secure your savings with guaranteed returns and flexible terms.',
-      category: 'investments',
-      badge: 'Guaranteed',
-      badgeColor: 'green',
-      interestRate: '9.75% p.a.',
-      annualFee: 'R0',
-      requirements: 'Min deposit: R5,000',
-      expiryDate: '2025-12-31',
-      approvalChance: 100,
-      benefits: ['Guaranteed returns', 'Flexible terms', 'SARB protected'],
-    }
-  ];
-
-  const [offers, setOffers] = useState(allOffers);
+  const [offers, setOffers] = useState([]);
+  const [userCreditScore, setUserCreditScore] = useState(null);
+  const [eligibilityScore, setEligibilityScore] = useState(null);
+  const [totalBalance, setTotalBalance] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [applications, setApplications] = useState([]);
 
   const categories = [
     { id: 'all', label: 'All Offers', icon: <Gift size={16} /> },
@@ -164,42 +47,158 @@ const Offers = () => {
     { id: 'expiry', label: 'Ending Soon' }
   ];
 
-  // Filter and sort offers
-  useEffect(() => {
-    let filteredOffers = selectedFilter === 'all' 
-      ? allOffers 
-      : allOffers.filter(offer => offer.category === selectedFilter);
-
-    // Sort offers
-    switch (sortBy) {
-      case 'approval':
-        filteredOffers.sort((a, b) => b.approvalChance - a.approvalChance);
-        break;
-      case 'rate':
-        filteredOffers.sort((a, b) => {
-          const aRate = parseFloat(a.interestRate.replace('%', '').replace(' p.a.', ''));
-          const bRate = parseFloat(b.interestRate.replace('%', '').replace(' p.a.', ''));
-          return aRate - bRate;
-        });
-        break;
-      case 'expiry':
-        filteredOffers.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
-        break;
-      default:
-        // Keep original order for relevance
-        break;
+  // API Functions
+  const fetchOffers = async () => {
+    const token = localStorage.getItem('jwt');
+    if (!token) {
+      setError('Not authenticated. Please log in.');
+      setLoading(false);
+      return;
     }
 
-    setOffers(filteredOffers);
-  }, [selectedFilter, sortBy]);
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/offers?category=${selectedFilter}&sortBy=${sortBy}`,
+        {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
+        }
+      );
 
-  const handleSaveOffer = (offerId) => {
-    setSavedOffers(prev => 
-      prev.includes(offerId) 
-        ? prev.filter(id => id !== offerId)
-        : [...prev, offerId]
-    );
+      const data = await response.json();
+      if (response.ok) {
+        setOffers(data.offers || []);
+        setUserCreditScore(data.userCreditScore);
+        setEligibilityScore(data.eligibilityScore);
+        setTotalBalance(data.totalBalance);
+        setError('');
+      } else {
+        setError(data.error || 'Failed to fetch offers');
+      }
+    } catch (err) {
+      setError('Server connection failed');
+      console.error('Fetch offers error:', err);
+    }
   };
+
+  const fetchSavedOffers = async () => {
+    const token = localStorage.getItem('jwt');
+    if (!token) return;
+
+    try {
+      const response = await fetch('http://localhost:3001/api/offers/saved', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setSavedOffers(data.savedOffers || []);
+      }
+    } catch (err) {
+      console.error('Fetch saved offers error:', err);
+    }
+  };
+
+  const fetchApplications = async () => {
+    const token = localStorage.getItem('jwt');
+    if (!token) return;
+
+    try {
+      const response = await fetch('http://localhost:3001/api/offers/applications', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        setApplications(data.applications || []);
+      }
+    } catch (err) {
+      console.error('Fetch applications error:', err);
+    }
+  };
+
+  const handleSaveOffer = async (offerId) => {
+    const token = localStorage.getItem('jwt');
+    if (!token) return;
+
+    try {
+      const response = await fetch(`http://localhost:3001/api/offers/${offerId}/save`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        if (data.saved) {
+          setSavedOffers(prev => [...prev, offerId]);
+        } else {
+          setSavedOffers(prev => prev.filter(id => id !== offerId));
+        }
+      }
+    } catch (err) {
+      console.error('Save offer error:', err);
+    }
+  };
+
+  const handleApplyOffer = async (offerId) => {
+    const token = localStorage.getItem('jwt');
+    if (!token) return;
+
+    try {
+      const response = await fetch(`http://localhost:3001/api/offers/${offerId}/apply`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        alert(`Application submitted successfully! Application ID: ${data.applicationId}`);
+        fetchApplications(); // Refresh applications
+      } else {
+        alert(data.error || 'Failed to submit application');
+      }
+    } catch (err) {
+      console.error('Apply offer error:', err);
+      alert('Failed to submit application');
+    }
+  };
+
+  const refreshData = async () => {
+    setLoading(true);
+    await Promise.all([
+      fetchOffers(),
+      fetchSavedOffers(),
+      fetchApplications()
+    ]);
+    setLoading(false);
+  };
+
+  // Load data on component mount and filter/sort changes
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      await Promise.all([
+        fetchOffers(),
+        fetchSavedOffers(),
+        fetchApplications()
+      ]);
+      setLoading(false);
+    };
+
+    loadData();
+  }, [selectedFilter, sortBy]);
 
   const getDaysUntilExpiry = (expiryDate) => {
     const today = new Date();
@@ -228,6 +227,59 @@ const Offers = () => {
     return '#ef4444';
   };
 
+  const isOfferApplied = (offerId) => {
+    return applications.some(app => app.offer_id === offerId);
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        backgroundColor: '#1a1a1a' 
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: '#8A1F2C' }} />
+          <p style={{ color: '#cbd5e1' }}>Loading personalized offers...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        backgroundColor: '#1a1a1a' 
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <AlertTriangle className="w-8 h-8 mx-auto mb-4" style={{ color: '#EF4444' }} />
+          <p style={{ color: '#EF4444', marginBottom: '16px' }}>{error}</p>
+          <button 
+            onClick={refreshData}
+            style={{
+              padding: '8px 16px',
+              backgroundColor: '#8A1F2C',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer'
+            }}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div style={{ 
       padding: '24px', 
@@ -242,9 +294,54 @@ const Offers = () => {
         <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: '#ffffff', margin: '0 0 8px 0' }}>
           Personalized Offers for You
         </h2>
-        <p style={{ fontSize: '18px', color: '#b3b3b3', margin: 0 }}>
-          Based on your excellent credit score of {userCreditScore}, you qualify for our best rates
+        <p style={{ fontSize: '18px', color: '#b3b3b3', margin: '0 0 16px 0' }}>
+          Based on your {userCreditScore ? `excellent credit score of ${userCreditScore}` : 'financial profile'}, you qualify for our best rates
         </p>
+        
+        {/* User Stats */}
+        {eligibilityScore && (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            gap: '24px', 
+            flexWrap: 'wrap',
+            marginTop: '16px'
+          }}>
+            <div style={{ 
+              padding: '12px 16px', 
+              backgroundColor: '#2a2a2a', 
+              borderRadius: '8px',
+              border: '1px solid #404040'
+            }}>
+              <div style={{ fontSize: '12px', color: '#b3b3b3' }}>Credit Score</div>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#10b981' }}>
+                {userCreditScore}
+              </div>
+            </div>
+            <div style={{ 
+              padding: '12px 16px', 
+              backgroundColor: '#2a2a2a', 
+              borderRadius: '8px',
+              border: '1px solid #404040'
+            }}>
+              <div style={{ fontSize: '12px', color: '#b3b3b3' }}>Eligibility Score</div>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#3b82f6' }}>
+                {eligibilityScore}/100
+              </div>
+            </div>
+            <div style={{ 
+              padding: '12px 16px', 
+              backgroundColor: '#2a2a2a', 
+              borderRadius: '8px',
+              border: '1px solid #404040'
+            }}>
+              <div style={{ fontSize: '12px', color: '#b3b3b3' }}>Total Balance</div>
+              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#ffffff' }}>
+                R{totalBalance?.toLocaleString()}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Filters and Sort */}
@@ -283,23 +380,44 @@ const Offers = () => {
           ))}
         </div>
 
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          style={{
-            padding: '8px 12px',
-            border: '1px solid #404040',
-            borderRadius: '8px',
-            fontSize: '14px',
-            backgroundColor: '#2a2a2a',
-            color: '#ffffff',
-            cursor: 'pointer'
-          }}
-        >
-          {sortOptions.map(option => (
-            <option key={option.id} value={option.id}>{option.label}</option>
-          ))}
-        </select>
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            style={{
+              padding: '8px 12px',
+              border: '1px solid #404040',
+              borderRadius: '8px',
+              fontSize: '14px',
+              backgroundColor: '#2a2a2a',
+              color: '#ffffff',
+              cursor: 'pointer'
+            }}
+          >
+            {sortOptions.map(option => (
+              <option key={option.id} value={option.id}>{option.label}</option>
+            ))}
+          </select>
+          
+          <button
+            onClick={refreshData}
+            disabled={loading}
+            style={{
+              padding: '8px 12px',
+              backgroundColor: '#8A1F2C',
+              color: 'white',
+              border: 'none',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px'
+            }}
+          >
+            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* Offers Grid */}
@@ -310,6 +428,8 @@ const Offers = () => {
       }}>
         {offers.map((offer) => {
           const daysLeft = getDaysUntilExpiry(offer.expiryDate);
+          const isApplied = isOfferApplied(offer.id);
+          
           return (
             <div
               key={offer.id}
@@ -388,6 +508,24 @@ const Offers = () => {
                   </button>
                 </div>
               </div>
+
+              {/* Applied Status */}
+              {isApplied && (
+                <div style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '6px', 
+                  padding: '8px 12px',
+                  backgroundColor: '#10b981',
+                  borderRadius: '8px',
+                  marginBottom: '16px'
+                }}>
+                  <CheckCircle size={16} color="#ffffff" />
+                  <span style={{ fontSize: '12px', color: '#ffffff', fontWeight: '500' }}>
+                    Application Submitted
+                  </span>
+                </div>
+              )}
 
               {/* Description */}
               <p style={{ color: '#d1d5db', margin: '0 0 16px 0', lineHeight: '1.5' }}>
@@ -482,27 +620,47 @@ const Offers = () => {
               {/* Action Buttons */}
               <div style={{ display: 'flex', gap: '12px' }}>
                 <button
+                  onClick={() => handleApplyOffer(offer.id)}
+                  disabled={isApplied}
                   style={{
                     flex: 1,
                     padding: '12px 16px',
-                    backgroundColor: '#dc2626',
+                    backgroundColor: isApplied ? '#6b7280' : '#dc2626',
                     color: 'white',
                     border: 'none',
                     borderRadius: '8px',
                     fontSize: '14px',
                     fontWeight: '600',
-                    cursor: 'pointer',
+                    cursor: isApplied ? 'not-allowed' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     gap: '6px',
-                    transition: 'background-color 0.2s'
+                    transition: 'background-color 0.2s',
+                    opacity: isApplied ? 0.6 : 1
                   }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = '#b91c1c'}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = '#dc2626'}
+                  onMouseEnter={(e) => {
+                    if (!isApplied) {
+                      e.target.style.backgroundColor = '#b91c1c';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (!isApplied) {
+                      e.target.style.backgroundColor = '#dc2626';
+                    }
+                  }}
                 >
-                  Apply Now
-                  <ArrowRight size={16} />
+                  {isApplied ? (
+                    <>
+                      <CheckCircle size={16} />
+                      Applied
+                    </>
+                  ) : (
+                    <>
+                      Apply Now
+                      <ArrowRight size={16} />
+                    </>
+                  )}
                 </button>
                 <button
                   style={{
@@ -539,7 +697,7 @@ const Offers = () => {
       </div>
 
       {/* No offers message */}
-      {offers.length === 0 && (
+      {offers.length === 0 && !loading && (
         <div style={{ 
           textAlign: 'center', 
           padding: '48px', 
@@ -561,11 +719,16 @@ const Offers = () => {
         border: '1px solid #404040'
       }}>
         <p style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#d1d5db' }}>
-        💡 <strong style={{ color: '#dc2626' }}>Pro Tip:</strong> Your credit score of {userCreditScore} qualifies you for premium offers with the best rates.
+          💡 <strong style={{ color: '#dc2626' }}>Pro Tip:</strong> Your {userCreditScore ? `credit score of ${userCreditScore}` : 'excellent financial profile'} qualifies you for premium offers with the best rates.
         </p>
         <p style={{ margin: 0, fontSize: '12px', color: '#b3b3b3' }}>
-          Offers are updated daily. Check back regularly for new opportunities.
+          Offers are personalized based on your financial profile and updated in real-time.
         </p>
+        {eligibilityScore && (
+          <p style={{ margin: '8px 0 0 0', fontSize: '12px', color: '#b3b3b3' }}>
+            Your eligibility score: <strong style={{ color: '#3b82f6' }}>{eligibilityScore}/100</strong>
+          </p>
+        )}
       </div>
     </div>
   );

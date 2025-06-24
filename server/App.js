@@ -689,10 +689,480 @@ app.get('/', (req, res) => {
         bills: 'GET /api/analytics/upcoming-bills',
         insights: 'GET /api/analytics/ai-insights',
         overview: 'GET /api/analytics/overview'
+      },
+       offers: {
+        list: 'GET /api/offers',
+        saved: 'GET /api/offers/saved',
+        save: 'POST /api/offers/:id/save',
+        apply: 'POST /api/offers/:id/apply',
+        applications: 'GET /api/offers/applications'
       }
     },
   });
 });
+
+
+// ==========================
+// OFFERS ENDPOINTS
+// ==========================
+
+// Helper function to calculate user eligibility score
+function calculateEligibilityScore(user, accounts, transactions, creditScore) {
+  let score = 0;
+  
+  // Credit score weight (40%)
+  if (creditScore >= 750) score += 40;
+  else if (creditScore >= 700) score += 30;
+  else if (creditScore >= 650) score += 20;
+  else if (creditScore >= 600) score += 10;
+  
+  // Account balance weight (25%)
+  const totalBalance = accounts.reduce((sum, acc) => sum + parseFloat(acc.balance), 0);
+  if (totalBalance >= 100000) score += 25;
+  else if (totalBalance >= 50000) score += 20;
+  else if (totalBalance >= 20000) score += 15;
+  else if (totalBalance >= 10000) score += 10;
+  
+  // Transaction history weight (20%)
+  const monthlyTransactions = transactions.length / 3; // Assuming 3 months of data
+  if (monthlyTransactions >= 20) score += 20;
+  else if (monthlyTransactions >= 10) score += 15;
+  else if (monthlyTransactions >= 5) score += 10;
+  
+  // Income stability weight (15%)
+  const creditTransactions = transactions.filter(tx => tx.transaction_type === 'CREDIT');
+  const avgMonthlyIncome = creditTransactions.reduce((sum, tx) => sum + Math.abs(parseFloat(tx.amount)), 0) / 3;
+  if (avgMonthlyIncome >= 50000) score += 15;
+  else if (avgMonthlyIncome >= 30000) score += 12;
+  else if (avgMonthlyIncome >= 15000) score += 8;
+  else if (avgMonthlyIncome >= 8000) score += 5;
+  
+  return Math.min(score, 100);
+}
+
+// Generate personalized offers based on user profile
+function generatePersonalizedOffers(userProfile, eligibilityScore, creditScore) {
+  const baseOffers = [
+    {
+      id: 1,
+      title: 'Premium Credit Card',
+      description: 'Premium rewards card with airport lounge access and comprehensive travel insurance.',
+      category: 'credit-cards',
+      provider: 'ABSA Bank',
+      badge: 'Pre-approved',
+      badgeColor: 'green',
+      baseInterestRate: 19.75,
+      baseAnnualFee: 0,
+      baseCreditLimit: 50000,
+      requirements: {
+        minIncome: 30000,
+        minCreditScore: 700
+      },
+      benefits: ['Airport lounge access', 'Travel insurance', 'Concierge service'],
+      expiryDays: 30
+    },
+    {
+      id: 2,
+      title: 'Home Loan',
+      description: 'Competitive home loan rates with flexible repayment options.',
+      category: 'home-loans',
+      provider: 'ABSA Bank',
+      badge: 'Best Rate',
+      badgeColor: 'blue',
+      baseInterestRate: 11.5,
+      baseAnnualFee: 0,
+      baseLoanAmount: 2000000,
+      requirements: {
+        minIncome: 25000,
+        minCreditScore: 650
+      },
+      benefits: ['No transfer fees', 'Flexible repayment', 'Free bond origination'],
+      expiryDays: 90
+    },
+    {
+      id: 3,
+      title: 'Vehicle Finance',
+      description: 'Finance your dream car with competitive rates and flexible terms.',
+      category: 'vehicle-finance',
+      provider: 'ABSA Bank',
+      badge: 'Special Rate',
+      badgeColor: 'purple',
+      baseInterestRate: 12.25,
+      baseAnnualFee: 99,
+      baseLoanAmount: 500000,
+      requirements: {
+        minIncome: 15000,
+        minCreditScore: 600
+      },
+      benefits: ['Up to 84 months terms', 'Balloon payment options', 'Insurance included'],
+      expiryDays: 45
+    },
+    {
+      id: 4,
+      title: 'Investment Account',
+      description: 'High-yield investment account with no minimum balance requirements.',
+      category: 'investments',
+      provider: 'ABSA Bank',
+      badge: 'New',
+      badgeColor: 'orange',
+      baseInterestRate: 8.5,
+      baseAnnualFee: 0,
+      baseCreditLimit: 0,
+      requirements: {
+        minIncome: 5000,
+        minCreditScore: 550
+      },
+      benefits: ['No minimum balance', 'Daily compounding', 'Online access'],
+      expiryDays: 60
+    },
+    {
+      id: 5,
+      title: 'Personal Loan',
+      description: 'Quick personal loan approval with funds available within 48 hours.',
+      category: 'personal-loans',
+      provider: 'ABSA Bank',
+      badge: 'Fast Approval',
+      badgeColor: 'red',
+      baseInterestRate: 15.5,
+      baseAnnualFee: 0,
+      baseLoanAmount: 200000,
+      requirements: {
+        minIncome: 8000,
+        minCreditScore: 580
+      },
+      benefits: ['48-hour approval', 'No collateral needed', 'Flexible terms'],
+      expiryDays: 21
+    },
+    {
+      id: 6,
+      title: 'Life Insurance',
+      description: 'Comprehensive life cover with Vitality rewards and health benefits.',
+      category: 'insurance',
+      provider: 'ABSA Bank',
+      badge: 'Exclusive',
+      badgeColor: 'teal',
+      baseInterestRate: 0, // Premium amount
+      baseAnnualFee: 180,
+      baseCreditLimit: 0,
+      requirements: {
+        minIncome: 10000,
+        minCreditScore: 600
+      },
+      benefits: ['Vitality rewards', 'Health screening', 'Premium discounts'],
+      expiryDays: 120
+    },
+    {
+      id: 7,
+      title: 'Cashback Credit Card',
+      description: 'Earn up to 5% cashback on all purchases with no spending caps.',
+      category: 'credit-cards',
+      provider: 'ABSA Bank',
+      badge: 'Popular',
+      badgeColor: 'yellow',
+      baseInterestRate: 18.25,
+      baseAnnualFee: 99,
+      baseCreditLimit: 30000,
+      requirements: {
+        minIncome: 12000,
+        minCreditScore: 650
+      },
+      benefits: ['Up to 5% cashback', 'No spending caps', 'Monthly rewards'],
+      expiryDays: 35
+    },
+    {
+      id: 8,
+      title: 'Fixed Deposit',
+      description: 'Secure your savings with guaranteed returns and flexible terms.',
+      category: 'investments',
+      provider: 'ABSA Bank',
+      badge: 'Guaranteed',
+      badgeColor: 'green',
+      baseInterestRate: 9.75,
+      baseAnnualFee: 0,
+      baseCreditLimit: 0,
+      requirements: {
+        minIncome: 5000,
+        minCreditScore: 500
+      },
+      benefits: ['Guaranteed returns', 'Flexible terms', 'SARB protected'],
+      expiryDays: 180
+    }
+  ];
+
+  return baseOffers
+    .filter(offer => {
+      // Filter based on eligibility
+      return creditScore >= offer.requirements.minCreditScore;
+    })
+    .map(offer => {
+      // Calculate personalized rates and terms
+      const rateDiscount = Math.max(0, (eligibilityScore - 50) * 0.1); // Up to 5% discount
+      const interestRate = Math.max(0.5, offer.baseInterestRate - rateDiscount);
+      
+      // Calculate approval chance
+      let approvalChance = 50;
+      if (creditScore >= offer.requirements.minCreditScore + 100) approvalChance += 40;
+      else if (creditScore >= offer.requirements.minCreditScore + 50) approvalChance += 30;
+      else if (creditScore >= offer.requirements.minCreditScore + 25) approvalChance += 20;
+      else if (creditScore >= offer.requirements.minCreditScore) approvalChance += 10;
+      
+      if (eligibilityScore >= 80) approvalChance += 10;
+      else if (eligibilityScore >= 60) approvalChance += 5;
+      
+      approvalChance = Math.min(98, approvalChance);
+
+      // Calculate expiry date
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + offer.expiryDays);
+
+      // Format rate display
+      let rateDisplay;
+      if (offer.category === 'insurance') {
+        rateDisplay = `From R${Math.round(offer.baseAnnualFee * (100 - rateDiscount * 2) / 100)}/month`;
+      } else if (offer.category === 'investments') {
+        rateDisplay = `${interestRate.toFixed(2)}% p.a.`;
+      } else {
+        rateDisplay = `${interestRate.toFixed(2)}%`;
+      }
+
+      return {
+        ...offer,
+        interestRate: rateDisplay,
+        annualFee: offer.baseAnnualFee === 0 ? 'R0' : 
+                   offer.id === 1 && eligibilityScore >= 70 ? 'R0 first year' : 
+                   `R${offer.baseAnnualFee}/year`,
+        requirements: `Min income: R${offer.requirements.minIncome.toLocaleString()}/month`,
+        expiryDate: expiryDate.toISOString().split('T')[0],
+        approvalChance,
+        eligibilityScore
+      };
+    });
+}
+
+// Get personalized offers for user
+app.get('/api/offers', authenticateToken, async (req, res) => {
+  const user_id = req.user.user_id;
+  const { category, sortBy } = req.query;
+
+  try {
+    // Get user's financial data
+    const { data: accounts, error: accountError } = await supabaseClient
+      .from('accounts')
+      .select('*')
+      .eq('user_id', user_id)
+      .eq('status', 'ACTIVE');
+
+    if (accountError) throw accountError;
+
+    // Get user's credit score
+    const { data: creditScoreData, error: creditError } = await supabaseClient
+      .from('credit_scores')
+      .select('*')
+      .eq('user_id', user_id)
+      .order('score_date', { ascending: false })
+      .limit(1);
+
+    if (creditError) throw creditError;
+
+    const creditScore = creditScoreData && creditScoreData.length > 0 ? creditScoreData[0].score : 650;
+
+    // Get recent transactions
+    const accountIds = accounts.map(acc => acc.account_id);
+    let transactions = [];
+    
+    if (accountIds.length > 0) {
+      const threeMonthsAgo = new Date();
+      threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+      const { data: txData, error: txError } = await supabaseClient
+        .from('transactions')
+        .select('*')
+        .in('account_id', accountIds)
+        .gte('transaction_date', threeMonthsAgo.toISOString());
+
+      if (txError) throw txError;
+      transactions = txData || [];
+    }
+
+    // Calculate eligibility score
+    const eligibilityScore = calculateEligibilityScore(req.user, accounts, transactions, creditScore);
+
+    // Generate personalized offers
+    let offers = generatePersonalizedOffers(req.user, eligibilityScore, creditScore);
+
+    // Apply category filter
+    if (category && category !== 'all') {
+      offers = offers.filter(offer => offer.category === category);
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'approval':
+        offers.sort((a, b) => b.approvalChance - a.approvalChance);
+        break;
+      case 'rate':
+        offers.sort((a, b) => {
+          const aRate = parseFloat(a.interestRate.replace('%', '').replace(' p.a.', ''));
+          const bRate = parseFloat(b.interestRate.replace('%', '').replace(' p.a.', ''));
+          return aRate - bRate;
+        });
+        break;
+      case 'expiry':
+        offers.sort((a, b) => new Date(a.expiryDate) - new Date(b.expiryDate));
+        break;
+      default:
+        // Keep relevance order (highest eligibility score first)
+        offers.sort((a, b) => b.approvalChance - a.approvalChance);
+        break;
+    }
+
+    res.json({
+      offers,
+      userCreditScore: creditScore,
+      eligibilityScore,
+      totalBalance: accounts.reduce((sum, acc) => sum + parseFloat(acc.balance), 0)
+    });
+
+  } catch (error) {
+    console.error('Offers fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch personalized offers' });
+  }
+});
+
+// Get saved offers for user
+app.get('/api/offers/saved', authenticateToken, async (req, res) => {
+  const user_id = req.user.user_id;
+
+  try {
+    // Check if saved_offers table exists, if not return empty array
+    const { data: savedOffers, error } = await supabaseClient
+      .from('saved_offers')
+      .select('offer_id')
+      .eq('user_id', user_id);
+
+    if (error && error.code === 'PGRST116') {
+      // Table doesn't exist, return empty array
+      return res.json({ savedOffers: [] });
+    }
+
+    if (error) throw error;
+
+    res.json({ 
+      savedOffers: savedOffers ? savedOffers.map(item => item.offer_id) : []
+    });
+
+  } catch (error) {
+    console.error('Saved offers fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch saved offers' });
+  }
+});
+
+// Save/unsave an offer
+app.post('/api/offers/:offerId/save', authenticateToken, async (req, res) => {
+  const user_id = req.user.user_id;
+  const { offerId } = req.params;
+
+  try {
+    // Check if offer is already saved
+    const { data: existing, error: checkError } = await supabaseClient
+      .from('saved_offers')
+      .select('*')
+      .eq('user_id', user_id)
+      .eq('offer_id', parseInt(offerId));
+
+    if (checkError && checkError.code !== 'PGRST116') throw checkError;
+
+    if (existing && existing.length > 0) {
+      // Remove from saved
+      const { error: deleteError } = await supabaseClient
+        .from('saved_offers')
+        .delete()
+        .eq('user_id', user_id)
+        .eq('offer_id', parseInt(offerId));
+
+      if (deleteError) throw deleteError;
+      
+      res.json({ saved: false, message: 'Offer removed from saved' });
+    } else {
+      // Add to saved
+      const { error: insertError } = await supabaseClient
+        .from('saved_offers')
+        .insert({
+          user_id,
+          offer_id: parseInt(offerId),
+          saved_at: new Date().toISOString()
+        });
+
+      if (insertError) throw insertError;
+      
+      res.json({ saved: true, message: 'Offer saved successfully' });
+    }
+
+  } catch (error) {
+    console.error('Save offer error:', error);
+    res.status(500).json({ error: 'Failed to save/unsave offer' });
+  }
+});
+
+// Apply for an offer
+app.post('/api/offers/:offerId/apply', authenticateToken, async (req, res) => {
+  const user_id = req.user.user_id;
+  const { offerId } = req.params;
+
+  try {
+    // Log the application
+    const { error: insertError } = await supabaseClient
+      .from('offer_applications')
+      .insert({
+        user_id,
+        offer_id: parseInt(offerId),
+        application_date: new Date().toISOString(),
+        status: 'PENDING'
+      });
+
+    if (insertError && insertError.code !== 'PGRST116') throw insertError;
+
+    // In a real scenario, you would integrate with application processing systems
+    res.json({ 
+      success: true, 
+      message: 'Application submitted successfully',
+      applicationId: `APP-${Date.now()}`,
+      status: 'PENDING'
+    });
+
+  } catch (error) {
+    console.error('Apply for offer error:', error);
+    res.status(500).json({ error: 'Failed to submit application' });
+  }
+});
+
+// Get user's offer applications
+app.get('/api/offers/applications', authenticateToken, async (req, res) => {
+  const user_id = req.user.user_id;
+
+  try {
+    const { data: applications, error } = await supabaseClient
+      .from('offer_applications')
+      .select('*')
+      .eq('user_id', user_id)
+      .order('application_date', { ascending: false });
+
+    if (error && error.code === 'PGRST116') {
+      return res.json({ applications: [] });
+    }
+
+    if (error) throw error;
+
+    res.json({ applications: applications || [] });
+
+  } catch (error) {
+    console.error('Applications fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch applications' });
+  }
+});
+// ==========================
+// ANALYTICS ENDPOINTS
+// ==========================
 
 // Helper function to get date range based on timeRange parameter
 function getDateRange(timeRange) {
