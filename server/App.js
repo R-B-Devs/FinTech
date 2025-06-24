@@ -185,10 +185,6 @@ app.post('/reset-password/:token', async (req, res) => {
         res.json( { success: true, message: 'Password reset successful!' } );
       } else {
         res.status(406).json( { success: false, message: 'Unable to reset password. Please try again.' } );
-        console.error(`// ================
-//              Password Reset error
-//              ${error.message}
-// =======================`);
       }
   }
 
