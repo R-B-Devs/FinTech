@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import socket from '../utilis/WebRTCService';
-import InAppCall from "./InAppCall"; // Adjust path if needed
+import InAppCall from "./InAppCall";
 
 const CallContainer = () => {
   const [callFeature, setCallFeature] = useState({
@@ -10,149 +10,140 @@ const CallContainer = () => {
     activeDepartment: null,
   });
 
+  const [activeCall, setActiveCall] = useState(null);
+
   const peerConnection = useRef(null);
   const localStream = useRef(null);
+  const remoteStream = useRef(new MediaStream());
 
-  // Request microphone permission and get audio stream
+  useEffect(() => {
+    if (callFeature.currentPage === 'main-menu' && !callFeature.microphoneAllowed) {
+      requestMicrophonePermission();
+    }
+  }, [callFeature.currentPage]);
+
   const requestMicrophonePermission = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-        video: false,
-      });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
       localStream.current = stream;
-      setCallFeature((prev) => ({
+      setCallFeature(prev => ({
         ...prev,
         microphoneAllowed: true,
         currentPage: "main-menu",
       }));
-    } catch (error) {
-      alert("Microphone permission denied");
+    } catch (err) {
+      alert("Microphone permission denied.");
     }
   };
 
-  // Start a call by joining a room and creating offer
-  const startCall = (department) => {
-    setCallFeature((prev) => ({
-      ...prev,
-      activeDepartment: department,
-      currentPage: "active-call",
-    }));
+  const startCall = async (department) => {
+    if (!localStream.current) {
+      alert("Microphone access required.");
+      return;
+    }
 
     peerConnection.current = new RTCPeerConnection({
       iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
     });
 
-    // Add local audio tracks to peer connection
-    localStream.current.getTracks().forEach((track) => {
+    // Add local tracks to peer connection
+    localStream.current.getTracks().forEach(track => {
       peerConnection.current.addTrack(track, localStream.current);
     });
 
-    peerConnection.current.onicecandidate = (event) => {
+    // Send any ICE candidates to server
+    peerConnection.current.onicecandidate = event => {
       if (event.candidate) {
-        socket.emit("ice-candidate", {
+        socket.emit('ice-candidate', {
           candidate: event.candidate,
           roomId: department,
-          targetUser: null, // Implement multi-user later if needed
+          targetUser: null,
+          sender: socket.id,
         });
       }
     };
 
-    socket.emit("join-room", department);
-
-    peerConnection.current
-      .createOffer()
-      .then((offer) => {
-        return peerConnection.current.setLocalDescription(offer);
-      })
-      .then(() => {
-        socket.emit("offer", {
-          offer: peerConnection.current.localDescription,
-          roomId: department,
-          targetUser: null,
-        });
+    // Handle remote tracks
+    peerConnection.current.ontrack = event => {
+      event.streams[0].getTracks().forEach(track => {
+        remoteStream.current.addTrack(track);
       });
-  };
+    };
 
-  // End the call and clean up
-  const endCall = () => {
-    peerConnection.current?.close();
-    peerConnection.current = null;
-    setCallFeature((prev) => ({
+    socket.emit('join-room', department);
+
+    const offer = await peerConnection.current.createOffer();
+    await peerConnection.current.setLocalDescription(offer);
+
+    socket.emit('offer', {
+      offer: peerConnection.current.localDescription,
+      roomId: department,
+      targetUser: null,
+      sender: socket.id,
+    });
+
+    setActiveCall({
+      department,
+      status: 'calling',
+      isVideo: false,
+      remoteStream: remoteStream.current,
+    });
+
+    setCallFeature(prev => ({
       ...prev,
-      activeDepartment: null,
-      currentPage: "main-menu",
+      activeDepartment: department,
+      currentPage: 'active-call',
     }));
   };
 
-  // Listen to socket events for signaling
+  const endCall = () => {
+    peerConnection.current?.close();
+    peerConnection.current = null;
+
+    localStream.current?.getTracks().forEach(track => track.stop());
+    localStream.current = null;
+
+    remoteStream.current.getTracks().forEach(track => remoteStream.current.removeTrack(track));
+
+    setActiveCall(null);
+
+    setCallFeature(prev => ({
+      ...prev,
+      activeDepartment: null,
+      currentPage: 'main-menu',
+    }));
+  };
+
+  // Handle incoming answer
   useEffect(() => {
-    socket.on("offer", async ({ offer, sender, roomId }) => {
-      if (!peerConnection.current) {
-        peerConnection.current = new RTCPeerConnection({
-          iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-        });
-
-        localStream.current.getTracks().forEach((track) => {
-          peerConnection.current.addTrack(track, localStream.current);
-        });
-
-        peerConnection.current.onicecandidate = (event) => {
-          if (event.candidate) {
-            socket.emit("ice-candidate", {
-              candidate: event.candidate,
-              roomId,
-              targetUser: sender,
-            });
-          }
-        };
+    socket.on('answer', async ({ answer }) => {
+      if (peerConnection.current) {
+        await peerConnection.current.setRemoteDescription(new RTCSessionDescription(answer));
+        setActiveCall(prev => ({ ...prev, status: 'active' }));
       }
-
-      await peerConnection.current.setRemoteDescription(
-        new RTCSessionDescription(offer)
-      );
-      const answer = await peerConnection.current.createAnswer();
-      await peerConnection.current.setLocalDescription(answer);
-
-      socket.emit("answer", { answer, roomId, targetUser: sender });
     });
 
-    socket.on("answer", async ({ answer }) => {
-      await peerConnection.current?.setRemoteDescription(
-        new RTCSessionDescription(answer)
-      );
-    });
-
-    socket.on("ice-candidate", async ({ candidate }) => {
+    socket.on('ice-candidate', async ({ candidate }) => {
       try {
-        await peerConnection.current?.addIceCandidate(
-          new RTCIceCandidate(candidate)
-        );
+        await peerConnection.current?.addIceCandidate(new RTCIceCandidate(candidate));
       } catch (e) {
-        console.error("Error adding received ice candidate", e);
+        console.error('Error adding ICE candidate:', e);
       }
     });
 
     return () => {
-      socket.off("offer");
-      socket.off("answer");
-      socket.off("ice-candidate");
+      socket.off('answer');
+      socket.off('ice-candidate');
     };
   }, []);
-
-  // Toggle call panel open/close (optional)
-  const toggleCallFeature = () => {
-    setCallFeature((prev) => ({ ...prev, isOpen: !prev.isOpen }));
-  };
 
   return (
     <InAppCall
       callFeature={callFeature}
-      toggleCallFeature={toggleCallFeature}
       setCallFeature={setCallFeature}
-      requestMicrophonePermission={requestMicrophonePermission}
       startCall={startCall}
       endCall={endCall}
+      activeCall={activeCall}
     />
   );
 };
