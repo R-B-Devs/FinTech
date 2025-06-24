@@ -177,7 +177,7 @@ app.post('/reset-password/:token', async (req, res) => {
     return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
   } else {
       const salt = await bcrypt.genSalt(10);
-      const passwordHash = await bcrypt.hash(password, salt);
+      const passwordHash = await bcrypt.hash(req.body.password, salt);
       const { error } = await supabaseClient.from('users').update( { password_hash: passwordHash, salt: salt })
       .eq('id_number', req.body.id_number);
 
