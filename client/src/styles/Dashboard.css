@@ -274,6 +274,7 @@
 /* ==================== */
  
 /* Modern Banking Call Panel */
+/* Modern Banking Call Panel */
 .call-panel {
   position: fixed;
   bottom: 20px;
@@ -281,16 +282,16 @@
   width: 380px;
   max-height: 80vh;
   background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   transform: translateY(120%);
   opacity: 0;
-  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   z-index: 1000;
   display: flex;
   flex-direction: column;
-  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
@@ -299,15 +300,17 @@
   opacity: 1;
 }
 
-/* Header with Banking Blue Gradient */
+/* Premium Banking Header */
 .call-panel-header {
   padding: 18px 24px;
-  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+  background: linear-gradient(135deg, #1a56db 0%, #1e3a8a 100%);
   color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  position: relative;
+  z-index: 2;
 }
 
 .call-panel-header h3 {
@@ -315,6 +318,19 @@
   font-size: 18px;
   font-weight: 600;
   letter-spacing: 0.2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.call-panel-header h3::before {
+  content: "";
+  display: block;
+  width: 8px;
+  height: 8px;
+  background: #ffffff;
+  border-radius: 50%;
+  opacity: 0.8;
 }
 
 .call-close-btn {
@@ -322,26 +338,37 @@
   border: none;
   color: white;
   cursor: pointer;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .call-close-btn:hover {
   background: rgba(255, 255, 255, 0.25);
-  transform: rotate(90deg);
+  transform: rotate(90deg) scale(1.1);
 }
 
-/* Content Area with Scroll */
+/* Content Area with Custom Scroll */
 .call-panel-content {
   flex: 1;
   overflow-y: auto;
   padding: 24px;
   background: #f8fafc;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.call-panel-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.call-panel-content::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 3px;
 }
 
 /* Welcome Page Styles */
@@ -350,18 +377,28 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 20px;
+  gap: 24px;
+}
+
+.welcome-message-container {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 16px;
+  width: 100%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .call-icon {
-  width: 72px;
-  height: 72px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  background: rgba(37, 99, 235, 0.1);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(30, 64, 175, 0.1) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 12px;
+  margin: 0 auto 16px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
 }
 
 .icon-large {
@@ -371,96 +408,104 @@
 }
 
 .call-description {
-  color: #64748b;
+  color: #475569;
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 1.6;
   max-width: 300px;
+  margin: 0 auto;
 }
 
-/* Button Styles */
+/* Enhanced Button Styles */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 14px 20px;
-  border-radius: 10px;
+  padding: 14px 24px;
+  border-radius: 12px;
   font-weight: 500;
   font-size: 15px;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   border: none;
   width: 100%;
   margin: 8px 0;
-  gap: 8px;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
 }
 
 .btn.primary {
   background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   color: white;
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
 }
 
 .btn.primary:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+}
+
+.btn.primary:active {
+  transform: translateY(0);
 }
 
 .btn.secondary {
   background: white;
   color: #2563eb;
   border: 1px solid #e2e8f0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .btn.secondary:hover {
   background: #f8fafc;
   border-color: #cbd5e1;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-/* Department Buttons */
+/* Department Buttons with Hover Effects */
 .department-btn {
   display: flex;
   align-items: center;
-  padding: 16px;
+  padding: 18px;
   width: 100%;
   background-color: white;
   border: 1px solid #e2e8f0;
-  border-radius: 12px;
+  border-radius: 14px;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   text-align: left;
-  margin: 8px 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  margin: 10px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
 }
 
 .department-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
   border-color: #cbd5e1;
 }
 
 .department-btn.emergency {
   border-left: 4px solid #ef4444;
   background-color: #fef2f2;
+  animation: pulse 2s infinite;
 }
 
-.department-btn.emergency:hover {
-  background-color: #fee2e2;
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.2); }
+  70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 .btn-icon-container {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   background: rgba(37, 99, 235, 0.1);
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 16px;
-}
-
-.btn-icon-container.emergency {
-  background: rgba(239, 68, 68, 0.1);
+  flex-shrink: 0;
 }
 
 .department-icon {
@@ -477,70 +522,21 @@
   font-weight: 600;
   color: #1e293b;
   display: block;
-  margin-bottom: 2px;
-}
-
-.department-desc {
-  font-size: 13px;
-  color: #64748b;
-  display: block;
+  margin-bottom: 4px;
+  font-size: 15px;
 }
 
 .arrow {
   color: #94a3b8;
   margin-left: 8px;
+  transition: transform 0.3s ease;
 }
 
-/* Video Preview */
-.video-preview {
-  width: 100%;
-  height: 180px;
-  background: #e2e8f0;
-  border-radius: 12px;
-  overflow: hidden;
-  margin-bottom: 20px;
-  position: relative;
-  border: 1px solid #e2e8f0;
+.department-btn:hover .arrow {
+  transform: translateX(3px);
 }
 
-.preview-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.preview-label {
-  position: absolute;
-  bottom: 8px;
-  left: 8px;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-}
-
-/* Call Status */
-.call-status {
-  margin-top: 20px;
-  padding: 12px;
-  background: white;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #64748b;
-  border: 1px solid #e2e8f0;
-}
-
-.wait-time {
-  font-weight: 600;
-  color: #2563eb;
-}
-
-/* Active Call View */
+/* Active Call View Enhancements */
 .active-call-view {
   display: flex;
   flex-direction: column;
@@ -551,9 +547,9 @@
 .video-call-container {
   position: relative;
   width: 100%;
-  height: 220px;
-  background: #1e293b;
-  border-radius: 12px;
+  height: 240px;
+  background: #0f172a;
+  border-radius: 16px;
   overflow: hidden;
 }
 
@@ -565,211 +561,124 @@
 
 .local-video {
   position: absolute;
-  bottom: 12px;
-  right: 12px;
-  width: 90px;
-  height: 70px;
-  border-radius: 6px;
+  bottom: 16px;
+  right: 16px;
+  width: 100px;
+  height: 75px;
+  border-radius: 8px;
   border: 2px solid white;
   object-fit: cover;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
 }
 
-.voice-call-ui {
-  text-align: center;
-  padding: 20px 0;
+.local-video:hover {
+  transform: scale(1.05);
 }
 
-.caller-avatar {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background: #e0e7ff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0 auto 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.avatar-icon {
-  width: 48px;
-  height: 48px;
-  color: #2563eb;
-}
-
-.caller-info {
-  font-size: 16px;
-  color: #334155;
-  font-weight: 500;
-}
-
-.call-status-message {
-  text-align: center;
-  padding: 12px;
-  background: #e0e7ff;
-  border-radius: 12px;
-  color: #2563eb;
-  font-weight: 500;
-  margin-bottom: 16px;
-}
-
-.call-timer {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 18px;
-  font-weight: 600;
-  color: #2563eb;
-}
-
-.timer-icon {
-  width: 20px;
-  height: 20px;
-}
-
-/* Call Controls */
+/* Call Controls with Glass Morphism */
 .active-call-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-top: 16px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .call-buttons {
   display: flex;
   justify-content: center;
   gap: 16px;
+  margin-top: 16px;
 }
 
 .control-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 16px;
+  padding: 14px;
   border-radius: 12px;
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid rgba(0, 0, 0, 0.05);
   cursor: pointer;
-  transition: all 0.25s ease;
-  color: #64748b;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #475569;
   font-size: 13px;
-  min-width: 70px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  min-width: 80px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
 .control-btn:hover {
   background: #f8fafc;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.control-btn.active {
-  background: #e0e7ff;
-  color: #2563eb;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
 }
 
 .control-btn .icon {
   width: 24px;
   height: 24px;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .control-btn.end-call {
-  background: #ef4444;
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
   color: white;
-  border-color: #ef4444;
+  border: none;
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.3);
 }
 
 .control-btn.end-call:hover {
-  background: #dc2626;
-  border-color: #dc2626;
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
 }
 
-/* Connecting Animation */
+/* Modern Connecting Animation */
 .connecting-animation {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  margin-top: 12px;
+  gap: 10px;
+  margin-top: 16px;
+  height: 20px;
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background: #2563eb;
   border-radius: 50%;
   animation: bounce 1.4s infinite ease-in-out;
-}
-
-.dot:nth-child(1) {
-  animation-delay: -0.32s;
-}
-
-.dot:nth-child(2) {
-  animation-delay: -0.16s;
+  box-shadow: 0 2px 4px rgba(37, 99, 235, 0.3);
 }
 
 @keyframes bounce {
-  0%, 80%, 100% { transform: translateY(0); }
-  40% { transform: translateY(-8px); }
-}
-
-/* Permission Page */
-.permission-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 20px;
-}
-
-.permission-text {
-  color: #64748b;
-  font-size: 15px;
-  line-height: 1.5;
-  max-width: 300px;
-}
-
-.allow-btn {
-  margin-top: 12px;
-}
-
-.back-btn {
-  margin-top: 8px;
-}
-
-.security-note {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: #64748b;
-  margin-top: 20px;
-}
-
-.security-icon {
-  color: #94a3b8;
+  0%, 80%, 100% { 
+    transform: translateY(0);
+    background: #2563eb;
+  }
+  40% { 
+    transform: translateY(-10px);
+    background: #1e40af;
+  }
 }
 
 /* Responsive Adjustments */
 @media (max-width: 480px) {
   .call-panel {
-    width: 100%;
-    bottom: 0;
-    right: 0;
-    border-radius: 16px 16px 0 0;
-    max-height: 90vh;
+    width: calc(100% - 40px);
+    bottom: 20px;
+    right: 20px;
+    border-radius: 20px;
+    max-height: 85vh;
   }
   
   .video-call-container {
-    height: 180px;
+    height: 200px;
   }
   
   .local-video {
-    width: 70px;
-    height: 50px;
+    width: 80px;
+    height: 60px;
   }
 }
 /* Metrics Grid */

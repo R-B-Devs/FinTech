@@ -13,64 +13,28 @@ const CustomerCallUI = ({
   requestMicrophonePermission,
   startCall,
   endCall,
-  activeCall
+  activeCall,
+  callStatus,
+  remoteVideoRef,
+  localVideoRef
 }) => {
   const [callDuration, setCallDuration] = useState(0);
-  const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOn, setIsVideoOn] = useState(false);
   const navigate = useNavigate();
-  const localVideoRef = useRef(null);
-  const remoteVideoRef = useRef(null);
 
-  // Setup video streams
-  useEffect(() => {
-    if (localVideoRef.current && callFeature.mediaStream) {
-      localVideoRef.current.srcObject = callFeature.mediaStream;
-    }
-  }, [callFeature.mediaStream]);
-
-  // Timer for call duration
   useEffect(() => {
     let interval;
-    if (callFeature.callStatus === 'active') {
+    if (callStatus === 'connected') {
       interval = setInterval(() => setCallDuration(prev => prev + 1), 1000);
     } else {
       setCallDuration(0);
     }
     return () => clearInterval(interval);
-  }, [callFeature.callStatus]);
+  }, [callStatus]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-  };
-
-  const toggleMute = () => {
-    if (callFeature.mediaStream) {
-      const audioTracks = callFeature.mediaStream.getAudioTracks();
-      audioTracks.forEach(track => {
-        track.enabled = !track.enabled;
-      });
-      setIsMuted(!isMuted);
-    }
-  };
-
-  const toggleVideo = async () => {
-    if (!isVideoOn) {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        setCallFeature(prev => ({ ...prev, mediaStream: stream }));
-        setIsVideoOn(true);
-      } catch (err) {
-        console.error("Failed to enable video:", err);
-      }
-    } else {
-      if (callFeature.mediaStream) {
-        callFeature.mediaStream.getVideoTracks().forEach(track => track.stop());
-      }
-      setIsVideoOn(false);
-    }
   };
 
   return (
@@ -85,225 +49,132 @@ const CustomerCallUI = ({
       <div className="call-panel-content">
         {!activeCall && callFeature.currentPage === 'welcome' && (
           <div className="call-page welcome-page">
-            <div className="call-icon">
-              <div className="icon-circle">
-                <Phone className="icon-large" />
-              </div>
-            </div>
-            <h4>BankConnect Support</h4>
-            <p className="call-description">Get instant help from our banking specialists through secure voice or video calls.</p>
-
+            <div className="call-icon"><Phone className="icon-large" /></div>
+            <h4>Customer Support Call</h4>
+            <p>Connect with our support team for assistance with your banking needs.</p>
             <div className="call-options">
-              <button
-                className="btn primary voice-call-btn"
-                onClick={() => setCallFeature(prev => ({ ...prev, currentPage: 'microphone-permission' }))}
-              >
-                <div className="btn-icon-circle">
-                  <Phone className="btn-icon" />
-                </div>
-                <span>Voice Call</span>
+              <button className="btn primary" onClick={() => setCallFeature(prev => ({ ...prev, currentPage: 'microphone-permission' }))}>
+                <Phone className="btn-icon" /> Voice Call
               </button>
-              <button
-                className="btn primary video-call-btn"
-                onClick={() => setCallFeature(prev => ({ ...prev, currentPage: 'video-permission' }))}
-              >
-                <div className="btn-icon-circle">
-                  <Video className="btn-icon" />
-                </div>
-                <span>Video Call</span>
+              <button className="btn primary" onClick={() => setCallFeature(prev => ({ ...prev, currentPage: 'video-permission' }))}>
+                <Video className="btn-icon" /> Video Call
               </button>
             </div>
-
             <div className="call-info">
-              <div className="info-item">
-                <Clock className="info-icon" size={16} />
-                <span>Mon-Fri 8am-8pm, Sat 9am-5pm</span>
-              </div>
-              <div className="info-item">
-                <Shield className="info-icon" size={16} />
-                <span>Secure encrypted connection</span>
-              </div>
+              <p>Standard call rates apply. Available Mon-Fri 8am-8pm, Sat 9am-5pm.</p>
             </div>
           </div>
         )}
 
-        {!activeCall && (callFeature.currentPage === 'microphone-permission' || callFeature.currentPage === 'video-permission') && (
+        {!activeCall && callFeature.currentPage === 'microphone-permission' && (
           <div className="call-page permission-page">
-            <div className="call-icon">
-              <div className="icon-circle">
-                {callFeature.currentPage === 'video-permission' ? (
-                  <Video className="icon-large" />
-                ) : (
-                  <Mic className="icon-large" />
-                )}
-              </div>
+            <div className="call-icon"><Mic className="icon-large" /></div>
+            <h4>Microphone Access Required</h4>
+            <p>To use our call service, we need access to your microphone.</p>
+            <button className="btn primary" onClick={() => requestMicrophonePermission(false)}>Allow Microphone Access</button>
+            <button className="btn secondary" onClick={() => setCallFeature(prev => ({ ...prev, currentPage: 'main-menu' }))}>
+              Continue with Call Service
+            </button>
+            <div className="call-info">
+              <p>We only access your microphone during active calls.</p>
             </div>
-            <h4>Permission Required</h4>
-            <p className="permission-text">
-              {callFeature.currentPage === 'video-permission'
-                ? 'To make a video call, we need access to your camera and microphone.'
-                : 'To make a voice call, we need access to your microphone.'}
-            </p>
+          </div>
+        )}
 
-            <button 
-              className="btn primary allow-btn"
-              onClick={() => requestMicrophonePermission(callFeature.currentPage === 'video-permission')}
-            >
-              Allow Access
+        {!activeCall && callFeature.currentPage === 'video-permission' && (
+          <div className="call-page permission-page">
+            <div className="call-icon"><Video className="icon-large" /></div>
+            <h4>Camera & Mic Access Required</h4>
+            <p>To use video calling, we need access to your camera and microphone.</p>
+            <button className="btn primary" onClick={() => requestMicrophonePermission(true)}>Allow Camera & Mic Access</button>
+            <button className="btn secondary" onClick={() => setCallFeature(prev => ({ ...prev, currentPage: 'main-menu' }))}>
+              Continue to Menu
             </button>
-            <button 
-              className="btn secondary back-btn"
-              onClick={() => setCallFeature(prev => ({ ...prev, currentPage: 'welcome' }))}
-            >
-              Back
-            </button>
-
-            <div className="security-note">
-              <Shield className="security-icon" size={14} />
-              <span>We only access your {callFeature.currentPage === 'video-permission' ? 'camera and microphone' : 'microphone'} during active calls.</span>
+            <div className="call-info">
+              <p>We only access your media during active calls.</p>
             </div>
           </div>
         )}
 
         {!activeCall && callFeature.currentPage === 'main-menu' && (
           <div className="call-page menu-page">
-            <h4>Which service do you need?</h4>
-            <p className="menu-subtitle">Select a department to connect with</p>
-
-            {callFeature.isVideo && (
-              <div className="video-preview">
-                <video ref={localVideoRef} autoPlay muted playsInline className="preview-video" />
-                <div className="preview-label">Your Camera</div>
-              </div>
-            )}
-
+            <h4>How Can We Help You Today?</h4>
             <div className="call-departments">
-              <button 
-                className="department-btn general-btn"
-                onClick={() => startCall('general-enquiries', callFeature.isVideo)}
-              >
-                <div className="btn-icon-container">
-                  <MessageCircle className="department-icon" />
-                </div>
-                <div className="department-info">
-                  <span className="department-name">General Enquiries</span>
-                  <span className="department-desc">Account questions and general support</span>
-                </div>
-                <ChevronRight className="arrow" />
+              <button className="department-btn" onClick={() => callFeature.isVideo ? navigate('/agent') : startCall('general-enquiries', false)}>
+                <div className="btn-icon"><MessageCircle className="icon" /></div>
+                <span>General Enquiries</span><ChevronRight className="arrow" />
               </button>
-
-              <button 
-                className="department-btn emergency-btn"
-                onClick={() => startCall('fraud-department', callFeature.isVideo)}
-              >
-                <div className="btn-icon-container emergency">
-                  <Shield className="department-icon" />
-                </div>
-                <div className="department-info">
-                  <span className="department-name">Fraud & Security</span>
-                  <span className="department-desc">Lost card or suspicious activity</span>
-                </div>
-                <ChevronRight className="arrow" />
+              <button className="department-btn emergency" onClick={() => startCall('fraud-department', callFeature.isVideo)}>
+                <div className="btn-icon"><Shield className="icon" /></div>
+                <span>Fraud or Card Emergency</span><ChevronRight className="arrow" />
               </button>
-
-              <button 
-                className="department-btn loan-btn"
-                onClick={() => startCall('loan-repayment', callFeature.isVideo)}
-              >
-                <div className="btn-icon-container">
-                  <DollarSign className="department-icon" />
-                </div>
-                <div className="department-info">
-                  <span className="department-name">Loans & Mortgages</span>
-                  <span className="department-desc">Payments and applications</span>
-                </div>
-                <ChevronRight className="arrow" />
+              <button className="department-btn" onClick={() => startCall('loan-repayment', callFeature.isVideo)}>
+                <div className="btn-icon"><DollarSign className="icon" /></div>
+                <span>Loan Repayment</span><ChevronRight className="arrow" />
               </button>
-
-              <button 
-                className="department-btn credit-btn"
-                onClick={() => startCall('credit-application', callFeature.isVideo)}
-              >
-                <div className="btn-icon-container">
-                  <CreditCard className="department-icon" />
-                </div>
-                <div className="department-info">
-                  <span className="department-name">Credit Cards</span>
-                  <span className="department-desc">Applications and support</span>
-                </div>
-                <ChevronRight className="arrow" />
+              <button className="department-btn" onClick={() => startCall('credit-application', callFeature.isVideo)}>
+                <div className="btn-icon"><CreditCard className="icon" /></div>
+                <span>Credit Application</span><ChevronRight className="arrow" />
               </button>
             </div>
-
             <div className="call-status">
-              <div className="wait-time-container">
-                <Clock className="wait-icon" size={16} />
-                <span>Current wait time: <span className="wait-time">2 minutes</span></span>
-              </div>
+              <p>Current wait time: <span className="wait-time">2 minutes</span></p>
             </div>
           </div>
         )}
 
         {activeCall && (
           <div className="active-call-view">
-            {activeCall.isVideo ? (
-              <div className="video-call-container">
-                <video ref={remoteVideoRef} autoPlay playsInline className="remote-video" />
-                <video ref={localVideoRef} autoPlay muted playsInline className="local-video" />
-              </div>
-            ) : (
-              <div className="voice-call-ui">
-                <div className="caller-avatar">
-                  <div className="avatar-circle">
-                    <User className="avatar-icon" />
-                  </div>
-                </div>
-                <p className="caller-info">Connected to {activeCall.department.replace('-', ' ')}</p>
+            {callFeature.isVideo && (
+              <div className="video-container">
+                <video 
+                  ref={remoteVideoRef} 
+                  autoPlay 
+                  playsInline 
+                  className="remote-video"
+                />
+                <video 
+                  ref={localVideoRef} 
+                  autoPlay 
+                  muted 
+                  playsInline 
+                  className="local-video"
+                />
               </div>
             )}
-
+            
             <div className="call-status-message">
-              <div className="call-timer">
-                <Clock className="timer-icon" />
-                <span>{formatTime(callDuration)}</span>
-              </div>
-              <p className="call-status-text">
-                {activeCall.status === 'ringing' ? 'Connecting to agent...' : 'Call in progress'}
-              </p>
-              {activeCall.status === 'ringing' && (
-                <div className="connecting-animation">
-                  <div className="dot"></div>
-                  <div className="dot"></div>
-                  <div className="dot"></div>
-                </div>
+              {callStatus === 'ringing' && (
+                <>
+                  <p>Connecting to agent...</p>
+                  <div className="connecting-animation">
+                    <div className="dot"></div><div className="dot"></div><div className="dot"></div>
+                  </div>
+                </>
+              )}
+              {callStatus === 'connected' && (
+                <>
+                  <p>Call in progress</p>
+                  <div className="call-timer">
+                    <Clock className="timer-icon" />
+                    <span>{formatTime(callDuration)}</span>
+                  </div>
+                </>
               )}
             </div>
-
             <div className="active-call-controls">
+              <div className="call-info">
+                <p>Department: <strong>{activeCall.department.replace('-', ' ')}</strong></p>
+                <p>Status: <span className={`status-${callStatus}`}>
+                  {callStatus === 'ringing' ? 'Connecting' : 'Connected'}
+                </span></p>
+              </div>
               <div className="call-buttons">
-                <button 
-                  className={`control-btn ${isMuted ? 'active' : ''}`} 
-                  onClick={toggleMute}
-                >
-                  {isMuted ? <MicOff className="icon" /> : <Mic className="icon" />}
-                  <span>{isMuted ? 'Unmute' : 'Mute'}</span>
-                </button>
-                {activeCall.isVideo && (
-                  <button 
-                    className={`control-btn ${!isVideoOn ? 'active' : ''}`}
-                    onClick={toggleVideo}
-                  >
-                    {isVideoOn ? <Video className="icon" /> : <VideoOff className="icon" />}
-                    <span>{isVideoOn ? 'Video On' : 'Video Off'}</span>
-                  </button>
+                <button className="control-btn"><Mic className="icon" /><span>Mute</span></button>
+                {callFeature.isVideo && (
+                  <button className="control-btn"><Video className="icon" /><span>Video</span></button>
                 )}
-                <button 
-                  className="control-btn end-call"
-                  onClick={endCall}
-                >
-                  <Phone className="icon" />
-                  <span>End Call</span>
-                </button>
+                <button className="control-btn end-call" onClick={endCall}><Phone className="icon" /><span>End Call</span></button>
               </div>
             </div>
           </div>
@@ -323,27 +194,22 @@ const InAppCall = ({
 }) => {
   const peerConnection = useRef(null);
   const localStream = useRef(null);
-  const remoteStream = useRef(new MediaStream());
+  const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
-
-  useEffect(() => {
-    if (remoteVideoRef.current) {
-      remoteVideoRef.current.srcObject = remoteStream.current;
-    }
-  }, []);
+  const [callStatus, setCallStatus] = useState('idle');
 
   const requestMicrophonePermission = async (video = false) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
         audio: true, 
-        video: video ? {
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          facingMode: 'user'
-        } : false
+        video: video 
       });
-      
       localStream.current = stream;
+      
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+
       setCallFeature(prev => ({
         ...prev,
         microphoneAllowed: true,
@@ -354,32 +220,16 @@ const InAppCall = ({
       }));
     } catch (err) {
       console.error('Media access denied:', err);
-      setCallFeature(prev => ({ 
-        ...prev, 
-        microphoneAllowed: false,
-        error: video ? 'Camera and microphone access required' : 'Microphone access required'
-      }));
+      setCallFeature(prev => ({ ...prev, microphoneAllowed: false }));
     }
   };
 
-  const setupPeerConnection = (department) => {
-    peerConnection.current = new RTCPeerConnection({
+  const createPeerConnection = (department) => {
+    const pc = new RTCPeerConnection({
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
     });
 
-    // Add local stream tracks
-    localStream.current.getTracks().forEach(track => {
-      peerConnection.current.addTrack(track, localStream.current);
-    });
-
-    // Handle incoming tracks
-    peerConnection.current.ontrack = (event) => {
-      event.streams[0].getTracks().forEach(track => {
-        remoteStream.current.addTrack(track);
-      });
-    };
-
-    peerConnection.current.onicecandidate = (event) => {
+    pc.onicecandidate = (event) => {
       if (event.candidate) {
         socket.emit('ice-candidate', {
           candidate: event.candidate,
@@ -388,26 +238,46 @@ const InAppCall = ({
       }
     };
 
-    return peerConnection.current;
+    pc.ontrack = (event) => {
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.srcObject = event.streams[0];
+      }
+    };
+
+    pc.onconnectionstatechange = () => {
+      console.log('Connection state:', pc.connectionState);
+      if (pc.connectionState === 'connected') {
+        setCallStatus('connected');
+      } else if (pc.connectionState === 'disconnected') {
+        endCall();
+      }
+    };
+
+    return pc;
   };
 
   const startCall = async (department, isVideo = false) => {
-    if (!localStream.current) {
-      console.error('Local stream not available');
-      return;
-    }
-
-    const pc = setupPeerConnection(department);
-    socket.emit('join-room', department);
-
     try {
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
+      const stream = localStream.current;
+      if (!stream) {
+        console.error('Local stream not available');
+        return;
+      }
+
+      peerConnection.current = createPeerConnection(department);
+      
+      stream.getTracks().forEach((track) => {
+        peerConnection.current.addTrack(track, stream);
+      });
+
+      socket.emit('join-room', department);
+
+      const offer = await peerConnection.current.createOffer();
+      await peerConnection.current.setLocalDescription(offer);
 
       socket.emit('offer', {
         offer,
-        roomId: department,
-        isVideo
+        roomId: department
       });
 
       setActiveCall({
@@ -416,29 +286,35 @@ const InAppCall = ({
         isVideo
       });
 
+      setCallStatus('ringing');
       setCallFeature(prev => ({
         ...prev,
+        currentPage: 'active-call',
         callStatus: 'ringing'
       }));
 
-      // Listen for answers
-      socket.on('answer', async (data) => {
-        await pc.setRemoteDescription(data.answer);
-        setActiveCall(prev => ({ ...prev, status: 'connected' }));
-        setCallFeature(prev => ({ ...prev, callStatus: 'active' }));
-      });
-
-      // Listen for ICE candidates
-      socket.on('ice-candidate', async (data) => {
+      // Setup socket listeners
+      socket.on('answer', async ({ answer }) => {
         try {
-          await pc.addIceCandidate(data.candidate);
-        } catch (e) {
-          console.error('Error adding ICE candidate', e);
+          if (peerConnection.current.signalingState === 'have-local-offer') {
+            await peerConnection.current.setRemoteDescription(new RTCSessionDescription(answer));
+            setCallStatus('connected');
+          }
+        } catch (error) {
+          console.error('Error setting remote description:', error);
+          endCall();
         }
       });
 
-    } catch (err) {
-      console.error('Call setup failed:', err);
+      socket.on('ice-candidate', ({ candidate }) => {
+        if (peerConnection.current && candidate) {
+          peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate))
+            .catch(e => console.error('Error adding ICE candidate:', e));
+        }
+      });
+
+    } catch (error) {
+      console.error('Error starting call:', error);
       endCall();
     }
   };
@@ -454,20 +330,33 @@ const InAppCall = ({
       localStream.current = null;
     }
 
-    remoteStream.current.getTracks().forEach(track => track.stop());
-    remoteStream.current = new MediaStream();
+    if (remoteVideoRef.current?.srcObject) {
+      remoteVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
+      remoteVideoRef.current.srcObject = null;
+    }
+
+    if (localVideoRef.current?.srcObject) {
+      localVideoRef.current.srcObject = null;
+    }
 
     socket.off('answer');
     socket.off('ice-candidate');
 
     setActiveCall(null);
+    setCallStatus('idle');
     setCallFeature(prev => ({
       ...prev,
+      currentPage: 'main-menu',
       callStatus: 'idle',
-      mediaStream: null,
-      isVideo: false
+      mediaStream: null
     }));
   };
+
+  useEffect(() => {
+    return () => {
+      endCall();
+    };
+  }, []);
 
   return (
     <CustomerCallUI
@@ -478,6 +367,9 @@ const InAppCall = ({
       startCall={startCall}
       endCall={endCall}
       activeCall={activeCall}
+      callStatus={callStatus}
+      remoteVideoRef={remoteVideoRef}
+      localVideoRef={localVideoRef}
     />
   );
 };
