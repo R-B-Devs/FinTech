@@ -685,6 +685,7 @@ import {
   MessageCircle,
   Phone,
   Video,
+  RefreshCw,
   UserCircle,
   X
 } from 'lucide-react';
@@ -788,8 +789,19 @@ const Dashboard = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  //if (loading) 
+  // return <div className="dashboard-loading">Loading dashboard data...</div>;
+
+    // Loading state
   if (loading) 
-    return <div className="dashboard-loading">Loading dashboard data...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0a0a0a' }}>
+        <div className="text-center">
+          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: '#8A1F2C' }} />
+          <p style={{ color: '#cbd5e1' }}>Just a moment — we’re refreshing things...</p>
+        </div>
+      </div>
+    );
   
   if (apiError) 
     return <div className="dashboard-error">{apiError}</div>;
