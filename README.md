@@ -81,11 +81,11 @@ The ABSA Financial Assistant is designed to provide ABSA Bank clients with:
    - Anomaly detection algorithms for suspicious activities. ⚠️
 
 ## Database Schema 📚
-- **users** - User account information. 👤
-- **accounts** - Bank account details. 🏦
-- **transactions** - Financial transactions. 💰
-- **income** - User income sources. 💵
-- **credit_scores** - Credit score history. 📉
+- **Users** - User account information. 👤
+- **Accounts** - Bank account details. 🏦
+- **Transactions** - Financial transactions. 💰
+- **Income** - User income sources. 💵
+- **Credit_scores** - Credit score history. 📉
 
 ## Features Implementation ⚙️
 1. **Dashboard**
