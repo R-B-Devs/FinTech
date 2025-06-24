@@ -23,6 +23,12 @@ import Investments from './pages/Investments';
 import Profile from './pages/Profile';
 import SettingsPage from './pages/Settings';
 
+// NEW: Settings subpages
+import PersonalInfo from './pages/PersonalInfo';
+import LinkedAccounts from './pages/LinkedAccounts';
+import HelpCenter from './pages/HelpCenter';
+import ContactSupport from './pages/ContactSupport';
+
 function App() {
   return (
     <Router>
@@ -32,7 +38,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/demo" element={<DemoPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/otp" element={<OtpPage />} />
         <Route path="/verifyOtp" element={<VerifyOtp />} />
@@ -49,7 +55,13 @@ function App() {
         <Route path="/dashboard/cards" element={<Cards />} />
         <Route path="/dashboard/investments" element={<Investments />} />
         <Route path="/dashboard/profile" element={<Profile />} />
+
+        {/* Settings and its subpages */}
         <Route path="/dashboard/settings" element={<SettingsPage />} />
+        <Route path="/dashboard/settings/personal-info" element={<PersonalInfo />} />
+        <Route path="/dashboard/settings/linked-accounts" element={<LinkedAccounts />} />
+        <Route path="/dashboard/settings/help-center" element={<HelpCenter />} />
+        <Route path="/dashboard/settings/contact-support" element={<ContactSupport />} />
       </Routes>
     </Router>
   );

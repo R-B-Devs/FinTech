@@ -1,10 +1,18 @@
 require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const supabase = require('./supabaseClient');
+const nodemailer = require('nodemailer');
+const bodyParser = require('body-parser');
+const crypto = require("crypto");
+
+// Supabase client initialization
+const { createClient } = require('@supabase/supabase-js');
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+const supabaseClient = createClient(supabaseUrl, supabaseKey);
 
 async function testSupabaseConnection() {
   const { data, error } = await supabase
@@ -21,12 +29,155 @@ async function testSupabaseConnection() {
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-
+const resetTokens = {};
+//cors
+app.use(bodyParser.json());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+//openai 
+const aiRoutes = require('./api/ai');
+app.use('/api/ai', aiRoutes);
 const JWT_SECRET = process.env.JWT_SECRET;
+
+
+
+function generateOTP() {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
+
+let otpStore = {};
+
+// Configure Nodemailer with Gmail SMTP
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'absacobol@gmail.com', 
+    pass: 'zbbo urcg hdge doeb',   
+  },
+});
+
+app.post('/send-otp', async (req, res) => {
+  const { email } = req.body;
+  const otp = generateOTP();
+  otpStore[email] = { otp, expires: Date.now() + 5 * 60 * 1000 };
+
+  try {
+    await transporter.sendMail({
+      from: '" LynqAI " <absacobol@gmail.com>', 
+      to: email,
+      subject: ' Your OTP Code',
+      html: `
+        <div style="font-family: 'Segoe UI', sans-serif; max-width: 600px; margin: auto; padding: 20px; background-color: #f9f9f9; border-radius: 10px; border: 1px solid #ddd;">
+      <h1 style="color: #8A1F2C; text-align: center;">🔐 LynqAI Verification</h1>
+      <p>Hey there! </p>
+      <p>Your OTP code is:</p>
+      <h2 style="text-align:center; background-color:#8A1F2C; color:#fff; padding:10px; border-radius:5px;">${otp}</h2>
+      <p>This code will expire in <strong>5 minutes</strong>.</p>
+      <p>If you didn’t request this, just ignore it.</p>
+      <p>Stay awesome,<br/>— The LynqAI Team </p>
+    </div>
+      `,
+    });
+
+    res.json({ success: true, message: 'OTP sent successfully' });
+  } catch (error) {
+    console.error('Error sending OTP:', error);
+    res.status(500).json({ success: false, message: 'Failed to send OTP' });
+  }
+});
+
+app.post('/verify-otp', (req, res) => {
+  const { email, otp } = req.body;
+  const entry = otpStore[email];
+
+  if (!entry || Date.now() > entry.expires) {
+    return res.json({ success: false, message: 'OTP expired or invalid.' });
+  }
+
+  if (entry.otp !== otp) {
+    return res.json({ success: false, message: 'Incorrect OTP.' });
+  }
+
+  // Optional: delete OTP from store after success
+  delete otpStore[email];
+
+  res.json({ success: true, message: 'OTP verified successfully!' });
+});
+
+
+// ======================================================================
+//                            Password Reset
+// ======================================================================
+
+app.post('/send-reset-link', async (req, res) => {
+  const { email } = req.body;
+
+  let { data: user, error } = await supabaseClient.from('users').select('*').eq('email', email).single();
+
+  if ( !error ) {
+
+    const token = crypto.randomBytes(32).toString('hex');
+    resetTokens[email] = { token, expires: Date.now() + 15 * 60 * 1000 }; // 15 min lifetime
+
+    const resetLink = `http://localhost:3000/reset-password/${token}`;
+
+    try {
+        await transporter.sendMail({
+        from: '"LynqAI" <absacobol@gmail.com>',
+        to: email,
+        subject: ' Reset Your Password',
+        html: `
+          <div style="font-family:Arial,sans-serif;padding:20px;border:1px solid #eee;border-radius:10px;">
+            <h2 style="color:#8A1F2C;">Reset Your LynqAI Password</h2>
+            <p>Click the link below to reset your password. This link is valid for 15 minutes.</p>
+            <a href="${resetLink}" style="display:inline-block;background:#8A1F2C;color:#fff;padding:10px 15px;border-radius:5px;text-decoration:none;">Reset Password</a>
+            <p>If you didn’t request this, ignore it.</p>
+          </div>
+        `,
+      });
+      res.status(200).json( { success: true, message: 'Reset link sent successfully' });
+    } catch (error) {
+      console.error('Error sending reset link:', error.message);
+      res.status(500).json({ success: false, message: 'Failed to send reset link' });
+      
+    }
+  }
+  else {
+    console.error(`// ================
+//              Password Reset link error
+//              That email may not exist
+//              ${error.message}
+// =======================`)
+      res.status(404).json( { success: false, message: 'That account does not exist. Please try again.' });
+  }
+});
+
+//reset password token
+app.post('/reset-password/:token', async (req, res) => {
+  const { token } = req.params;
+  const { password } = req.body;
+
+  const email = Object.keys(resetTokens).find(
+    key => resetTokens[key].token === token && resetTokens[key].expires > Date.now()
+  );
+
+  if (!email) {
+    return res.status(400).json({ success: false, message: 'Invalid or expired reset token' });
+  }
+
+  // Now update the password (you can later hook this to a DB update)
+  console.log(`New password for ${email}: ${password}`);
+
+  // Clean up token after use
+  delete resetTokens[email];
+
+  res.json({ success: true, message: 'Password reset successful!' });
+});
+
+
+
+
 
 // ==========================
 // AUTH LOGIC AND FUNCTIONS
@@ -260,10 +411,50 @@ async function authenticateToken(req, res, next) {
     res.status(403).json({ error: 'Invalid or expired token' });
   }
 }
-
+module.exports.authenticateToken = authenticateToken;
 // ==========================
 // ROUTES
 // ==========================
+app.get('/api/users/profile-full', authenticateToken, async (req, res) => {
+  const user_id = req.user.user_id;
+
+  try {
+    const [
+      { data: accounts },
+      { data: transactions },
+      { data: income },
+      { data: credit_scores },
+      { data: loan_suggestions },
+      { data: ai_conversations },
+      { data: call_logs },
+      { data: suspicious_activities }
+    ] = await Promise.all([
+      supabaseClient.from('accounts').select('*').eq('user_id', user_id),
+      supabaseClient.from('transactions').select('*').in('account_id', (await supabaseClient.from('accounts').select('account_id').eq('user_id', user_id)).data.map(a => a.account_id)),
+      supabaseClient.from('income').select('*').eq('user_id', user_id),
+      supabaseClient.from('credit_scores').select('*').eq('user_id', user_id).order('score_date', { ascending: false }).limit(1),
+      supabaseClient.from('loan_suggestions').select('*').eq('user_id', user_id),
+      supabaseClient.from('ai_conversations').select('*').eq('user_id', user_id),
+      supabaseClient.from('call_logs').select('*').eq('user_id', user_id),
+      supabaseClient.from('suspicious_activities').select('*').eq('user_id', user_id),
+    ]);
+
+    res.json({
+      user: req.user,
+      accounts,
+      transactions,
+      income,
+      credit_scores: credit_scores[0] || null,
+      loan_suggestions,
+      ai_conversations,
+      call_logs,
+      suspicious_activities
+    });
+  } catch (err) {
+    console.error('Error loading full profile:', err);
+    res.status(500).json({ error: 'Failed to load full profile' });
+  }
+});
 
 app.get('/api/users/all', async (req, res) => {
   const result = await getAllUsers();
@@ -278,20 +469,6 @@ app.get('/api/users/all', async (req, res) => {
   }
 });
 
-app.get('/api/users/:user_id', async (req, res) => {
-  const { user_id } = req.params;
-
-  if (!/^[0-9a-fA-F-]{36}$/.test(user_id)) {
-    return res.status(400).json({ error: 'Invalid user ID format' });
-  }
-
-  const result = await getUserById(user_id);
-  if (result.success) {
-    res.json({ message: 'User retrieved successfully', user: result.user });
-  } else {
-    res.status(404).json({ error: result.message });
-  }
-});
 
 app.get('/api/health', async (req, res) => {
   try {
@@ -405,6 +582,118 @@ app.get('/api/users/transactions', authenticateToken, async (req, res) => {
     });
   } else {
     res.status(500).json({ error: result.message });
+  }
+});
+
+app.get('/api/users/dashboard', authenticateToken, async (req, res) => {
+  const user_id = req.user.user_id;
+  try {
+    // Fetch accounts and their balances
+    const { data: accounts, error: accountsError } = await supabase
+      .from('accounts')
+      .select('*')
+      .eq('user_id', user_id)
+      .eq('status', 'ACTIVE');
+    if (accountsError) throw accountsError;
+
+    // Calculate total balance
+    const totalBalance = accounts.reduce((sum, acc) => sum + Number(acc.balance), 0);
+
+    // Investments (if you have an account_type for investments, change this filter if needed)
+    const investments = accounts
+      .filter(acc => acc.account_type && acc.account_type.toLowerCase() === 'investment')
+      .reduce((sum, acc) => sum + Number(acc.balance), 0);
+
+    // Recent transactions (latest 5, from user's accounts)
+    const accountIds = accounts.map(acc => acc.account_id);
+    let recentTransactions = [];
+    if (accountIds.length > 0) {
+      const { data: transactions, error: txError } = await supabase
+        .from('transactions')
+        .select('*')
+        .in('account_id', accountIds)
+        .order('transaction_date', { ascending: false })
+        .limit(5);
+
+      if (txError) throw txError;
+      recentTransactions = transactions;
+    }
+
+    // Latest credit score
+    let creditScore = null;
+    const { data: csData, error: csError } = await supabase
+      .from('credit_scores')
+      .select('*')
+      .eq('user_id', user_id)
+      .order('score_date', { ascending: false })
+      .limit(1);
+    if (csError) throw csError;
+    creditScore = csData && csData.length > 0 ? csData[0].score : null;
+
+    // Respond with summary
+    res.json({
+      totalBalance,
+      investments,
+      creditScore,
+      savingsGoal: 75, // Use a placeholder or add logic if you track goals
+      recentTransactions,
+      accounts
+    });
+  } catch (err) {
+    console.error('Dashboard summary fetch error:', err);
+    res.status(500).json({ error: 'Failed to load dashboard data.' });
+  }
+});
+app.put('/api/users/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+  const fields = req.body;
+
+  if (!/^[0-9a-fA-F-]{36}$/.test(user_id)) {
+    return res.status(400).json({ error: 'Invalid user ID format' });
+  }
+
+  try {
+    // Remove null or empty fields from update
+    const validFields = Object.fromEntries(
+      Object.entries(fields).filter(([_, value]) => value !== null && value !== '')
+    );
+
+    if (Object.keys(validFields).length === 0) {
+      return res.status(400).json({ error: 'No valid fields to update' });
+    }
+
+    validFields.updated_at = new Date().toISOString();
+
+    const { data, error } = await supabaseClient
+      .from('users')
+      .update(validFields)
+      .eq('user_id', user_id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Update user error:', error);
+      return res.status(500).json({ error: 'Failed to update user profile' });
+    }
+
+    res.json({ message: 'Profile updated successfully', user: data });
+  } catch (err) {
+    console.error('Unexpected error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+app.get('/api/users/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+    console.log(user_id)
+  if (!/^[0-9a-fA-F-]{36}$/.test(user_id)) {
+    return res.status(400).json({ error: 'Invalid user ID format' });
+  }
+
+  const result = await getUserById(user_id);
+  if (result.success) {
+    res.json({ message: 'User retrieved successfully', user: result.user });
+  } else {
+    res.status(404).json({ error: result.message });
   }
 });
 
