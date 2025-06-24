@@ -9,6 +9,7 @@ import ResetPassword from "./pages/ResetPassword";
 import RegistrationPage from "./pages/registration-page.jsx"; 
 import OtpPage from "./pages/OtpVerification.jsx";
 import VerifyOtp from "./pages/VerifyOtp.jsx";
+import CookieBanner from "./components/CookieBanner.jsx";
 
 import Dashboard from './pages/Dashboard';
 import Analytics from './pages/Analytics';
@@ -22,9 +23,12 @@ import Investments from './pages/Investments';
 import Profile from './pages/Profile';
 import SettingsPage from './pages/Settings';
 
+
 function App() {
   return (
     <Router>
+      <CookieBanner />
+      
       <Routes>
         {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
