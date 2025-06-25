@@ -685,8 +685,10 @@ import {
   MessageCircle,
   Phone,
   Video,
+  RefreshCw,
   UserCircle,
-  X
+  X,
+  LogOut
 } from 'lucide-react';
 
 const timeframes = ['week', 'month', 'quarter', 'year'];
@@ -788,8 +790,19 @@ const Dashboard = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  //if (loading) 
+  // return <div className="dashboard-loading">Loading dashboard data...</div>;
+
+    // Loading state
   if (loading) 
-    return <div className="dashboard-loading">Loading dashboard data...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0a0a0a' }}>
+        <div className="text-center">
+          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4" style={{ color: '#8A1F2C' }} />
+          <p style={{ color: '#cbd5e1' }}>Just a moment — we’re refreshing things...</p>
+        </div>
+      </div>
+    );
   
   if (apiError) 
     return <div className="dashboard-error">{apiError}</div>;
@@ -816,11 +829,15 @@ const Dashboard = () => {
             <button className="header-btn">
               <Bell className="header-icon" />
             </button>
+
             <div className="header-container">
               <div className="header-content">
-                <Link to="/dashboard/settings" className="header-btn">
-                  <Settings className="header-icon" />
+                <Link to="/login" className="header-btn">
+                  <LogOut className="header-icon" /> 
                 </Link>
+                </div>
+
+                <div className="header-container">
                 <Link to="/dashboard/profile" className="user-avatar">
                   <User className="user-icon" />
                 </Link>
