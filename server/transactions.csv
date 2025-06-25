@@ -1,3 +1,2 @@
 "transaction_id","account_id","transaction_type","amount","description","category","merchant_name","transaction_date","balance_after","location","account_type"
-"56468967-1bc9-4100-9d88-baf561a9305b","5a93aa6a-d3e4-4718-91c4-da6ec3d66930","CREDIT",-4000,"Rent",,,"2025-06-20T11:06:23",,"Braamfontein","CHEQUE"
-"7dfc361d-531d-4a02-ad46-cf4f0489c9ec","5a93aa6a-d3e4-4718-91c4-da6ec3d66930","DEBIT",-850,"Grocery Shopping","GROCERIES","Pick n Pay","2025-06-15T11:16:41.518477",14570.5,"Johannesburg, SA","CHEQUE"
+"5e78b9df-9a03-43c8-a680-89d121255475","3ff79c9a-a62f-4ba6-9320-702ec8e05b22","DEBIT",-5000,"Rent","Rent","JONE","2025-06-25T13:52:15",0,"BRAAMFONTEIN","CREDIT_CARD"
