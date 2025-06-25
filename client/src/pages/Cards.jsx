@@ -1,42 +1,78 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CreditCard, Wallet } from 'lucide-react';
 import '../styles/Cards.css';
 
-const initialCards = [
-  {
-    id: 1,
-    bank: 'ABSA',
-    cardType: 'Gold Cheque',
-    cardNumber: '1234567812345678',
-    cardHolder: 'Kgaugelo Helen',
-    accountnumber: 123456789,
-    expiry: '12/26',
-    cvv: '123',
-    isBlocked: false,
-  },
-  {
-    id: 2,
-    bank: 'ABSA',
-    cardType: 'Savings',
-    cardNumber: '8765432187654321',
-    cardHolder: 'Kgaugelo Helen',
-    accountnumber: 987654321,
-    expiry: '09/27',
-    cvv: '456',
-    isBlocked: false,
-  },
-];
-
 const Cards = () => {
-  const [cards, setCards] = useState(initialCards);
+  const [cards, setCards] = useState([]);
   const [flippedIds, setFlippedIds] = useState([]);
   const [onlineEnabled, setOnlineEnabled] = useState(true);
   const [internationalEnabled, setInternationalEnabled] = useState(false);
+  const [error, setError] = useState('');
+
+  // Fetch user data from backend using token
+  useEffect(() => {
+    const fetchUser = async () => {
+      const token = localStorage.getItem('jwt');
+      if (!token) {
+        setError('User not authenticated');
+        return;
+      }
+
+      try {
+        // Decode token to extract user_id
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const userId = payload.user_id;
+
+        const response = await fetch(`http://localhost:3001/api/users/${userId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.user) {
+          const fullName = `${data.user.first_name} ${data.user.last_name}`;
+
+          setCards([
+            {
+              id: 1,
+              bank: 'ABSA',
+              cardType: 'Gold Cheque',
+              cardNumber: '1234567812345678',
+              cardHolder: fullName,
+              accountnumber: data.user.account_number,
+              expiry: '12/26',
+              cvv: '123',
+              isBlocked: false,
+            },
+            {
+              id: 2,
+              bank: 'ABSA',
+              cardType: 'Savings',
+              cardNumber: '8765432187654321',
+              cardHolder: fullName,
+              accountnumber: data.user.account_number,
+              expiry: '09/27',
+              cvv: '456',
+              isBlocked: false,
+            }
+          ]);
+        } else {
+          setError(data.error || 'Failed to load user');
+        }
+      } catch (err) {
+        setError('Failed to fetch user info');
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   const toggleFlip = (id) => {
     const card = cards.find((c) => c.id === id);
-    if (card?.isBlocked) return; // Don’t flip if blocked
+    if (card?.isBlocked) return;
     setFlippedIds((prev) =>
       prev.includes(id) ? prev.filter((fid) => fid !== id) : [...prev, id]
     );
@@ -48,7 +84,7 @@ const Cards = () => {
         card.id === id ? { ...card, isBlocked: !card.isBlocked } : card
       )
     );
-    setFlippedIds((prev) => prev.filter((fid) => fid !== id)); // reset flip
+    setFlippedIds((prev) => prev.filter((fid) => fid !== id));
   };
 
   return (
@@ -69,10 +105,11 @@ const Cards = () => {
       <main className="cards-page">
         <h2><CreditCard size={28} /> Saved Cards</h2>
 
+        {error && <div className="error">{error}</div>}
+
         <div className="cards-container">
           {cards.map((card) => {
             const isFlipped = flippedIds.includes(card.id);
-
             return (
               <div
                 key={card.id}
@@ -130,8 +167,8 @@ const Cards = () => {
             <label className="switch">
               <input
                 type="checkbox"
-                checked={cards[0].isBlocked}
-                onChange={() => toggleBlockCard(cards[0].id)}
+                checked={cards[0]?.isBlocked}
+                onChange={() => toggleBlockCard(cards[0]?.id)}
               />
               <span className="slider round"></span>
             </label>
@@ -154,8 +191,8 @@ const Cards = () => {
             <label className="switch">
               <input
                 type="checkbox"
-                checked={cards[1].isBlocked}
-                onChange={() => toggleBlockCard(cards[1].id)}
+                checked={cards[1]?.isBlocked}
+                onChange={() => toggleBlockCard(cards[1]?.id)}
               />
               <span className="slider round"></span>
             </label>
