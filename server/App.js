@@ -621,6 +621,40 @@ app.get('/api/users/dashboard', authenticateToken, async (req, res) => {
   }
 });
 
+  // csv automation "Node Income-expenses.js"
+  const { exec } = require('child_process');
+  const path = require('path');
+
+  const fullPath = path.resolve(__dirname, 'Income-expenses.js');
+
+  exec(`node ${fullPath}`, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`❌ Script error: ${error.message}`);
+      return;
+    }
+    if (stderr) {
+      console.warn(`⚠️ Script stderr: ${stderr}`);
+    }
+    console.log(`✅ Script output:\n${stdout}`);
+  });
+
+// =================Python Automations
+//  const { exec } = require('child_process');
+//   const path = require('path');
+
+//   const fullPath2 = path.resolve(__dirname, 'db_export_user.py');
+
+//   exec(`node ${fullPath}`, (error, stdout, stderr) => {
+//     if (error) {
+//       console.error(`❌ Script error: ${error.message}`);
+//       return;
+//     }
+//     if (stderr) {
+//       console.warn(`⚠️ Script stderr: ${stderr}`);
+//     }
+//     console.log(`✅ Script output:\n${stdout}`);
+//   });
+
 app.put('/api/users/:user_id', async (req, res) => {
   const { user_id } = req.params;
   const fields = req.body;
