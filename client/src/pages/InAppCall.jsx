@@ -5,7 +5,7 @@ import {
 } from 'lucide-react';
 import socket from '../utilis/WebRTCService';
 import { useNavigate } from 'react-router-dom';
- 
+
 const CustomerCallUI = ({
   callFeature,
   toggleCallFeature,
@@ -22,16 +22,14 @@ const CustomerCallUI = ({
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(false);
   const navigate = useNavigate();
-  const localVideoRef = useRef(null);
-  const remoteVideoRef = useRef(null);
- 
+
   // Setup video streams
   useEffect(() => {
     if (localVideoRef.current && callFeature.mediaStream) {
       localVideoRef.current.srcObject = callFeature.mediaStream;
     }
-  }, [callFeature.mediaStream]);
- 
+  }, [callFeature.mediaStream, localVideoRef]);
+
   // Timer for call duration
   useEffect(() => {
     let interval;
@@ -41,14 +39,14 @@ const CustomerCallUI = ({
       setCallDuration(0);
     }
     return () => clearInterval(interval);
-  }, [callFeature.callStatus]);
- 
+  }, [callStatus]);
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
- 
+
   const toggleMute = () => {
     if (callFeature.mediaStream) {
       const audioTracks = callFeature.mediaStream.getAudioTracks();
@@ -58,7 +56,7 @@ const CustomerCallUI = ({
       setIsMuted(!isMuted);
     }
   };
- 
+
   const toggleVideo = async () => {
     if (!isVideoOn) {
       try {
@@ -75,7 +73,7 @@ const CustomerCallUI = ({
       setIsVideoOn(false);
     }
   };
- 
+
   return (
     <div className={`call-panel ${callFeature.isOpen ? 'open' : ''}`}>
       <div className="call-panel-header">
@@ -84,7 +82,7 @@ const CustomerCallUI = ({
           <X className="icon" />
         </button>
       </div>
- 
+
       <div className="call-panel-content">
         {!activeCall && callFeature.currentPage === 'welcome' && (
           <div className="call-page welcome-page">
@@ -95,7 +93,7 @@ const CustomerCallUI = ({
             </div>
             <h4>BankConnect Support</h4>
             <p className="call-description">Get instant help from our banking specialists through secure voice or video calls.</p>
- 
+
             <div className="call-options">
               <button
                 className="btn primary voice-call-btn"
@@ -116,7 +114,7 @@ const CustomerCallUI = ({
                 <span>Video Call</span>
               </button>
             </div>
- 
+
             <div className="call-info">
               <div className="info-item">
                 <Clock className="info-icon" size={16} />
@@ -129,7 +127,7 @@ const CustomerCallUI = ({
             </div>
           </div>
         )}
- 
+
         {!activeCall && (callFeature.currentPage === 'microphone-permission' || callFeature.currentPage === 'video-permission') && (
           <div className="call-page permission-page">
             <div className="call-icon">
@@ -147,7 +145,7 @@ const CustomerCallUI = ({
                 ? 'To make a video call, we need access to your camera and microphone.'
                 : 'To make a voice call, we need access to your microphone.'}
             </p>
- 
+
             <button
               className="btn primary allow-btn"
               onClick={() => requestMicrophonePermission(callFeature.currentPage === 'video-permission')}
@@ -160,26 +158,26 @@ const CustomerCallUI = ({
             >
               Back
             </button>
- 
+
             <div className="security-note">
               <Shield className="security-icon" size={14} />
               <span>We only access your {callFeature.currentPage === 'video-permission' ? 'camera and microphone' : 'microphone'} during active calls.</span>
             </div>
           </div>
         )}
- 
+
         {!activeCall && callFeature.currentPage === 'main-menu' && (
           <div className="call-page menu-page">
             <h4>Which service do you need?</h4>
             <p className="menu-subtitle">Select a department to connect with</p>
- 
+
             {callFeature.isVideo && (
               <div className="video-preview">
                 <video ref={localVideoRef} autoPlay muted playsInline className="preview-video" />
                 <div className="preview-label">Your Camera</div>
               </div>
             )}
- 
+
             <div className="call-departments">
               <button
                 className="department-btn general-btn"
@@ -194,7 +192,7 @@ const CustomerCallUI = ({
                 </div>
                 <ChevronRight className="arrow" />
               </button>
- 
+
               <button
                 className="department-btn emergency-btn"
                 onClick={() => startCall('fraud-department', callFeature.isVideo)}
@@ -208,7 +206,7 @@ const CustomerCallUI = ({
                 </div>
                 <ChevronRight className="arrow" />
               </button>
- 
+
               <button
                 className="department-btn loan-btn"
                 onClick={() => startCall('loan-repayment', callFeature.isVideo)}
@@ -222,7 +220,7 @@ const CustomerCallUI = ({
                 </div>
                 <ChevronRight className="arrow" />
               </button>
- 
+
               <button
                 className="department-btn credit-btn"
                 onClick={() => startCall('credit-application', callFeature.isVideo)}
@@ -237,7 +235,7 @@ const CustomerCallUI = ({
                 <ChevronRight className="arrow" />
               </button>
             </div>
- 
+
             <div className="call-status">
               <div className="wait-time-container">
                 <Clock className="wait-icon" size={16} />
@@ -246,10 +244,9 @@ const CustomerCallUI = ({
             </div>
           </div>
         )}
- 
+
         {activeCall && (
           <div className="active-call-view">
-<<<<<<< HEAD
             {activeCall.isVideo ? (
               <div className="video-call-container">
                 <video ref={remoteVideoRef} autoPlay playsInline className="remote-video" />
@@ -265,63 +262,25 @@ const CustomerCallUI = ({
                 <p className="caller-info">Connected to {activeCall.department.replace('-', ' ')}</p>
               </div>
             )}
- 
+
             <div className="call-status-message">
               <div className="call-timer">
                 <Clock className="timer-icon" />
                 <span>{formatTime(callDuration)}</span>
               </div>
               <p className="call-status-text">
-                {activeCall.status === 'ringing' ? 'Connecting to agent...' : 'Call in progress'}
+                {callStatus === 'ringing' ? 'Connecting to agent...' : 'Call in progress'}
               </p>
-              {activeCall.status === 'ringing' && (
+              {callStatus === 'ringing' && (
                 <div className="connecting-animation">
                   <div className="dot"></div>
                   <div className="dot"></div>
                   <div className="dot"></div>
                 </div>
-=======
-            {callFeature.isVideo && (
-              <div className="video-container">
-                <video 
-                  ref={remoteVideoRef} 
-                  autoPlay 
-                  playsInline 
-                  className="remote-video"
-                />
-                <video 
-                  ref={localVideoRef} 
-                  autoPlay 
-                  muted 
-                  playsInline 
-                  className="local-video"
-                />
-              </div>
-            )}
-            
-            <div className="call-status-message">
-              {callStatus === 'ringing' && (
-                <>
-                  <p>Connecting to agent...</p>
-                  <div className="connecting-animation">
-                    <div className="dot"></div><div className="dot"></div><div className="dot"></div>
-                  </div>
-                </>
-              )}
-              {callStatus === 'connected' && (
-                <>
-                  <p>Call in progress</p>
-                  <div className="call-timer">
-                    <Clock className="timer-icon" />
-                    <span>{formatTime(callDuration)}</span>
-                  </div>
-                </>
->>>>>>> 16d02d8913d5803c0d6d5e2a8af4e6fdef853b60
               )}
             </div>
- 
+
             <div className="active-call-controls">
-<<<<<<< HEAD
               <div className="call-buttons">
                 <button
                   className={`control-btn ${isMuted ? 'active' : ''}`}
@@ -346,20 +305,6 @@ const CustomerCallUI = ({
                   <Phone className="icon" />
                   <span>End Call</span>
                 </button>
-=======
-              <div className="call-info">
-                <p>Department: <strong>{activeCall.department.replace('-', ' ')}</strong></p>
-                <p>Status: <span className={`status-${callStatus}`}>
-                  {callStatus === 'ringing' ? 'Connecting' : 'Connected'}
-                </span></p>
-              </div>
-              <div className="call-buttons">
-                <button className="control-btn"><Mic className="icon" /><span>Mute</span></button>
-                {callFeature.isVideo && (
-                  <button className="control-btn"><Video className="icon" /><span>Video</span></button>
-                )}
-                <button className="control-btn end-call" onClick={endCall}><Phone className="icon" /><span>End Call</span></button>
->>>>>>> 16d02d8913d5803c0d6d5e2a8af4e6fdef853b60
               </div>
             </div>
           </div>
@@ -368,7 +313,7 @@ const CustomerCallUI = ({
     </div>
   );
 };
- 
+
 const InAppCall = ({
   userRole = 'customer',
   callFeature,
@@ -379,16 +324,10 @@ const InAppCall = ({
 }) => {
   const peerConnection = useRef(null);
   const localStream = useRef(null);
-<<<<<<< HEAD
-  const remoteStream = useRef(new MediaStream());
   const remoteVideoRef = useRef(null);
- 
-  useEffect(() => {
-    if (remoteVideoRef.current) {
-      remoteVideoRef.current.srcObject = remoteStream.current;
-    }
-  }, []);
- 
+  const localVideoRef = useRef(null);
+  const [callStatus, setCallStatus] = useState('idle');
+
   const requestMicrophonePermission = async (video = false) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
@@ -399,19 +338,7 @@ const InAppCall = ({
           facingMode: 'user'
         } : false
       });
-     
-=======
-  const localVideoRef = useRef(null);
-  const remoteVideoRef = useRef(null);
-  const [callStatus, setCallStatus] = useState('idle');
-
-  const requestMicrophonePermission = async (video = false) => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: true, 
-        video: video 
-      });
->>>>>>> 16d02d8913d5803c0d6d5e2a8af4e6fdef853b60
+      
       localStream.current = stream;
       
       if (localVideoRef.current) {
@@ -435,27 +362,6 @@ const InAppCall = ({
       }));
     }
   };
-<<<<<<< HEAD
- 
-  const setupPeerConnection = (department) => {
-    peerConnection.current = new RTCPeerConnection({
-      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
-    });
- 
-    // Add local stream tracks
-    localStream.current.getTracks().forEach(track => {
-      peerConnection.current.addTrack(track, localStream.current);
-    });
- 
-    // Handle incoming tracks
-    peerConnection.current.ontrack = (event) => {
-      event.streams[0].getTracks().forEach(track => {
-        remoteStream.current.addTrack(track);
-      });
-    };
- 
-    peerConnection.current.onicecandidate = (event) => {
-=======
 
   const createPeerConnection = (department) => {
     const pc = new RTCPeerConnection({
@@ -463,7 +369,6 @@ const InAppCall = ({
     });
 
     pc.onicecandidate = (event) => {
->>>>>>> 16d02d8913d5803c0d6d5e2a8af4e6fdef853b60
       if (event.candidate) {
         socket.emit('ice-candidate', {
           candidate: event.candidate,
@@ -471,10 +376,6 @@ const InAppCall = ({
         });
       }
     };
-<<<<<<< HEAD
- 
-    return peerConnection.current;
-=======
 
     pc.ontrack = (event) => {
       if (remoteVideoRef.current) {
@@ -515,7 +416,8 @@ const InAppCall = ({
 
       socket.emit('offer', {
         offer,
-        roomId: department
+        roomId: department,
+        isVideo
       });
 
       setActiveCall({
@@ -537,6 +439,7 @@ const InAppCall = ({
           if (peerConnection.current.signalingState === 'have-local-offer') {
             await peerConnection.current.setRemoteDescription(new RTCSessionDescription(answer));
             setCallStatus('connected');
+            setActiveCall(prev => ({ ...prev, status: 'connected' }));
           }
         } catch (error) {
           console.error('Error setting remote description:', error);
@@ -555,84 +458,18 @@ const InAppCall = ({
       console.error('Error starting call:', error);
       endCall();
     }
->>>>>>> 16d02d8913d5803c0d6d5e2a8af4e6fdef853b60
   };
- 
-  const startCall = async (department, isVideo = false) => {
-    if (!localStream.current) {
-      console.error('Local stream not available');
-      return;
-    }
- 
-    const pc = setupPeerConnection(department);
-    socket.emit('join-room', department);
- 
-    try {
-      const offer = await pc.createOffer();
-      await pc.setLocalDescription(offer);
- 
-      socket.emit('offer', {
-        offer,
-        roomId: department,
-        isVideo
-      });
- 
-      setActiveCall({
-        department,
-        status: 'ringing',
-        isVideo
-      });
- 
-      setCallFeature(prev => ({
-        ...prev,
-        callStatus: 'ringing'
-      }));
- 
-      // Listen for answers
-      socket.on('answer', async (data) => {
-        await pc.setRemoteDescription(data.answer);
-        setActiveCall(prev => ({ ...prev, status: 'connected' }));
-        setCallFeature(prev => ({ ...prev, callStatus: 'active' }));
-      });
- 
-      // Listen for ICE candidates
-      socket.on('ice-candidate', async (data) => {
-        try {
-          await pc.addIceCandidate(data.candidate);
-        } catch (e) {
-          console.error('Error adding ICE candidate', e);
-        }
-      });
- 
-    } catch (err) {
-      console.error('Call setup failed:', err);
-      endCall();
-    }
-  };
- 
+
   const endCall = () => {
     if (peerConnection.current) {
       peerConnection.current.close();
       peerConnection.current = null;
     }
-<<<<<<< HEAD
- 
-=======
 
->>>>>>> 16d02d8913d5803c0d6d5e2a8af4e6fdef853b60
     if (localStream.current) {
       localStream.current.getTracks().forEach(track => track.stop());
       localStream.current = null;
     }
-<<<<<<< HEAD
- 
-    remoteStream.current.getTracks().forEach(track => track.stop());
-    remoteStream.current = new MediaStream();
- 
-    socket.off('answer');
-    socket.off('ice-candidate');
- 
-=======
 
     if (remoteVideoRef.current?.srcObject) {
       remoteVideoRef.current.srcObject.getTracks().forEach(track => track.stop());
@@ -646,19 +483,16 @@ const InAppCall = ({
     socket.off('answer');
     socket.off('ice-candidate');
 
->>>>>>> 16d02d8913d5803c0d6d5e2a8af4e6fdef853b60
     setActiveCall(null);
     setCallStatus('idle');
     setCallFeature(prev => ({
       ...prev,
       callStatus: 'idle',
       mediaStream: null,
-      isVideo: false
+      isVideo: false,
+      currentPage: 'welcome'
     }));
   };
-<<<<<<< HEAD
- 
-=======
 
   useEffect(() => {
     return () => {
@@ -666,7 +500,6 @@ const InAppCall = ({
     };
   }, []);
 
->>>>>>> 16d02d8913d5803c0d6d5e2a8af4e6fdef853b60
   return (
     <CustomerCallUI
       callFeature={callFeature}
@@ -682,11 +515,5 @@ const InAppCall = ({
     />
   );
 };
-<<<<<<< HEAD
- 
-export default InAppCall;
- 
-=======
 
 export default InAppCall;
->>>>>>> 16d02d8913d5803c0d6d5e2a8af4e6fdef853b60
