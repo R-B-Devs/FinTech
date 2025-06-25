@@ -152,7 +152,6 @@ app.post('/send-reset-link', async (req, res) => {
 
 app.post('/reset-password/:token', async (req, res) => {
   const { token } = req.params;
-  const { password } = req.body;
 
   const email = Object.keys(resetTokens).find(
     key => resetTokens[key].token === token && resetTokens[key].expires > Date.now()
