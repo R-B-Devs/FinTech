@@ -16,14 +16,14 @@ import Goals from './pages/Goals';
 import Offers from './pages/Offers';
 import CreditHealth from './pages/CreditHealth';
 import MoneyTracker from './pages/MoneyTracker';
-import Chat from './pages/Chat';
+import Chat from './pages/Chat'; // ✅ Correctly imported
 import Transactions from './pages/Transactions';
 import Cards from './pages/Cards';
 import Investments from './pages/Investments';
 import Profile from './pages/Profile';
 import SettingsPage from './pages/Settings';
 
-// NEW: Settings subpages
+// Settings subpages
 import PersonalInfo from './pages/PersonalInfo';
 import LinkedAccounts from './pages/LinkedAccounts';
 import HelpCenter from './pages/HelpCenter';
@@ -48,7 +48,7 @@ function App() {
         <Route path="/dashboard/analytics" element={<Analytics />} />
         <Route path="/dashboard/goals" element={<Goals />} />
         <Route path="/dashboard/offers" element={<Offers />} />
-        <Route path="/dashboard/chat" element={<Chat />} />
+        <Route path="/dashboard/chat" element={<Chat />} /> {/* ✅ Already here */}
         <Route path="/dashboard/credit-health" element={<CreditHealth />} />
         <Route path="/dashboard/money-tracker" element={<MoneyTracker />} />
         <Route path="/dashboard/transactions" element={<Transactions />} />

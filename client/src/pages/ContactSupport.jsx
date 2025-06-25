@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MessageCircle, Send, User, AtSign } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // ✅ Import navigate
 
 const ContactSupport = () => {
+  const navigate = useNavigate(); // ✅ Setup navigation
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     message: ''
   });
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [focusedField, setFocusedField] = useState('');
 
@@ -425,11 +429,13 @@ const ContactSupport = () => {
             </div>
 
             {/* Live chat card */}
-            <div 
-              style={styles.contactCard}
-              onMouseEnter={(e) => Object.assign(e.target.style, styles.contactCardHover)}
-              onMouseLeave={(e) => Object.assign(e.target.style, styles.contactCard)}
-            >
+            {/* Live chat card */}
+<div 
+        style={styles.contactCard}
+        onClick={() => navigate('/dashboard/chat')}
+        onMouseEnter={(e) => Object.assign(e.target.style, styles.contactCardHover)}
+        onMouseLeave={(e) => Object.assign(e.target.style, styles.contactCard)}
+>
               <div style={styles.contactCardContent}>
                 <div style={{...styles.iconBg, ...styles.iconBgChat}}>
                   <MessageCircle style={{ width: '1.5rem', height: '1.5rem', color: 'white' }} />

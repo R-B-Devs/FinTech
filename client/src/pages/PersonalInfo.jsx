@@ -3,25 +3,31 @@ import { Pencil, Save, X, Check } from 'lucide-react';
 
 const PersonalInfo = () => {
   const [editSection, setEditSection] = useState(null);
-  const [formData, setFormData] = useState({
-    profileNumber: '1234-5678-9012-3456',
-    fullName: 'John Doe',
-    saId: '8001015009087',
-    gender: 'Male',
-    primaryCell: '+27 71 234 5678',
-    altCell: '+27 82 345 6789',
-    email: 'john.doe@example.com',
-    workNumber: '021 123 4567',
-    residential: '123 Main St, Johannesburg, Gauteng',
-    postal: 'PO Box 456, Sandton, 2196',
-    birthCountry: 'South Africa',
-    residenceCountry: 'South Africa',
-    citizenship: 'South African',
-    employmentType: 'Full-Time',
-    occupation: 'Software Developer',
-    employerIndustry: 'Technology',
-    sourceOfFunds: 'Salary'
-  });
+ const defaultData = {
+  profileNumber: '1234-5678-9012-3456',
+  fullName: 'John Doe',
+  saId: '8001015009087',
+  gender: 'Male',
+  primaryCell: '+27 71 234 5678',
+  altCell: '+27 82 345 6789',
+  email: 'john.doe@example.com',
+  workNumber: '021 123 4567',
+  residential: '123 Main St, Johannesburg, Gauteng',
+  postal: 'PO Box 456, Sandton, 2196',
+  birthCountry: 'South Africa',
+  residenceCountry: 'South Africa',
+  citizenship: 'South African',
+  employmentType: 'Full-Time',
+  occupation: 'Software Developer',
+  employerIndustry: 'Technology',
+  sourceOfFunds: 'Salary'
+};
+
+const [formData, setFormData] = useState(() => {
+  const saved = localStorage.getItem('personalInfo');
+  return saved ? JSON.parse(saved) : defaultData;
+});
+
 
   const [tempData, setTempData] = useState({});
   const [saveStatus, setSaveStatus] = useState('');
@@ -43,13 +49,15 @@ const PersonalInfo = () => {
     setSaveStatus('');
   };
 
-  const handleSave = () => {
-    // Update form data with temp data
-    setFormData(prev => ({ ...prev, ...tempData }));
-    setSaveStatus('saved');
-    setEditSection(null);
-    setTempData({});
-    
+ const handleSave = () => {
+  const updatedData = { ...formData, ...tempData };
+  setFormData(updatedData);
+  localStorage.setItem('personalInfo', JSON.stringify(updatedData)); // 🧠 Save here
+  setSaveStatus('saved');
+  setEditSection(null);
+  setTempData({});
+ 
+
     // Clear save status after 2 seconds
     setTimeout(() => setSaveStatus(''), 2000);
   };
@@ -99,7 +107,10 @@ const PersonalInfo = () => {
 
   const renderField = (field) => {
     const isEditing = editSection && getSectionFields(editSection).some(f => f.name === field.name);
-    const currentValue = isEditing ? (tempData[field.name] || formData[field.name]) : formData[field.name];
+    const currentValue = isEditing 
+  ? (tempData[field.name] !== undefined ? tempData[field.name] : formData[field.name])
+  : formData[field.name];
+
 
     return (
       <div key={field.name} style={styles.fieldGroup}>

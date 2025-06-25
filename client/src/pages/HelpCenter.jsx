@@ -7,12 +7,6 @@ const HelpCenter = () => {
 
   const faqItems = [
     {
-      question: "How do I link a bank account?",
-      answer: "To link a bank account, go to Settings > Linked Accounts and click 'Manage'. Follow the instructions to securely connect your bank.",
-      icon: <CreditCard style={{ width: '20px', height: '20px' }} />,
-      category: "Banking"
-    },
-    {
       question: "How can I reset my password?",
       answer: "You can reset your password by clicking 'Forgot Password' on the login page. Follow the instructions to receive a reset link.",
       icon: <Shield style={{ width: '20px', height: '20px' }} />,
