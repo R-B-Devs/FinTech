@@ -12,6 +12,7 @@ import VerifyOtp from "./pages/VerifyOtp.jsx";
 
 import Dashboard from './pages/Dashboard';
 import CallContainer from './pages/CallContainer';  // Adjust path
+import AgentContainer from "./pages/agentContainer.jsx";
 import Analytics from './pages/Analytics';
 import Goals from './pages/Goals';
 import Offers from './pages/Offers';
@@ -54,6 +55,7 @@ function App() {
         {/* Dashboard routes */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/call" element={<CallContainer />} />
+        <Route path="/agents" element={<AgentContainer />} />
         <Route path="/dashboard/analytics" element={<Analytics />} />
         <Route path="/dashboard/goals" element={<Goals />} />
         <Route path="/dashboard/offers" element={<Offers />} />
