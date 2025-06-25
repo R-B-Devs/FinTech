@@ -6,6 +6,9 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const supabase = require('./supabaseClient');
 
+// JWT SECRET
+const express = require('express');
+const jwt     = require('jsonwebtoken');
 async function testSupabaseConnection() {
   const { data, error } = await supabase
     .from('users')
@@ -451,6 +454,137 @@ app.get('/api/users/dashboard', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error('Dashboard summary fetch error:', err);
     res.status(500).json({ error: 'Failed to load dashboard data.' });
+  }
+});
+
+// ==========================
+// CREDIT SCORE FUNCTIONS
+// ==========================
+
+async function updateCreditScore(user_id, score) {
+  if (!user_id || typeof score !== 'number' || score < 300 || score > 850) {
+    return { 
+      success: false, 
+      message: 'Invalid input. User ID is required and score must be between 300-850' 
+    };
+  }
+
+  try {
+    // First check if the user exists
+    const { data: user, error: userError } = await supabase
+      .from('users')
+      .select('user_id')
+      .eq('user_id', user_id)
+      .single();
+
+    if (userError || !user) {
+      return { 
+        success: false, 
+        message: 'User not found' 
+      };
+    }
+    // JWT TOKEN AUTHENTICATION
+    const JWT_SECRET = 'YOUR_SUPER_SECRET'; // use env vars in production
+
+app.post('/api/login', (req, res) => {
+  const { id_number } = req.body; // user's ID number
+  // You should verify in DB otherwise skip here
+  const token = jwt.sign({ user_id: id_number }, JWT_SECRET, { expiresIn: '1h' });
+  res.json({ token });
+});
+
+function auth(req, res, next) {
+  const h = req.headers.authorization;
+  if (!h) return res.sendStatus(401);
+  const t = h.split(' ')[1];
+  try {
+    req.user = jwt.verify(t, JWT_SECRET);
+    next();
+  } catch {
+    res.sendStatus(403);
+  }
+}
+
+    // Check if the user already has a credit score
+    const { data: existingScore, error: scoreError } = await supabase
+      .from('credit_scores')
+      .select('score_id')
+      .eq('user_id', user_id)
+      .single();
+
+    let result;
+    if (existingScore) {
+      // Update existing score
+      const { error } = await supabase
+        .from('credit_scores')
+        .update({ 
+          score,
+          score_date: new Date().toISOString()
+        })
+        .eq('user_id', user_id);
+
+      if (error) throw error;
+      result = { 
+        success: true, 
+        message: 'Credit score updated successfully',
+        action: 'updated' 
+      };
+    } else {
+      // Insert new score
+      const { error } = await supabase
+        .from('credit_scores')
+        .insert([{ 
+          user_id,
+          score,
+          score_date: new Date().toISOString()
+        }]);
+
+      if (error) throw error;
+      result = { 
+        success: true, 
+        message: 'Credit score created successfully',
+        action: 'created' 
+      };
+    }
+
+    return result;
+  } catch (error) {
+    console.error('Credit score update error:', error);
+    return { 
+      success: false, 
+      message: 'Failed to update credit score',
+      error: error.message 
+    };
+  }
+}
+
+// ==========================
+// ROUTE FOR CREDIT SCORE UPDATE
+// ==========================
+
+app.post('/api/users/credit-score', authenticateToken, async (req, res) => {
+  const { score } = req.body;
+  const user_id = req.user.user_id;
+
+  if (typeof score !== 'number' || score < 300 || score > 850) {
+    return res.status(400).json({ 
+      error: 'Score must be a number between 300 and 850' 
+    });
+  }
+
+  const result = await updateCreditScore(user_id, score);
+  if (result.success) {
+    res.json({
+      message: result.message,
+      action: result.action,
+      user_id,
+      score
+    });
+  } else {
+    res.status(500).json({ 
+      error: result.message,
+      details: result.error 
+    });
   }
 });
 
