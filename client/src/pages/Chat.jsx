@@ -40,35 +40,36 @@ const Chat = () => {
     setInputMessage('');
     setIsTyping(true);
 
-    // Simulate AI response
-    setTimeout(() => {
+    try {
+      // Call your actual AI endpoint
+      const aiResponseText = await generateAIResponse(inputMessage);
+      
       const aiResponse = {
         id: Date.now() + 1,
-        text: generateAIResponse(inputMessage),
+        text: aiResponseText,
         sender: 'ai',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
+      
       setMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      console.error('Error getting AI response:', error);
+      const errorResponse = {
+        id: Date.now() + 1,
+        text: "Sorry, I'm having trouble responding right now. Please try again.",
+        sender: 'ai',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setMessages(prev => [...prev, errorResponse]);
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
-  // const generateAIResponse = (userInput) => {
-  //   const responses = [
-  //     "That's an interesting question! Let me help you with that.",
-  //     "I understand what you're asking. Here's what I think...",
-  //     "Based on your question, I can provide some insights.",
-  //     "That's a great point! Let me elaborate on that for you.",
-  //     "I'm here to assist you with that. Here's my response...",
-  //     "Thanks for asking! I'd be happy to help you understand this better."
-  //   ];
-  //   return responses[Math.floor(Math.random() * responses.length)];
-  // };
-
   const generateAIResponse = async (userInput) => {
-  const token = localStorage.getItem('jwt');
-  try {
-    const res = await fetch('http://localhost:3001/api/ai/ask-context', {
+    const token = localStorage.getItem('jwt');
+    
+    const response = await fetch('http://localhost:3001/api/ai/ask-context', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -76,13 +77,14 @@ const Chat = () => {
       },
       body: JSON.stringify({ question: userInput })
     });
-    const data = await res.json();
-    return data.answer || 'Sorry, could not get a response';
-  } catch {
-    return 'AI service failed.';
-  }
-};
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.answer || 'Sorry, could not get a response';
+  };
 
   const handleLogout = () => {
     navigate('/login');
