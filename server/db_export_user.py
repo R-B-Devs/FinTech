@@ -11,18 +11,18 @@ key = os.getenv("SUPABASE_SERVICE_ROLE")  # Use service role for full access
 
 supabase = create_client(url, key)
 
-# Fetch users
-res = supabase.table("users").select("*").execute()
-users = res.data
+# # Fetch users
+# res = supabase.table("users").select("*").execute()
+# users = res.data
 
-df = pd.DataFrame(users)
+# df = pd.DataFrame(users)
 
-if 'account_number' in df.columns:
-    df.set_index('account_number', inplace=True)
+# if 'account_number' in df.columns:
+#     df.set_index('account_number', inplace=True)
 
-#Data frame for user no
-user_ids = df.index
-print(df.head(30))
+# #Data frame for user no
+# user_ids = df.index
+# print(df.head(30))
 
 
 
