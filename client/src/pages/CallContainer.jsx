@@ -4,7 +4,7 @@ import {
   MessageCircle, Shield, DollarSign, CreditCard, ChevronRight
 } from 'lucide-react';
 import socket from '../utilis/WebRTCService';
-import InAppCall from "./InAppCall";
+import CustomerCallUI from './InAppCall'; // Assuming this is your correct UI component
 
 const CallContainer = () => {
   const [callFeature, setCallFeature] = useState({
@@ -46,16 +46,14 @@ const CallContainer = () => {
       return;
     }
 
-      peerConnection.current = new RTCPeerConnection({
-        iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
-      });
+    peerConnection.current = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+    });
 
-    // Add local tracks to peer connection
     localStream.current.getTracks().forEach(track => {
       peerConnection.current.addTrack(track, localStream.current);
     });
 
-    // Send any ICE candidates to server
     peerConnection.current.onicecandidate = event => {
       if (event.candidate) {
         socket.emit('ice-candidate', {
@@ -67,7 +65,6 @@ const CallContainer = () => {
       }
     };
 
-    // Handle remote tracks
     peerConnection.current.ontrack = event => {
       event.streams[0].getTracks().forEach(track => {
         remoteStream.current.addTrack(track);
@@ -116,10 +113,8 @@ const CallContainer = () => {
       activeDepartment: null,
       currentPage: 'main-menu',
     }));
-    setActiveCall(null);
   };
 
-  // Handle incoming answer
   useEffect(() => {
     socket.on('answer', async ({ answer }) => {
       if (peerConnection.current) {
@@ -128,7 +123,6 @@ const CallContainer = () => {
       }
     });
 
-    socket.on('ice-candidate', async ({ candidate }) => {
     socket.on('ice-candidate', async ({ candidate }) => {
       try {
         await peerConnection.current?.addIceCandidate(new RTCIceCandidate(candidate));
@@ -154,4 +148,4 @@ const CallContainer = () => {
   );
 };
 
-export default InAppCall;
+export default CallContainer;
