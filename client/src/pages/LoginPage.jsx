@@ -111,7 +111,7 @@
 
 //             {/* Sign In Button */}
 //             <button className="login-button" disabled={!!idError || !!passwordError}>
-//               Login 
+//               Login
 //             </button>
 //           </div>
 //         </div>
@@ -136,7 +136,6 @@ import "../styles/LoginPage.css";
 import loginImg from "../assets/login-image.jpg";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
-import { validateLogin } from '../cyberFrontend/validation';
 
 const LoginPage = () => {
   const navigate = useNavigate();
