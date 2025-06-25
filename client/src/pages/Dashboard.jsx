@@ -686,7 +686,8 @@ import {
   Phone,
   Video,
   UserCircle,
-  X
+  X,
+  LogOut
 } from 'lucide-react';
 
 const timeframes = ['week', 'month', 'quarter', 'year'];
@@ -816,11 +817,15 @@ const Dashboard = () => {
             <button className="header-btn">
               <Bell className="header-icon" />
             </button>
+
             <div className="header-container">
               <div className="header-content">
-                <Link to="/dashboard/settings" className="header-btn">
-                  <Settings className="header-icon" />
+                <Link to="/login" className="header-btn">
+                  <LogOut className="header-icon" /> 
                 </Link>
+                </div>
+
+                <div className="header-container">
                 <Link to="/dashboard/profile" className="user-avatar">
                   <User className="user-icon" />
                 </Link>
