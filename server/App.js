@@ -7,20 +7,7 @@ const jwt = require('jsonwebtoken');
 const supabase = require('./supabaseClient');
 
 // JWT SECRET
-const express = require('express');
-const jwt     = require('jsonwebtoken');
-async function testSupabaseConnection() {
-  const { data, error } = await supabase
-    .from('users')
-    .select('user_id')
-    .limit(1);
 
-  if (error) {
-    console.error('❌ Supabase connection test failed:', error.message || error);
-  } else {
-    console.log('✅ Supabase database connection OK!');
-  }
-}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -483,28 +470,7 @@ async function updateCreditScore(user_id, score) {
         message: 'User not found' 
       };
     }
-    // JWT TOKEN AUTHENTICATION
-    const JWT_SECRET = 'YOUR_SUPER_SECRET'; // use env vars in production
-
-app.post('/api/login', (req, res) => {
-  const { id_number } = req.body; // user's ID number
-  // You should verify in DB otherwise skip here
-  const token = jwt.sign({ user_id: id_number }, JWT_SECRET, { expiresIn: '1h' });
-  res.json({ token });
-});
-
-function auth(req, res, next) {
-  const h = req.headers.authorization;
-  if (!h) return res.sendStatus(401);
-  const t = h.split(' ')[1];
-  try {
-    req.user = jwt.verify(t, JWT_SECRET);
-    next();
-  } catch {
-    res.sendStatus(403);
-  }
-}
-
+    
     // Check if the user already has a credit score
     const { data: existingScore, error: scoreError } = await supabase
       .from('credit_scores')
