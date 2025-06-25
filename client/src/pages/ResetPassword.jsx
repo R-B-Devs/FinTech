@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import "../styles/ResetPassword.css";
-import ResetImage from "../assets/Reset.png"; // make sure this path is correct
+import ResetImage from "../assets/Reset.png"; 
 
 const ResetPassword = () => {
   const [userId, setUserId] = useState("");
@@ -9,6 +9,7 @@ const ResetPassword = () => {
   const [strength, setStrength] = useState("");
   const [idError, setIdError] = useState("");
   const navigate = useNavigate();
+  const { token } = useParams(); 
 
   const validateId = (val) => {
     setUserId(val);
@@ -33,14 +34,26 @@ const ResetPassword = () => {
     }
   };
 
-  const handleReset = (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
     if (idError || strength !== "Strong") {
       alert("Please fix the issues before submitting.");
       return;
     }
-    alert("Password reset successfully!");
-    navigate("/login");
+
+    try {
+      const res = await fetch(`http://localhost:3001/reset-password/${token}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, password }),
+      });
+
+      const data = await res.json();
+      alert(data.message);
+      if (data.success) navigate("/login");
+    } catch (err) {
+      alert("Failed to reset password");
+    }
   };
 
   return (
