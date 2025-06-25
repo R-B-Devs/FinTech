@@ -464,187 +464,6 @@
 //               </div>
 //             </div>
 //           </div>
-
-//           <div className="content-grid">
-//             {/* AI Insights */}
-//             <div className="content-left">
-//               <div className="insights-card">
-//                 <div className="card-header">
-//                   <div className="card-title-section">
-//                     <div className="card-icon card-icon-ai">
-//                       <Brain className="icon" />
-//                     </div>
-//                     <h3 className="card-title">AI Financial Insights</h3>
-//                   </div>
-//                   <button 
-//                     onClick={() => setAiInsightsVisible(!aiInsightsVisible)}
-//                     className="toggle-btn"
-//                   >
-//                     {aiInsightsVisible ? <Eye className="toggle-icon" /> : <EyeOff className="toggle-icon" />}
-//                   </button>
-//                 </div>
-
-//                 {aiInsightsVisible && (
-//                   <div className="insights-content">
-//                     {aiInsights.map((insight, index) => (
-//                       <div key={index} className={`insight-item insight-${insight.type}`}>
-//                         <div className={`insight-icon-wrapper insight-icon-${insight.type}`}>
-//                           {insight.icon}
-//                         </div>
-//                         <div className="insight-content">
-//                           <div className="insight-header">
-//                             <h4 className="insight-title">{insight.title}</h4>
-//                             <span className="insight-confidence">{insight.confidence}% confidence</span>
-//                           </div>
-//                           <p className="insight-message">{insight.message}</p>
-//                         </div>
-//                         <ChevronRight className="insight-arrow" />
-//                       </div>
-//                     ))}
-//                   </div>
-//                 )}
-//               </div>
-
-//               {/* Recent Transactions */}
-//               <div className="transactions-card">
-//                 <div className="card-header">
-//                   <h3 className="card-title">Recent Transactions</h3>
-//                   <div className="timeframe-buttons">
-//                     {timeframes.map((timeframe) => (
-//                       <button
-//                         key={timeframe}
-//                         onClick={() => setSelectedTimeframe(timeframe)}
-//                         className={`timeframe-btn ${selectedTimeframe === timeframe ? 'timeframe-btn-active' : ''}`}
-//                       >
-//                         {timeframe}
-//                       </button>
-//                     ))}
-//                   </div>
-//                 </div>
-
-//                 <div className="transactions-list">
-//                   {recentTransactions.map((transaction) => (
-//                     <div key={transaction.id} className="transaction-item">
-//                       <div className="transaction-info">
-//                         <div className={`transaction-icon ${transaction.type === 'credit' ? 'transaction-icon-credit' : 'transaction-icon-debit'}`}>
-//                           {transaction.type === 'credit' ? 
-//                             <TrendingUp className="icon" /> : 
-//                             <TrendingDown className="icon" />
-//                           }
-//                         </div>
-//                         <div className="transaction-details">
-//                           <div className="transaction-description">{transaction.description}</div>
-//                           <div className="transaction-meta">{transaction.category} • {transaction.time}</div>
-//                         </div>
-//                       </div>
-//                       <div className={`transaction-amount ${transaction.type === 'credit' ? 'transaction-amount-credit' : 'transaction-amount-debit'}`}>
-//                         {transaction.type === 'credit' ? '+' : '-'}R{transaction.amount}
-//                       </div>
-//                     </div>
-//                   ))}
-//                 </div>
-//               </div>
-//             </div>
-
-//             {/* Right Sidebar Content */}
-//             <div className="content-right">
-//               {/* Security Status */}
-//               <div className="security-card">
-//                 <div className="card-header">
-//                   <div className="card-title-section">
-//                     <div className="card-icon card-icon-security">
-//                       <Shield className="icon" />
-//                     </div>
-//                     <h3 className="card-title">Security Status</h3>
-//                   </div>
-//                   <div className="live-indicator">
-//                     <div className="live-dot"></div>
-//                     <span className="live-text">Live</span>
-//                   </div>
-//                 </div>
-
-//                 <div className="security-metrics">
-//                   {securityMetrics.map((metric, index) => (
-//                     <div key={index} className="security-metric">
-//                       <span className="security-label">{metric.label}</span>
-//                       <div className="security-value">
-//                         <span className="security-text">{metric.value}</span>
-//                         <CheckCircle className="security-check" />
-//                       </div>
-//                     </div>
-//                   ))}
-//                 </div>
-
-//                 <div className="cobol-status">
-//                   <div className="cobol-indicator">
-//                     <Lock className="cobol-icon" />
-//                     <span className="cobol-text">COBOL mainframe integration active</span>
-//                   </div>
-//                 </div>
-//               </div>
-
-//               {/* Quick Actions */}
-//               <div className="actions-card">
-//                 <h3 className="card-title">Personalized Financial Tips</h3>
-//                 <div className="actions-list">
-//                   <button className="action-btn action-btn-primary">
-//                     <Zap className="action-icon" />
-//                     <span className="action-text">Spend Less Than You Earn</span>
-//                   </button>
-//                   <button className="action-btn action-btn-primary">
-//                     <PieChart className="action-icon" />
-//                     <span className="action-text">Invest Early and Regularly</span>
-//                   </button>
-//                   <button className="action-btn action-btn-primary">
-//                     <Target className="action-icon" />
-//                     <span className="action-text">Track Your Expenses</span>
-//                   </button>
-//                   <button className="action-btn action-btn-primary">
-//                     <Database className="action-icon" />
-//                     <span className="action-text">Avoid High-Interest Debt</span>
-//                   </button>
-//                   <button className="action-btn action-btn-primary">
-//                     <Database className="action-icon" />
-//                     <span className="action-text">Build an Emergency Fund</span>
-//                   </button>
-//                 </div>
-//               </div>
-
-//               {/* Performance Metrics */}
-//               <div className="performance-card">
-//                 <h3 className="card-title">System Performance</h3>
-//                 <div className="performance-metrics">
-//                   <div className="performance-metric">
-//                     <div className="performance-header">
-//                       <span className="performance-label">AI Processing</span>
-//                       <span className="performance-value performance-value-green">98%</span>
-//                     </div>
-//                     <div className="progress-bar">
-//                       <div className="progress-fill progress-fill-green" style={{width: '98%'}}></div>
-//                     </div>
-//                   </div>
-//                   <div className="performance-metric">
-//                     <div className="performance-header">
-//                       <span className="performance-label">COBOL Uptime</span>
-//                       <span className="performance-value performance-value-blue">99.9%</span>
-//                     </div>
-//                     <div className="progress-bar">
-//                       <div className="progress-fill progress-fill-blue" style={{width: '99.9%'}}></div>
-//                     </div>
-//                   </div>
-//                   <div className="performance-metric">
-//                     <div className="performance-header">
-//                       <span className="performance-label">Security Score</span>
-//                       <span className="performance-value performance-value-purple">100%</span>
-//                     </div>
-//                     <div className="progress-bar">
-//                       <div className="progress-fill progress-fill-purple" style={{width: '100%'}}></div>
-//                     </div>
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
 //         </main>
 //       </div>
 //     </div>
@@ -686,35 +505,12 @@ import {
   Phone,
   Video,
   UserCircle,
-  X
+  X,
+  Loader2
 } from 'lucide-react';
 
 const timeframes = ['week', 'month', 'quarter', 'year'];
 
-// Placeholders for metrics, AI insights, and security unless you make them dynamic
-const aiInsights = [
-  {
-    type: 'success',
-    icon: <CheckCircle className="icon" />,
-    title: 'Spending Optimization',
-    message: 'Your grocery spending is 15% below average. Consider investing the savings.',
-    confidence: 94
-  },
-  {
-    type: 'warning',
-    icon: <AlertTriangle className="icon" />,
-    title: 'Bill Prediction',
-    message: 'Electricity bill likely to increase by R180 next month based on usage patterns.',
-    confidence: 87
-  },
-  {
-    type: 'info',
-    icon: <TrendingUp className="icon" />,
-    title: 'Investment Opportunity',
-    message: 'Stock market trends suggest a good time to increase your portfolio by 5%.',
-    confidence: 91
-  }
-];
 const securityMetrics = [
   { label: '2FA Status', value: 'Active' },
   { label: 'Encryption', value: '256-bit' },
@@ -724,6 +520,7 @@ const securityMetrics = [
 
 const Dashboard = () => {
   const [selectedTimeframe, setSelectedTimeframe] = useState('month');
+  const [aiInsights, setAiInsights] = useState([]);
   const [aiInsightsVisible, setAiInsightsVisible] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -736,6 +533,9 @@ const Dashboard = () => {
   const [recentTransactions, setRecentTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
+  const [userQuery, setUserQuery] = useState('');
 
   // For getting the current user name
   let localUser = {};
@@ -743,12 +543,114 @@ const Dashboard = () => {
     localUser = JSON.parse(localStorage.getItem('user') || '{}');
   } catch { localUser = {}; }
 
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
+  // Format AI insights
+  const formatInsights = (insights) => {
+    if (!insights) return [];
+    if (Array.isArray(insights)) {
+      return insights.map(insight => ({
+        title: insight.title || "Financial Insight",
+        message: insight.message || insight.description || "",
+        type: insight.type || "info",
+        confidence: insight.confidence || Math.floor(Math.random() * 21) + 80,
+        icon: insight.icon || <Brain className="icon" />,
+        action: insight.action || null
+      }));
+    }
+    if (typeof insights === 'string') {
+      return insights
+        .split(/\n[0-9]*\.?\s+/)
+        .filter(item => item.trim() !== "")
+        .map((item, i) => ({
+          title: `AI Insight ${i + 1}`,
+          message: item.trim(),
+          type: ["warning", "success", "info"][i % 3],
+          confidence: Math.floor(Math.random() * 21) + 80,
+          icon: <Brain className="icon" />,
+        }));
+    }
+    return [];
+  };
 
-  // Fetch dashboard data on mount
+  // Fetch AI insights
+  const fetchAiInsights = async () => {
+    setAiLoading(true);
+    setAiError(null);
+    try {
+      const token = localStorage.getItem('jwt');
+      const response = await fetch("http://localhost:5001/analyze", {
+        headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+      });
+      if (!response.ok) {
+        throw new Error(`AI service error: ${response.status}`);
+      }
+      const data = await response.json();
+      setAiInsights(formatInsights(data.insights || data));
+    } catch (err) {
+      console.error("Failed to load AI insights:", err);
+      setAiError("AI insights temporarily unavailable. Showing sample insights.");
+      setAiInsights([
+        {
+          title: "Spending Pattern",
+          message: "Your dining out expenses are 20% higher than last month.",
+          type: "warning",
+          confidence: 85,
+          icon: <AlertTriangle className="icon" />
+        },
+        {
+          title: "Savings Opportunity",
+          message: "You could save R500/month by optimizing subscription services.",
+          type: "success",
+          confidence: 92,
+          icon: <CheckCircle className="icon" />
+        },
+        {
+          title: "Investment Suggestion",
+          message: "Consider increasing your investment contributions by 5% based on current market conditions.",
+          type: "info",
+          confidence: 78,
+          icon: <TrendingUp className="icon" />
+        }
+      ]);
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  // Handle user query to AI
+  const handleAiQuery = async () => {
+    if (!userQuery.trim()) return;
+    setAiLoading(true);
+    try {
+      const token = localStorage.getItem('jwt');
+      const response = await fetch("http://localhost:5001/query", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+        },
+        body: JSON.stringify({ query: userQuery })
+      });
+      const data = await response.json();
+      setAiInsights(prev => [
+        {
+          title: "Your Query Result",
+          message: data.response || data.answer || data.message || "Received response from AI",
+          type: "info",
+          confidence: 95,
+          icon: <Brain className="icon" />
+        },
+        ...prev
+      ]);
+      setUserQuery('');
+    } catch (err) {
+      console.error("AI query failed:", err);
+      setAiError("Could not process your query. Please try again.");
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  // Fetch dashboard data
   useEffect(() => {
     async function fetchDashboardData() {
       setLoading(true);
@@ -759,7 +661,6 @@ const Dashboard = () => {
         setLoading(false);
         return;
       }
-
       try {
         const response = await fetch('http://localhost:3001/api/users/dashboard', {
           headers: { 'Authorization': `Bearer ${token}` }
@@ -782,14 +683,24 @@ const Dashboard = () => {
       setLoading(false);
     }
     fetchDashboardData();
+    fetchAiInsights();
   }, []);
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+  // Update time every second
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
 
   if (loading) 
-    return <div className="dashboard-loading">Loading dashboard data...</div>;
+    return (
+      <div className="dashboard-loading">
+        <Loader2 className="animate-spin" size={48} />
+        <p>Loading your financial dashboard...</p>
+      </div>
+    );
   
   if (apiError) 
     return <div className="dashboard-error">{apiError}</div>;
@@ -872,6 +783,7 @@ const Dashboard = () => {
                   </Link>
                 </div>
               </div>
+
               <div className="nav-section">
                 <div className="nav-section-title">Financial</div>
                 <div className="nav-links">
@@ -889,6 +801,7 @@ const Dashboard = () => {
                   </Link>
                 </div>
               </div>
+
               <div className="nav-section">
                 <div className="nav-section-title">Security</div>
                 <div className="nav-links">
@@ -1119,30 +1032,69 @@ const Dashboard = () => {
                     </div>
                     <h3 className="card-title">AI Financial Insights</h3>
                   </div>
-                  <button 
-                    onClick={() => setAiInsightsVisible(!aiInsightsVisible)}
-                    className="toggle-btn"
-                  >
-                    {aiInsightsVisible ? <Eye className="toggle-icon" /> : <EyeOff className="toggle-icon" />}
-                  </button>
+                  <div className="ai-controls">
+                    <button 
+                      onClick={() => setAiInsightsVisible(!aiInsightsVisible)}
+                      className="toggle-btn"
+                    >
+                      {aiInsightsVisible ? <Eye className="toggle-icon" /> : <EyeOff className="toggle-icon" />}
+                    </button>
+                    <button 
+                      onClick={fetchAiInsights}
+                      disabled={aiLoading}
+                      className="refresh-btn"
+                    >
+                      {aiLoading ? <Loader2 className="animate-spin" size={16} /> : "Refresh"}
+                    </button>
+                  </div>
                 </div>
+                {aiError && (
+                  <div className="ai-error-banner">
+                    {aiError}
+                  </div>
+                )}
                 {aiInsightsVisible && (
                   <div className="insights-content">
-                    {aiInsights.map((insight, index) => (
-                      <div key={index} className={`insight-item insight-${insight.type}`}>
-                        <div className={`insight-icon-wrapper insight-icon-${insight.type}`}>
-                          {insight.icon}
-                        </div>
-                        <div className="insight-content">
-                          <div className="insight-header">
-                            <h4 className="insight-title">{insight.title}</h4>
-                            <span className="insight-confidence">{insight.confidence}% confidence</span>
-                          </div>
-                          <p className="insight-message">{insight.message}</p>
-                        </div>
-                        <ChevronRight className="insight-arrow" />
+                    <div className="ai-query-box">
+                      <input
+                        type="text"
+                        value={userQuery}
+                        onChange={(e) => setUserQuery(e.target.value)}
+                        placeholder="Ask financial questions..."
+                        disabled={aiLoading}
+                        onKeyPress={(e) => e.key === 'Enter' && handleAiQuery()}
+                      />
+                      <button 
+                        onClick={handleAiQuery}
+                        disabled={aiLoading || !userQuery.trim()}
+                      >
+                        {aiLoading ? <Loader2 className="animate-spin" size={16} /> : "Ask"}
+                      </button>
+                    </div>
+                    {aiLoading && aiInsights.length === 0 ? (
+                      <div className="ai-loading">
+                        <Loader2 className="animate-spin" size={24} />
+                        <p>Analyzing your financial data...</p>
                       </div>
-                    ))}
+                    ) : (
+                      aiInsights.map((insight, index) => (
+                        <div key={index} className={`insight-item insight-${insight.type}`}>
+                          <div className={`insight-icon-wrapper insight-icon-${insight.type}`}>
+                            {insight.icon}
+                          </div>
+                          <div className="insight-content">
+                            <div className="insight-header">
+                              <h4 className="insight-title">{insight.title}</h4>
+                              {insight.confidence && (
+                                <span className="insight-confidence">{insight.confidence}% confidence</span>
+                              )}
+                            </div>
+                            <p className="insight-message">{insight.message}</p>
+                          </div>
+                          <ChevronRight className="insight-arrow" />
+                        </div>
+                      ))
+                    )}
                   </div>
                 )}
               </div>
