@@ -455,6 +455,7 @@ const Analytics = () => {
           </div>
         </div>
         
+        
         {/* Navigation Tabs */}
         <div className="analytics-tabs">
           <TabButton id="overview" label="Overview" active={activeTab === 'overview'} onClick={setActiveTab} />

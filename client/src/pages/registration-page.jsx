@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import registerImage from '../assets/register.png';
 import '../styles/registration-page.css';
-import BotVerification from '../components/BotVerification';
 
 
 function RegistrationForm() {

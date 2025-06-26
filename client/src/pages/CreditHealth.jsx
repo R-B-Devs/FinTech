@@ -22,7 +22,7 @@ const CreditHealth = () => {
 
       <div className="credit-metrics">
         <div className="metric-card">
-          <TrendingUp className="metric-icon" />
+          <TrendingUp size={110} className="metric-icon" />
           <h4>Credit Utilization</h4>
           <p>27% used of your total limit</p>
         </div>

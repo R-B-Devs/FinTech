@@ -1,4 +1,4 @@
-
+/*  
 .nav-link {
   display: inline-flex;
   align-items: center;
@@ -17,7 +17,7 @@
   align-items: center;
   gap: 6px;
   background-color: red; /* temporarily red */
-  color: white;
+  /*{color: white;
   padding: 0.6rem 1.2rem;
   font-size: 16px;
   z-index: 999;
@@ -43,4 +43,4 @@
   align-items: center;
   gap: 8px;
 }
-
+*/

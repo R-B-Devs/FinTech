@@ -23,8 +23,8 @@ import Investments from './pages/Investments';
 import Profile from './pages/Profile';
 import SettingsPage from './pages/Settings';
 import BackToDashboardButton from './pages/BackToDashboardButton';
-import CookieBanner from './pages/CookieBanner';
-import BotVerification from './pages/BotVerification.'
+
+import BotVerification from "./pages/BotVerification.jsx";
 
 // NEW: Settings subpages
 import PersonalInfo from './pages/PersonalInfo';
@@ -35,9 +35,9 @@ import ContactSupport from './pages/ContactSupport';
 function App() {
   return (
     <Router>
+
       <Routes>
         
-        <CookieBanner />
         {/* Public routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
@@ -47,9 +47,8 @@ function App() {
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/otp" element={<OtpPage />} />
         <Route path="/verifyOtp" element={<VerifyOtp />} />
-       {/* <Route path="/cookiebanner" element={<CookieBanner />} /> */}
         <Route path="/botverification" element={<BotVerification />} />
-        <Route path="/backtodashboardbutton" element={<CookieBanner />} />
+        <Route path="/backtodashboardbutton" element={<BackToDashboardButton />} />
        
 
 
