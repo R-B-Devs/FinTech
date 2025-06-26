@@ -6,6 +6,7 @@
 # set working directories
 # and install dependencies
 FROM node:24-alpine AS build
+WORKDIR /app
 RUN npm install
 COPY . .
 EXPOSE 3000
