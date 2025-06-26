@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 
 const ContactSupport = () => {
   const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ const ContactSupport = () => {
 
   return (
     <div style={styles.container}>
+       <BackToDashboardButton />
       <h1 style={styles.title}>Contact Support</h1>
       <p style={styles.subtitle}>
         Need help? Reach out to our support team through the form below or use the provided contact information.

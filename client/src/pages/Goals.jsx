@@ -1,9 +1,11 @@
 import React from 'react';
 import '../styles/Goals.css'; // Optional CSS for goals styling
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 
 const Goals = () => {
   return (
     <div className="goals-page">
+      <BackToDashboardButton />
       <h2>Your Financial Goals</h2>
       <p>Track your progress and set new goals to stay on top of your finances.</p>
 

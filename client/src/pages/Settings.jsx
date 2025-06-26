@@ -5,6 +5,7 @@ import {
   Moon, Sun, Smartphone, Mail, Lock, Globe, HelpCircle, LogOut, Save
 } from 'lucide-react';
 import '../styles/Settings.css';
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 
 export default function SettingsPage() {
   const navigate = useNavigate();

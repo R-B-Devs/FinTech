@@ -1,0 +1,33 @@
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: red; /* temporarily red */
+  color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 16px;
+  z-index: 999;
+}
+
+
+.nav-link:hover {
+  background-color: #444;
+  color: #61dafb;
+}
+
+.material-symbols-outlined {
+  font-size: 18px;
+  vertical-align: middle;
+}
+.back-button {
+  background: #444;
+  color: white;
+  padding: 10px 20px;
+  margin: 1rem;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { CreditCard } from 'lucide-react';
 import '../styles/Cards.css';
+import BackToDashboardButton from '../pages/BackToDashboardButton';
+
 
 const savedCards = [
   {
@@ -23,6 +25,7 @@ const savedCards = [
   },
 ];
 
+
 const Cards = () => {
   // track flipped cards by id
   const [flippedIds, setFlippedIds] = useState([]);
@@ -37,8 +40,12 @@ const Cards = () => {
 
   return (
     <div className="cards-page">
+      <BackToDashboardButton />
       <h2><CreditCard size={28} /> Saved Cards</h2>
       <p>Click on a card to see more details.</p>
+
+      
+
 
       <div className="cards-container">
         {savedCards.map((card) => {

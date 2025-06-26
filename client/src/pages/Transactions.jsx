@@ -71,6 +71,7 @@ import React, { useEffect, useState } from 'react';
 import { Activity } from 'lucide-react';
 import '../styles/Transactions.css';
 
+
 const Transactions = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);

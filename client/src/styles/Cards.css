@@ -131,4 +131,8 @@
     font-style: italic;
     color: #ffa6a6;
   }
+  .nav-link {
+  border: 2px solid red;
+}
+
   

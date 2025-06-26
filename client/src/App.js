@@ -22,6 +22,7 @@ import Cards from './pages/Cards';
 import Investments from './pages/Investments';
 import Profile from './pages/Profile';
 import SettingsPage from './pages/Settings';
+import BackToDashboardButton from './pages/BackToDashboardButton';
 
 // NEW: Settings subpages
 import PersonalInfo from './pages/PersonalInfo';

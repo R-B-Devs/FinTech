@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 
 const LinkedAccounts = () => {
   const [accounts, setAccounts] = useState([
@@ -54,6 +55,7 @@ const LinkedAccounts = () => {
 
   return (
     <div style={styles.container}>
+      <BackToDashboardButton />
       <h1 style={styles.title}>Linked Accounts</h1>
       <p style={styles.text}>
         Manage your connected bank accounts and payment methods.

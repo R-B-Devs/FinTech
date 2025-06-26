@@ -1,6 +1,7 @@
 import React from 'react';
 import { BarChart2 } from 'lucide-react';
 import '../styles/Investments.css';
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 
 const investments = [
   { id: 1, name: 'Tech Growth Fund', type: 'Mutual Fund', value: 25000, change: 5.2 },
@@ -12,6 +13,7 @@ const investments = [
 const Investments = () => {
   return (
     <div className="investments-page">
+      <BackToDashboardButton />
       <h2><BarChart2 size={28} /> Investments Portfolio</h2>
       <p>Overview of your current investments and their performance.</p>
 

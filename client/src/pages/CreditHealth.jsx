@@ -1,10 +1,12 @@
 import React from 'react';
 import { Activity, TrendingUp, ShieldCheck, Info } from 'lucide-react';
 import '../styles/CreditHealth.css';
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 
 const CreditHealth = () => {
   return (
     <div className="credit-health-page">
+      <BackToDashboardButton />
       <h2><Activity className="icon" /> Credit Health Overview</h2>
 
       <div className="credit-score-section">
@@ -33,9 +35,9 @@ const CreditHealth = () => {
           <Info className="metric-icon" />
           <h4>Credit Tips</h4>
           <ul>
-            <li>💡 Keep utilization under 30%</li>
-            <li>💡 Always pay on time</li>
-            <li>💡 Avoid too many new credit applications</li>
+            <li><i class="fa-regular fa-lightbulb"></i> Keep utilization under 30%</li>
+            <li><i class="fa-regular fa-lightbulb"></i>Always pay on time</li>
+            <li><i class="fa-regular fa-lightbulb"></i> Avoid too many new credit applications</li>
           </ul>
         </div>
       </div>

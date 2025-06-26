@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import ForgotPasswordImg from "../assets/forgot.png";
 import Logo from "../assets/logo.png";
 import "../styles/ForgotPassword.css";
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
@@ -28,6 +29,7 @@ const ForgotPassword = () => {
 
   return (
     <div className="forgot-password-container">
+      <BackToDashboardButton />
       <div className="forgot-password-content">
         <div className="forgot-password-left">
           <img src={Logo} alt="Logo" className="forgot-password-logo" />

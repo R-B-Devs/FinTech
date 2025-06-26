@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 
 const HelpCenter = () => {
   const [openIndex, setOpenIndex] = useState(null);
@@ -37,6 +38,7 @@ const HelpCenter = () => {
 
   return (
     <div style={styles.container}>
+      <BackToDashboardButton />
       <h1 style={styles.title}>Help Center</h1>
       <p style={styles.text}>
         Browse frequently asked questions, guides, and support resources to get the most out of your financial tools.

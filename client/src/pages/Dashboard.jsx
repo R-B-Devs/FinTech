@@ -691,6 +691,7 @@ import {
   LogOut
 } from 'lucide-react';
 
+
 const timeframes = ['week', 'month', 'quarter', 'year'];
 
 // Placeholders for metrics, AI insights, and security unless you make them dynamic

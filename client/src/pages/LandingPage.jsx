@@ -5,6 +5,7 @@ import woman from '../assets/woman.png';
 
 
 
+
 const LandingPage = () => {
   const navigate = useNavigate();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });

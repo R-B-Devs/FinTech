@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from "../assets/logo.png";
 import "../styles/Chat.css";
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 
 const Chat = () => {
   const [messages, setMessages] = useState([
@@ -103,6 +104,7 @@ const Chat = () => {
 
   return (
     <div className="chat-container">
+       <BackToDashboardButton />
       {/* Header */}
       <div className="chat-header">
         <div className="chat-header-left">

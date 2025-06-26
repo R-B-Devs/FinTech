@@ -1,8 +1,10 @@
 import React from 'react';
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 
 const DemoPage = () => {
   return (
     <div style={styles.container}>
+      <BackToDashboardButton />
       {/* Brand Name */}
       <div style={styles.brandContainer}>
         <h1 style={styles.brandName}>

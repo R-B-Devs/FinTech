@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 import { 
   Gift, 
   CreditCard, 
@@ -17,6 +18,7 @@ import {
   AlertTriangle,
   CheckCircle
 } from 'lucide-react';
+
 
 const Offers = () => {
   const [selectedFilter, setSelectedFilter] = useState('all');
@@ -288,7 +290,7 @@ const Offers = () => {
       fontFamily: 'system-ui, -apple-system, sans-serif',
       backgroundColor: '#1a1a1a',
       minHeight: '100vh'
-    }}>
+    }}><BackToDashboardButton />
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '32px' }}>
         <h2 style={{ fontSize: '32px', fontWeight: 'bold', color: '#ffffff', margin: '0 0 8px 0' }}>

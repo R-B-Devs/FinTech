@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Pencil } from 'lucide-react';
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 
 const PersonalInfo = () => {
   const [editSection, setEditSection] = useState(null);

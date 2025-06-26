@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell, Area, AreaChart } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, Calendar, AlertTriangle, Target, CreditCard, PiggyBank, Brain, Users, Bell, Settings, Filter, Download, RefreshCw } from 'lucide-react';
 import "../styles/MoneyTracker.css";
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 
 const MoneyTracker = () => {
   const [activeTab, setActiveTab] = useState('overview');

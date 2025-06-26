@@ -89,6 +89,7 @@
 import React, { useEffect, useState } from 'react';
 import { FaUserCircle, FaUser, FaSave } from 'react-icons/fa';
 import '../styles/Profile.css';
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);

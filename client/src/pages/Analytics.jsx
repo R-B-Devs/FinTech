@@ -4,6 +4,7 @@ import {
   BarChart, Bar, AreaChart, Area, ResponsiveContainer
 } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, Target, Calendar, Download, Filter, AlertTriangle, RefreshCw } from 'lucide-react';
+import BackToDashboardButton from '../pages/BackToDashboardButton';
 
 const COLORS = ['#a10d2f', '#ff6384', '#36a2eb', '#ffce56', '#4bc0c0', '#9966ff', '#ff9f40'];
 
@@ -352,6 +353,7 @@ const Analytics = () => {
     const Icon = kpi.icon;
     return (
       <div className="kpi-card">
+        <BackToDashboardButton />
         <div className="kpi-header">
           <Icon size={24} className="kpi-icon" />
           <span className={`kpi-trend ${kpi.trend}`}>
