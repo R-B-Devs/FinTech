@@ -6,6 +6,8 @@
 # set working directories
 # Note: The WORKDIR command sets the working directory for any RUN, CMD, ENTRYPOINT
 FROM node:24-alpine
+WORKDIR /app
+COPY package.json package-lock.json ./
 # RUN npm install -g npm@latest
 RUN npm install
 COPY . .
