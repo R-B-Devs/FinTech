@@ -106,21 +106,15 @@ const Chat = () => {
       {/* Header */}
       <div className="chat-header">
         <div className="chat-header-left">
-          <img src={Logo} alt="LynqAI Logo" className="chat-logo" />
-          <div className="chat-title">
-            <h1>Lynq Chat</h1>
-            <span className="chat-status">Online</span>
-          </div>
+          <div className="logo">
+              <span className="logo-text">Lynq</span>
+              <span className="logo-accent">AI</span>
+            </div>
         </div>
         <div className="chat-header-right">
           <button className="chat-action-btn" onClick={clearChat} title="Clear Chat">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-            </svg>
-          </button>
-          <button className="chat-action-btn logout-btn" onClick={handleLogout} title="Logout">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
             </svg>
           </button>
         </div>
