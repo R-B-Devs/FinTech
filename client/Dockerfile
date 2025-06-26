@@ -15,6 +15,8 @@ RUN npm run build
 # serve the app build with static server
 FROM node:24-alpine AS production
 WORKDIR /app
+RUN npm install -g serve
+COPY --from=build /app/build ./build
 EXPOSE 3000
 CMD ["npm", "start"]
 
