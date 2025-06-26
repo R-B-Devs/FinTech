@@ -136,6 +136,8 @@ import "../styles/LoginPage.css";
 import loginImg from "../assets/login-image.jpg";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLock, faUser } from '@fortawesome/free-solid-svg-icons';
+import BotVerification from '../pages/BotVerification';
+
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -221,6 +223,14 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
+
+
+    const [isVerified, setIsVerified] = useState(false);
+
+    const handleVerification = () => {
+    setIsVerified(true);
+   };
+
   // ======================================
 
   return (
