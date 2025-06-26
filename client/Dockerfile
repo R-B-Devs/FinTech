@@ -18,7 +18,7 @@ WORKDIR /app
 RUN npm install -g serve
 COPY --from=build /app/build ./build
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["serve", "-s", "build", "-l", "3000"]
 
 # ensure app files are owned by configured user
 # then copy source files into containerized application directory
