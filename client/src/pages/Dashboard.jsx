@@ -271,20 +271,14 @@ const Dashboard = () => {
             <button className="header-btn">
               <Bell className="header-icon" />
             </button>
-
-            <div className="header-container">
-              <div className="header-content">
-                <Link to="/login" className="header-btn">
+            <Link to="/dashboard/profile" className="user-avatar">
+                  <User className="user-icon" />
+            </Link>
+            <Link to="/login" className="header-btn">
                   <LogOut className="header-icon" /> 
                 </Link>
-              </div>
 
-              <div className="header-container">
-                <Link to="/dashboard/profile" className="user-avatar">
-                  <User className="user-icon" />
-                </Link>
-              </div>
-            </div>
+
           </div>
         </div>
       </header>

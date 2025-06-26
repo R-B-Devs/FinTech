@@ -96,7 +96,7 @@
   background: none;
   border: none;
   color: white;
-  border-radius: 0.5rem;
+  border-radius: 0.9rem;
   cursor: pointer;
   transition: background-color 0.2s;
 }
@@ -128,12 +128,13 @@
 /* Layout */
 .dashboard-layout {
   display: flex;
+  
 }
 
 /* Sidebar Styles */
 .sidebar {
   width: 16rem;
-  background: rgba(17, 24, 39, 0.3);
+ background-color: #1e1e1e;
   backdrop-filter: blur(20px);
   border-right: 1px solid #374151;
   min-height: calc(100vh - 73px);

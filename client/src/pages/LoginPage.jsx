@@ -111,7 +111,7 @@
 
 //             {/* Sign In Button */}
 //             <button className="login-button" disabled={!!idError || !!passwordError}>
-//               Login 
+//               Login
 //             </button>
 //           </div>
 //         </div>
@@ -269,6 +269,10 @@ const LoginPage = () => {
                     setPassword(e.target.value);
                     validatePassword(e.target.value);
                   }}
+                    onPaste={(e) => {
+                     e.preventDefault();
+                    alert("Pasting passwords is disabled for security reasons.");
+                 }}
                   autoComplete="current-password"
                 />
               </div>
