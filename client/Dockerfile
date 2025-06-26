@@ -4,6 +4,7 @@
 # USER app
 
 # set working directories
+# and install dependencies
 FROM node:24-alpine AS build
 RUN npm install
 COPY . .
