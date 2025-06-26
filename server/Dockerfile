@@ -1,8 +1,3 @@
-# run as non-root user
-# FROM node:20
-# RUN useradd -ms /bin/sh -u 1001 app
-# USER app
-
 # set working directories
 # Note: The WORKDIR command sets the working directory for any RUN, CMD, ENTRYPOINT
 FROM node:24-alpine
