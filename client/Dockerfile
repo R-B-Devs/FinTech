@@ -4,9 +4,7 @@
 # USER app
 
 # set working directories
-WORKDIR /client
-COPY package*.json ./
-# RUN npm install -g npm@latest
+FROM node:24-alpine AS build
 RUN npm install
 COPY . .
 EXPOSE 3000
