@@ -22,6 +22,8 @@ import Cards from './pages/Cards';
 import Investments from './pages/Investments';
 import Profile from './pages/Profile';
 import SettingsPage from './pages/Settings';
+import Timeout from './pages/Timeout';
+
 
 // Settings subpages
 import PersonalInfo from './pages/PersonalInfo';
@@ -44,6 +46,7 @@ function App() {
         <Route path="/verifyOtp" element={<VerifyOtp />} />
 
         {/* Dashboard routes */}
+        <Route element={<Timeout timeout={2 * 60 * 1000} gracePeriod={30 * 1000} />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/analytics" element={<Analytics />} />
         <Route path="/dashboard/goals" element={<Goals />} />
@@ -62,6 +65,7 @@ function App() {
         <Route path="/dashboard/settings/linked-accounts" element={<LinkedAccounts />} />
         <Route path="/dashboard/settings/help-center" element={<HelpCenter />} />
         <Route path="/dashboard/settings/contact-support" element={<ContactSupport />} />
+        </Route>
       </Routes>
     </Router>
   );
