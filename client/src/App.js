@@ -28,7 +28,7 @@ import PersonalInfo from './pages/PersonalInfo';
 import LinkedAccounts from './pages/LinkedAccounts';
 import HelpCenter from './pages/HelpCenter';
 import ContactSupport from './pages/ContactSupport';
-
+import AgentPage from './pages/Agent';
 function App() {
   return (
     <Router>
@@ -42,7 +42,7 @@ function App() {
         <Route path="/register" element={<RegistrationPage />} />
         <Route path="/otp" element={<OtpPage />} />
         <Route path="/verifyOtp" element={<VerifyOtp />} />
-
+        <Route path="/AgentP" element={<AgentPage />} />
         {/* Dashboard routes */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/dashboard/analytics" element={<Analytics />} />

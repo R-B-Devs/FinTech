@@ -656,6 +656,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, Outlet } from 'react-router-dom';
 import "../styles/Dashboard.css";
+import CallButton from './CallButton';
+// import 'bootstrap/dist/css/bootstrap.min.css';
+
 import {
   TrendingUp, 
   TrendingDown, 
@@ -948,7 +951,7 @@ const Dashboard = () => {
                 </div>
                 <div className="status-badge status-phone">
                   <Phone className="status-icon" />
-                  <span>Phone Call</span>
+                  <CallButton clientName="John Doe" />{/* CallButton component for initiating calls */}
                 </div>
                 <div className="status-badge status-video">
                   <Video className="status-icon" />
